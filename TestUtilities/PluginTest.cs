@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using ADMPlugin;
 using AgGateway.ADAPT.ApplicationDataModel;
 using AgGateway.ADAPT.ApplicationDataModel.ADM;
@@ -21,15 +20,15 @@ namespace PluginTest
     {
         private Plugin _plugin;
         private string _testCardPath;
-        private Mock<IProtobufSerializer> _protobufSerializerMock;
+        private Mock<IBinaryWriter> _binaryWriterMock;
 
         [SetUp]
         public void Setup()
         {
-            _protobufSerializerMock = new Mock<IProtobufSerializer>();
+            _binaryWriterMock = new Mock<IBinaryWriter>();
 
             _testCardPath = DatacardUtility.WriteDataCard("TestDatacard");
-            _plugin = new Plugin(_protobufSerializerMock.Object);
+            _plugin = new Plugin(_binaryWriterMock.Object);
         }
 
         [Test]
@@ -123,51 +122,6 @@ namespace PluginTest
         }
 
         [Test]
-        public void GivenPluginAndCardPathWhenImportThenSpatialRecordsAreImported()
-        {
-            var path = Path.Combine(_testCardPath, "adm", "documents", "OperationData-367.adm");
-            _protobufSerializerMock.Setup(x => x.ReadSpatialRecords(path));
-
-            var result = _plugin.Import(_testCardPath);
-            foreach (var loggedData in result.Documents.LoggedData)
-            {
-                foreach (var operationData in loggedData.OperationData)
-                {
-                    Assert.NotNull(operationData.GetSpatialRecords());
-                }
-            }
-        }
-
-        [Test]
-        public void GivenPluginAndCardPathWhenImportThenSectionsAreImported()
-        {
-            var result = _plugin.Import(_testCardPath);
-            foreach (var loggedData in result.Documents.LoggedData)
-            {
-                foreach (var operationData in loggedData.OperationData)
-                {
-                    var sections = operationData.GetSections(0);
-                    Assert.NotNull(sections);
-                }
-            }
-        }
-
-        [Test]
-        public void GivenPluginAndCardPathWhenImportThenMetersAreImported()
-        {
-            var result = _plugin.Import(_testCardPath);
-            foreach (var loggedData in result.Documents.LoggedData)
-            {
-                foreach (var operationData in loggedData.OperationData)
-                {
-                    var sections = operationData.GetSections(0);
-                    var meters = sections.SelectMany(x => x.GetMeters());
-                    Assert.NotNull(meters);
-                }
-            }
-        }
-
-        [Test]
         public void GivenPluginAndCardPathWhenImportThenReferenceLayersAreImported()
         {
             var result = _plugin.Import(_testCardPath);
@@ -223,7 +177,7 @@ namespace PluginTest
                 Documents = new Documents
                 {
                     LoggedData = new List<LoggedData>(),
-                    //OperationData = new List<OperationData>(),
+                    OperationData = new List<OperationData>(),
                     WorkItems = new List<WorkItem>()
                 }
             };
@@ -231,109 +185,6 @@ namespace PluginTest
             _plugin.Export(dataModel, _testCardPath);
 
             var fileExists = File.Exists(Path.Combine(_testCardPath, "adm", "Document.adm"));
-            Assert.IsTrue(fileExists);
-        }
-
-        [Test]
-        public void GivenPluginAndDataModelWhenExportThenOperationDataFileIsWritten()
-        {
-            var spatialRecords = new List<SpatialRecord>
-            {
-                new SpatialRecord(),
-                new SpatialRecord(),
-                new SpatialRecord()
-            };
-
-            var operationData = new OperationData
-            {
-                GetSpatialRecords = () => spatialRecords,
-            };
-            var dataModel = new ApplicationDataModel
-            {
-                Documents = new Documents
-                {
-                    LoggedData = new List<LoggedData>{ new LoggedData{ OperationData = new List<OperationData>{operationData}}},
-                    WorkItems = new List<WorkItem>()
-                }
-            };
-
-            _plugin.Export(dataModel, _testCardPath);
-            var expectedPath = Path.Combine(_testCardPath,string.Format(@"adm\documents\OperationData{0}.adm", operationData.Id.ReferenceId));
-            _protobufSerializerMock.Verify(x => x.WriteSpatialRecords(expectedPath, spatialRecords, It.IsAny<IEnumerable<Meter>>()), Times.Once);
-        }
-
-        [Test]
-        public void GivenPluginAndDataModelWhenExportThenSectionFileIsWritten()
-        {
-            _testCardPath = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
-
-            var sections = new List<Section>
-            {
-                new Section(),
-                new Section(),
-                new Section(),
-            };
-
-            var operationData = new OperationData
-            {
-                GetSpatialRecords = () => new List<SpatialRecord>(),
-                GetSections = x => sections
-            };
-            var dataModel = new ApplicationDataModel
-            {
-                Documents = new Documents
-                {
-                    LoggedData = new List<LoggedData>{ new LoggedData{ OperationData = new List<OperationData>{operationData}}},
-                    //OperationData = new List<OperationData>(),
-                    WorkItems = new List<WorkItem>()
-                }
-            };
-
-            _plugin.Export(dataModel, _testCardPath);
-
-            var fileName = String.Format("Section{0}.adm", operationData.Id.ReferenceId);
-            var fileExists = File.Exists(Path.Combine(_testCardPath, "adm", "documents", fileName));
-            Assert.IsTrue(fileExists);
-        }
-
-        [Test]
-        public void GivenPluginAndDataModelWhenExportThenMeterFileIsWritten()
-        {
-            _testCardPath = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
-
-            var meters = new List<Meter>
-            {
-                new NumericMeter(),
-                new NumericMeter()
-            };
-            var sections = new List<Section>
-            {
-                new Section
-                {
-                    GetMeters = () => meters
-                }
-            };
-
-            var operationData = new OperationData
-            {
-                GetSpatialRecords = () => new List<SpatialRecord>(),
-                GetSections = x => sections
-            };
-
-            var dataModel = new ApplicationDataModel
-            {
-                Documents = new Documents
-                {
-                    LoggedData = new List<LoggedData> { new LoggedData { OperationData = new List<OperationData> { operationData } } },
-                    //OperationData = new List<OperationData>(),
-                    WorkItems = new List<WorkItem>()
-                }
-            };
-
-            _plugin.Export(dataModel, _testCardPath);
-
-            var fileName = String.Format("Meter{0}.adm", operationData.Id.ReferenceId);
-            var fileExists = File.Exists(Path.Combine(_testCardPath, "adm", "documents", fileName));
             Assert.IsTrue(fileExists);
         }
 
@@ -354,6 +205,40 @@ namespace PluginTest
 
             var fileExists = File.Exists(Path.Combine(_testCardPath, "adm", "ReferenceLayers.adm"));
             Assert.IsTrue(fileExists);
+        }
+
+        [Test]
+        public void GivenPluginAndBinaryDataWhenExportThenBinaryDataIsWritten()
+        {
+            _testCardPath = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
+
+            var spatialRecord = new SpatialRecord();
+            var spatialRecords = new List<SpatialRecord>
+            {
+                spatialRecord
+            };
+            var operationData = new OperationData
+            {
+                GetSpatialRecords = () => spatialRecords
+            };
+            var dataModel = new ApplicationDataModel
+            {
+                Documents = new Documents
+                {
+                    LoggedData = new List<LoggedData>
+                    {
+                        new LoggedData
+                        {
+                            OperationData = new List<OperationData>{operationData}
+                        }
+                    },
+                }
+            };
+
+            _plugin.Export(dataModel, _testCardPath);
+
+            var path = Path.Combine(_testCardPath, "adm", "documents");
+            _binaryWriterMock.Verify(x => x.Write(spatialRecord, path), Times.Once);
         }
 
         [TearDown]

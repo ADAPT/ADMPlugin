@@ -31,20 +31,24 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="AgGateway.ADAPT.ApplicationDataModel, Version=1.0.0.1, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\AgGatewayADAPTFramework.1.0.0.8\lib\AgGateway.ADAPT.ApplicationDataModel.dll</HintPath>
+      <HintPath>..\packages\ADAPT-Framework.1.0.0.2-prerelease\lib\AgGateway.ADAPT.ApplicationDataModel.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="AgGateway.ADAPT.PluginManager, Version=1.0.0.1, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\AgGatewayADAPTFramework.1.0.0.8\lib\AgGateway.ADAPT.PluginManager.dll</HintPath>
+      <HintPath>..\packages\ADAPT-Framework.1.0.0.2-prerelease\lib\AgGateway.ADAPT.PluginManager.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="AgGateway.ADAPT.Representation, Version=1.0.0.1, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\AgGatewayADAPTFramework.1.0.0.8\lib\AgGateway.ADAPT.Representation.dll</HintPath>
+      <HintPath>..\packages\ADAPT-Framework.1.0.0.2-prerelease\lib\AgGateway.ADAPT.Representation.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="Newtonsoft.Json, Version=8.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\Newtonsoft.Json.8.0.2\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="protobuf-net, Version=2.0.0.668, Culture=neutral, PublicKeyToken=257b51d87d2e4d67, processorArchitecture=MSIL">
+      <HintPath>..\packages\protobuf-net.2.0.0.668\lib\net40\protobuf-net.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -59,6 +63,7 @@
     <Compile Include="BinaryWriter.cs" />
     <Compile Include="Plugin.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ProtobufSerializer.cs" />
     <Compile Include="ZipUtil.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -67,12 +72,8 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\RepresentationSystem.xml">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Include="Resources\UnitSystem.xml">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
+    <Content Include="Resources\RepresentationSystem.xml" />
+    <Content Include="Resources\UnitSystem.xml" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

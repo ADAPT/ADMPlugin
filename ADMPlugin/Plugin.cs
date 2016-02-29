@@ -11,21 +11,22 @@ namespace ADMPlugin
 {
     public class Plugin : IPlugin
     {
-        private readonly IBinaryWriter _binaryWriter;
+        private readonly IProtobufSerializer _protobufSerializer;
 
-        public Plugin() : this(new BinaryWriter())
+        public Plugin() : this(new ProtobufSerializer())
         {
             
         }
 
-        public Plugin(IBinaryWriter binaryWriter)
+        public Plugin(IProtobufSerializer protobufSerializer)
         {
-            _binaryWriter = binaryWriter;
+            _protobufSerializer = protobufSerializer;
         }
 
         private const string PluginFolderAndExtension = "adm";
         private const string DocumentsFolder = "documents";
         private const string SectionFile = "Section{0}." + PluginFolderAndExtension;
+        private const string MeterFile = "Meter{0}." + PluginFolderAndExtension;
         private const string OperationDataFile = "OperationData{0}." + PluginFolderAndExtension;
         private const string FileFormat =  "{0}." + PluginFolderAndExtension;
 
@@ -102,13 +103,60 @@ namespace ADMPlugin
             if (!IsDataCardSupported(path, properties))
                 return null;
 
-            return new ApplicationDataModel
+            var applicationDataModel = new ApplicationDataModel
             {
                 ProprietaryValues = ImportData<List<ProprietaryValue>>(path, ProprietaryValuesAdm),
                 Catalog = ImportData<Catalog>(path, CatalogAdm),
                 Documents = ImportData<Documents>(path, DocumentAdm),
                 ReferenceLayers = ImportData<List<ReferenceLayer>>(path, ReferencelayersAdm)
             };
+
+            ImportLoggingData(path, applicationDataModel.Documents.LoggedData);
+            return applicationDataModel;
+        }
+
+        private void ImportLoggingData(string path, IEnumerable<LoggedData> loggedDatas)
+        {
+            foreach (var loggedData in loggedDatas)
+            {
+                foreach (var operationData in loggedData.OperationData)
+                {
+                    ImportSpatialRecords(path, operationData);
+                    ImportSections(path, operationData);
+                    ImportMeters(path, operationData);
+                }
+            }
+        }
+
+        private void ImportMeters(string path, OperationData operationData)
+        {
+            var sections = new List<Section>();
+            for (int i = 0; i <= operationData.MaxDepth; i++)
+            {
+                var levelSections = operationData.GetSections(i);
+                if(levelSections != null)
+                    sections.AddRange(levelSections);
+            }
+
+            foreach (var section in sections)
+            {
+                var metersFile = string.Format(MeterFile, operationData.Id.ReferenceId);
+                section.GetMeters = () => ImportData<List<Meter>>(path, metersFile);
+            }
+        }
+
+        private void ImportSections(string path, OperationData operationData)
+        {
+            var sectionsFile = string.Format(SectionFile, operationData.Id.ReferenceId);
+            var importData = ImportData<List<Section>>(path, sectionsFile);
+            operationData.GetSections = x => importData;
+        }
+
+        private void ImportSpatialRecords(string path, OperationData operationData)
+        {
+            var spatialRecordFileName = string.Format(OperationDataFile, operationData.Id.ReferenceId);
+            var spatialRecordFilePath = Path.Combine(path, spatialRecordFileName);
+            operationData.GetSpatialRecords = () => _protobufSerializer.ReadSpatialRecords(spatialRecordFilePath);
         }
 
         public void Export(ApplicationDataModel dataModel, string exportPath, Properties properties = null)
@@ -121,7 +169,7 @@ namespace ADMPlugin
             ExportData(path, CatalogAdm, dataModel.Catalog);
             ExportData(path, DocumentAdm, dataModel.Documents);
             ExportData(path, ReferencelayersAdm, dataModel.ReferenceLayers);
-            ExportBinary(path, dataModel.Documents);
+            ExportProtobuf(path, dataModel.Documents);
         }
 
         public Properties GetProperties(string dataPath)
@@ -129,7 +177,7 @@ namespace ADMPlugin
             return new Properties();
         }
 
-        private void ExportBinary(string path, Documents documents)
+        private void ExportProtobuf(string path, Documents documents)
         {
             if (documents == null || documents.LoggedData == null)
                 return;
@@ -149,31 +197,49 @@ namespace ADMPlugin
             if (!Directory.Exists(documentsPath))
                 Directory.CreateDirectory(documentsPath);
 
-            ProcessSections(documentsPath, operationData);
-
             ProcessSpatialRecords(documentsPath, operationData);
+            ProcessSectionsAndMeters(documentsPath, operationData);
         }
 
         private void ProcessSpatialRecords(string documentsPath, OperationData operationData)
         {
-            var spatialRecords = operationData.GetSpatialRecords().GetEnumerator();
+            var spatialRecords = operationData.GetSpatialRecords();
 
-            while (spatialRecords.MoveNext())
-            {
-                var spatialRecord = spatialRecords.Current;
-                _binaryWriter.Write(spatialRecord, documentsPath);
-            }
+            var fileName = string.Format(OperationDataFile, operationData.Id.ReferenceId);
+            var filePath = Path.Combine(documentsPath, fileName);
+
+            var meters = MapAllSectionsByDepth(operationData).SelectMany(x => x.GetMeters());
+
+            _protobufSerializer.WriteSpatialRecords(filePath, spatialRecords, meters);
         }
 
-        private void ProcessSections(string documentsPath, OperationData operationData)
+        private IEnumerable<Section> MapAllSectionsByDepth(OperationData operationData)
+        {
+            var sections = new List<Section>();
+            if (operationData.GetSections == null)
+                return sections;
+
+            for (var i = 0; i <= operationData.MaxDepth; i++)
+            {
+                sections.AddRange(operationData.GetSections(i));
+            }
+            return sections;
+        }
+
+        private void ProcessSectionsAndMeters(string documentsPath, OperationData operationData)
         {
             var sections = new List<Section>();
             for (var depth = 0; depth < operationData.MaxDepth; depth++)
             {
                 sections.AddRange(operationData.GetSections(depth));
             }
+            var sectionsFileName = string.Format(SectionFile, operationData.Id.ReferenceId);
 
-            ExportData(documentsPath, string.Format(SectionFile, operationData.Id.ReferenceId), sections);
+            var meters = sections.SelectMany(x => x.GetMeters());
+            var metersFileName = string.Format(MeterFile, operationData.Id.ReferenceId);
+
+            ExportData(documentsPath, sectionsFileName, sections);
+            ExportData(documentsPath, metersFileName, meters);
         }
 
         private T ImportData<T>(string path, string searchPattern)
