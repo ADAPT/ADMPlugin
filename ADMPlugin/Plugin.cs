@@ -130,13 +130,7 @@ namespace ADMPlugin
 
         private void ImportMeters(string path, OperationData operationData)
         {
-            var sections = new List<Section>();
-            for (int i = 0; i <= operationData.MaxDepth; i++)
-            {
-                var levelSections = operationData.GetSections(i);
-                if(levelSections != null)
-                    sections.AddRange(levelSections);
-            }
+            var sections = GetAllSections(operationData);
 
             foreach (var section in sections)
             {
@@ -208,34 +202,17 @@ namespace ADMPlugin
             var fileName = string.Format(OperationDataFile, operationData.Id.ReferenceId);
             var filePath = Path.Combine(documentsPath, fileName);
 
-            var meters = MapAllSectionsByDepth(operationData).SelectMany(x => x.GetMeters());
+            var meters = GetAllSections(operationData).SelectMany(x => x.GetMeters());
 
             _protobufSerializer.WriteSpatialRecords(filePath, spatialRecords, meters);
         }
 
-        private IEnumerable<Section> MapAllSectionsByDepth(OperationData operationData)
-        {
-            var sections = new List<Section>();
-            if (operationData.GetSections == null)
-                return sections;
-
-            for (var i = 0; i <= operationData.MaxDepth; i++)
-            {
-                sections.AddRange(operationData.GetSections(i));
-            }
-            return sections;
-        }
-
         private void ProcessSectionsAndMeters(string documentsPath, OperationData operationData)
         {
-            var sections = new List<Section>();
-            for (var depth = 0; depth < operationData.MaxDepth; depth++)
-            {
-                sections.AddRange(operationData.GetSections(depth));
-            }
+            var sections = GetAllSections(operationData);
             var sectionsFileName = string.Format(SectionFile, operationData.Id.ReferenceId);
 
-            var meters = sections.SelectMany(x => x.GetMeters());
+            var meters = sections.SelectMany(x => x.GetMeters().ToList());
             var metersFileName = string.Format(MeterFile, operationData.Id.ReferenceId);
 
             ExportData(documentsPath, sectionsFileName, sections);
@@ -305,6 +282,24 @@ namespace ADMPlugin
             {
                 return Serializer.Deserialize<T>(textReader);
             }
+        }
+
+        private static List<Section> GetAllSections(OperationData operationData)
+        {
+            if(operationData == null)
+                return new List<Section>();
+
+            var sections = new List<Section>();
+            for (var depth = 0; depth <= operationData.MaxDepth; depth++)
+            {
+                if(operationData.GetSections == null)
+                    continue;
+
+                var levelSections = operationData.GetSections(depth);
+                if (levelSections != null)
+                    sections.AddRange(levelSections);
+            }
+            return sections;
         }
     } 
 }

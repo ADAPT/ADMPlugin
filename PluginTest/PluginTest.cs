@@ -269,9 +269,9 @@ namespace PluginTest
 
             var sections = new List<Section>
             {
-                new Section(),
-                new Section(),
-                new Section(),
+                new Section{ GetMeters = () => new List<Meter>{ new NumericMeter(), new EnumeratedMeter() } },
+                new Section{ GetMeters = () => new List<Meter>{ new NumericMeter(), new EnumeratedMeter() } },
+                new Section{ GetMeters = () => new List<Meter>{ new NumericMeter(), new EnumeratedMeter() } },
             };
 
             var operationData = new OperationData
@@ -284,7 +284,6 @@ namespace PluginTest
                 Documents = new Documents
                 {
                     LoggedData = new List<LoggedData>{ new LoggedData{ OperationData = new List<OperationData>{operationData}}},
-                    //OperationData = new List<OperationData>(),
                     WorkItems = new List<WorkItem>()
                 }
             };
