@@ -124,9 +124,6 @@
   <data name="IncorrectHierarchy" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>Datacards\IncorrectHierarchy.zip;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
-  <data name="SpiekerHarvest" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>datacards\spiekerharvest.zip;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
   <data name="TestDatacard" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>datacards\testdatacard.zip;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>

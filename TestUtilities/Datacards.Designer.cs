@@ -83,16 +83,6 @@ namespace TestUtilities {
         /// <summary>
         ///   Looks up a localized resource of type System.Byte[].
         /// </summary>
-        internal static byte[] SpiekerHarvest {
-            get {
-                object obj = ResourceManager.GetObject("SpiekerHarvest", resourceCulture);
-                return ((byte[])(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Byte[].
-        /// </summary>
         internal static byte[] TestDatacard {
             get {
                 object obj = ResourceManager.GetObject("TestDatacard", resourceCulture);

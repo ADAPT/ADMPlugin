@@ -63,9 +63,7 @@
   <ItemGroup>
     <None Include="Datacards\IncorrectFiles.zip" />
     <None Include="Datacards\IncorrectHierarchy.zip" />
-    <None Include="Datacards\SpiekerHarvest.zip" />
     <None Include="Datacards\TestDatacard.zip" />
-    <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
