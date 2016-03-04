@@ -102,13 +102,17 @@ namespace ADMPlugin
         {
             if (!IsDataCardSupported(path, properties))
                 return null;
+            var documents = ImportData<Documents>(path, DocumentAdm);
+            var catalog = ImportData<Catalog>(path, CatalogAdm);
+            var proprietaryValues = ImportData<List<ProprietaryValue>>(path, ProprietaryValuesAdm);
+            var referenceLayers = ImportData<List<ReferenceLayer>>(path, ReferencelayersAdm);
 
             var applicationDataModel = new ApplicationDataModel
             {
-                ProprietaryValues = ImportData<List<ProprietaryValue>>(path, ProprietaryValuesAdm),
-                Catalog = ImportData<Catalog>(path, CatalogAdm),
-                Documents = ImportData<Documents>(path, DocumentAdm),
-                ReferenceLayers = ImportData<List<ReferenceLayer>>(path, ReferencelayersAdm)
+                ProprietaryValues = proprietaryValues,
+                Catalog = catalog,
+                Documents = documents,
+                ReferenceLayers = referenceLayers
             };
 
             ImportLoggingData(path, applicationDataModel.Documents.LoggedData);
@@ -130,26 +134,35 @@ namespace ADMPlugin
 
         private void ImportMeters(string path, OperationData operationData)
         {
-            var sections = GetAllSections(operationData);
+            var sections = GetAllSections(operationData).Where(x => x.Value != null).SelectMany(x => x.Value);
+
+            var metersFileName = string.Format(MeterFile, operationData.Id.ReferenceId);
+            var metersFilePath = Path.Combine(path, PluginFolderAndExtension, DocumentsFolder, metersFileName);
+            var otherstuff = _protobufSerializer.Read<IEnumerable<Meter>>(metersFilePath);
 
             foreach (var section in sections)
             {
-                var metersFile = string.Format(MeterFile, operationData.Id.ReferenceId);
-                section.GetMeters = () => ImportData<List<Meter>>(path, metersFile);
+                var stuff = otherstuff.Where(x => x.SectionId == section.Id.ReferenceId);
+                
+                section.GetMeters = () => stuff;
             }
         }
 
         private void ImportSections(string path, OperationData operationData)
         {
-            var sectionsFile = string.Format(SectionFile, operationData.Id.ReferenceId);
-            var importData = ImportData<List<Section>>(path, sectionsFile);
-            operationData.GetSections = x => importData;
+            var sectionsFileName = string.Format(SectionFile, operationData.Id.ReferenceId);
+            var sectionsFilePath = Path.Combine(path, PluginFolderAndExtension, DocumentsFolder, sectionsFileName);
+            var sections = _protobufSerializer.Read<Dictionary<int, IEnumerable<Section>>>(sectionsFilePath);
+
+            if(sections != null)
+                operationData.GetSections = x => sections[x];
         }
 
         private void ImportSpatialRecords(string path, OperationData operationData)
         {
             var spatialRecordFileName = string.Format(OperationDataFile, operationData.Id.ReferenceId);
-            var spatialRecordFilePath = Path.Combine(path, spatialRecordFileName);
+            var spatialRecordFilePath = Path.Combine(path, PluginFolderAndExtension, DocumentsFolder, spatialRecordFileName);
+
             operationData.GetSpatialRecords = () => _protobufSerializer.ReadSpatialRecords(spatialRecordFilePath);
         }
 
@@ -202,21 +215,21 @@ namespace ADMPlugin
             var fileName = string.Format(OperationDataFile, operationData.Id.ReferenceId);
             var filePath = Path.Combine(documentsPath, fileName);
 
-            var meters = GetAllSections(operationData).SelectMany(x => x.GetMeters());
-
-            _protobufSerializer.WriteSpatialRecords(filePath, spatialRecords, meters);
+            _protobufSerializer.Write(filePath, spatialRecords);
         }
 
         private void ProcessSectionsAndMeters(string documentsPath, OperationData operationData)
         {
             var sections = GetAllSections(operationData);
             var sectionsFileName = string.Format(SectionFile, operationData.Id.ReferenceId);
+            var sectionsFilePath = Path.Combine(documentsPath, sectionsFileName);
 
-            var meters = sections.SelectMany(x => x.GetMeters().ToList());
+            var meters = sections.SelectMany(section => section.Value.SelectMany(x => x.GetMeters()));
             var metersFileName = string.Format(MeterFile, operationData.Id.ReferenceId);
+            var metersFilePath = Path.Combine(documentsPath, metersFileName);
 
-            ExportData(documentsPath, sectionsFileName, sections);
-            ExportData(documentsPath, metersFileName, meters);
+            _protobufSerializer.Write(sectionsFilePath, sections);
+            _protobufSerializer.Write(metersFilePath, meters);
         }
 
         private T ImportData<T>(string path, string searchPattern)
@@ -284,21 +297,22 @@ namespace ADMPlugin
             }
         }
 
-        private static List<Section> GetAllSections(OperationData operationData)
+        private static Dictionary<int, IEnumerable<Section>> GetAllSections(OperationData operationData)
         {
             if(operationData == null)
-                return new List<Section>();
+                return null;
 
-            var sections = new List<Section>();
+            var sections = new Dictionary<int, IEnumerable<Section>>();
+
             for (var depth = 0; depth <= operationData.MaxDepth; depth++)
             {
                 if(operationData.GetSections == null)
                     continue;
 
                 var levelSections = operationData.GetSections(depth);
-                if (levelSections != null)
-                    sections.AddRange(levelSections);
+                sections.Add(depth, levelSections);
             }
+
             return sections;
         }
     } 

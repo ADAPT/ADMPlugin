@@ -38,7 +38,7 @@ namespace PluginTest
             _spatialRecords.Add(spatialRecord1);
 
             var filePath = Path.Combine(_testCardPath, "OperationData-1.adm");
-            _protobufSerializer.WriteSpatialRecords(filePath, _spatialRecords, _meters);
+            _protobufSerializer.Write(filePath, _spatialRecords);
 
             var fileExists = File.Exists(filePath);
             Assert.IsTrue(fileExists);
@@ -52,6 +52,26 @@ namespace PluginTest
             var spatialRecords = _protobufSerializer.ReadSpatialRecords(filePath);
             
             Assert.IsNotNull(spatialRecords);
+        }
+
+        [Test]
+        public void GivenMeterDataFileWhenReadThenMetersAreReturned()
+        {
+            var filePath = Path.Combine(_testCardPath, "adm", "documents", "Meter-1.adm");
+
+            var meters = _protobufSerializer.Read<IEnumerable<Meter>>(filePath);
+
+            Assert.IsNotNull(meters);
+        }
+
+        [Test]
+        public void GivenSectionDataFileWhenReadThensectionsAreReturned()
+        {
+            var filePath = Path.Combine(_testCardPath, "adm", "documents", "Section-1.adm");
+
+            var sections = _protobufSerializer.Read<Dictionary<int, IEnumerable<Section>>>(filePath);
+
+            Assert.IsNotNull(sections);
         }
 
         [TearDown]
