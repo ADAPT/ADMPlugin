@@ -3,8 +3,10 @@
 <project name="targetsbuild" basedir=".">
   <include buildfile="./properties.build" failonerror="true"/>
 
-  <version buildtype="NoIncrement" revisiontype="Increment" path="${versionPath}${versionFile}" failonerror="false" prefix="admplugin"/>
-
+  <target name="updateVersion" description="update version file">
+	<version buildtype="NoIncrement" revisiontype="Increment" path="${versionPath}${versionFile}" failonerror="false" prefix="admplugin"/>
+  </target>
+  
   <target name="unittest" description="Execute unit tests using nUnit" basdir="." depends="build">
     <property name="test.wildcard" value="*Test.dll" />
     <call target="nunitTest" />
@@ -62,7 +64,7 @@
     </exec>
   </target>
 
-  <target name="admPlugin" depends="packagePlugin">
+  <target name="admPlugin" depends="updateVersion,packagePlugin">
     <call target="getnugetversion" />
     <property name="packagename" value="${nupkgName}.${version}.nupkg" />
     <exec program="nuget" workingdir="${solutionDir}">
