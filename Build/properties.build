@@ -8,7 +8,7 @@
   <property name="solutionName" value="ADMPlugin.sln" />
   <property name="buildnumber.version" value="" />
   <property name="versionPath" value="C:\versions\"
-  <property name="versionFile" value="ADAPT.version" />
+  <property name="versionFile" value="ADMPlugin.version" />
   <property name="configuration" value="Release" />
   <property name="platform" value="Any CPU" />  
   <property name="nugetapikey" value="a3d6049f-98f4-4f6a-a1e0-824613870add" />
