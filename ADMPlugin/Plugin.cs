@@ -138,13 +138,13 @@ namespace ADMPlugin
 
             var metersFileName = string.Format(MeterFile, operationData.Id.ReferenceId);
             var metersFilePath = Path.Combine(path, PluginFolderAndExtension, DocumentsFolder, metersFileName);
-            var otherstuff = _protobufSerializer.Read<IEnumerable<Meter>>(metersFilePath);
+            var allMeters = _protobufSerializer.Read<IEnumerable<Meter>>(metersFilePath);
 
             foreach (var section in sections)
             {
-                var stuff = otherstuff.Where(x => x.SectionId == section.Id.ReferenceId);
+                var sectionMeters = allMeters.Where(x => x.SectionId == section.Id.ReferenceId);
                 
-                section.GetMeters = () => stuff;
+                section.GetMeters = () => sectionMeters;
             }
         }
 
