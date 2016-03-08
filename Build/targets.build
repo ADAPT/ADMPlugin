@@ -30,7 +30,7 @@
     <foreach item="File" property="pluginSolution" verbose="true">
       <in>
         <items basedir=".">
-          <include name=".\..\**\*.sln" />
+          <include name=".\..\*.sln" />
         </items>
       </in>
       <do>
