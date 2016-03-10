@@ -84,6 +84,11 @@ namespace ADMPlugin
         {
         }
 
+        public Properties GetProperties(string dataPath)
+        {
+            return new Properties();
+        }
+
         public bool IsDataCardSupported(string dataPath, Properties properties = null)
         {
             var path = Path.Combine(dataPath, PluginFolderAndExtension);
@@ -155,7 +160,7 @@ namespace ADMPlugin
             var sections = _protobufSerializer.Read<Dictionary<int, IEnumerable<Section>>>(sectionsFilePath);
 
             if(sections != null)
-                operationData.GetSections = x => sections[x];
+                operationData.GetSections = x => sections[x] ?? new List<Section>();
         }
 
         private void ImportSpatialRecords(string path, OperationData operationData)
@@ -179,46 +184,36 @@ namespace ADMPlugin
             ExportProtobuf(path, dataModel.Documents);
         }
 
-        public Properties GetProperties(string dataPath)
-        {
-            return new Properties();
-        }
-
         private void ExportProtobuf(string path, Documents documents)
         {
             if (documents == null || documents.LoggedData == null)
                 return;
 
-            foreach (var loggedData in documents.LoggedData)
+            foreach (var operationData in documents.LoggedData.SelectMany(x => x.OperationData))
             {
-                foreach (var operationData in loggedData.OperationData)
-                {
-                    ProcessOperationData(path, operationData);
-                }
+                if (operationData == null)
+                    continue;
+
+                var documentsPath = Path.Combine(path, DocumentsFolder);
+                if (!Directory.Exists(documentsPath))
+                    Directory.CreateDirectory(documentsPath);
+
+                ExportSpatialRecords(documentsPath, operationData);
+                ExportSectionsAndMeters(documentsPath, operationData);
             }
         }
 
-        private void ProcessOperationData(string path, OperationData operationData)
-        {
-            var documentsPath = Path.Combine(path, DocumentsFolder);
-            if (!Directory.Exists(documentsPath))
-                Directory.CreateDirectory(documentsPath);
-
-            ProcessSpatialRecords(documentsPath, operationData);
-            ProcessSectionsAndMeters(documentsPath, operationData);
-        }
-
-        private void ProcessSpatialRecords(string documentsPath, OperationData operationData)
+        private void ExportSpatialRecords(string documentsPath, OperationData operationData)
         {
             var spatialRecords = operationData.GetSpatialRecords();
 
             var fileName = string.Format(OperationDataFile, operationData.Id.ReferenceId);
             var filePath = Path.Combine(documentsPath, fileName);
 
-            _protobufSerializer.Write(filePath, spatialRecords);
+            _protobufSerializer.WriteSpatialRecords(filePath, spatialRecords);
         }
 
-        private void ProcessSectionsAndMeters(string documentsPath, OperationData operationData)
+        private void ExportSectionsAndMeters(string documentsPath, OperationData operationData)
         {
             var sections = GetAllSections(operationData);
             var sectionsFileName = string.Format(SectionFile, operationData.Id.ReferenceId);

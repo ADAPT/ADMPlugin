@@ -272,7 +272,7 @@ namespace PluginTest
 
             _plugin.Export(dataModel, _testCardPath);
             var expectedPath = Path.Combine(_testCardPath,string.Format(@"adm\documents\OperationData{0}.adm", operationData.Id.ReferenceId));
-            _protobufSerializerMock.Verify(x => x.Write(expectedPath, operationData.GetSpatialRecords()), Times.Once);
+            _protobufSerializerMock.Verify(x => x.WriteSpatialRecords(expectedPath, operationData.GetSpatialRecords()), Times.Once);
         }
 
         [Test]
