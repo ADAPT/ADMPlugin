@@ -3,16 +3,16 @@
 <project name="targetsbuild" basedir=".">
   <include buildfile="./properties.build" failonerror="true"/>
 
-  <target name="updateVersion" description="update version file">
-	<version buildtype="NoIncrement" revisiontype="Increment" path="${versionPath}${versionFile}" failonerror="false" prefix="admplugin"/>
+  <target name="updateVersion" description="updates version file">
+	<version buildtype="NoIncrement" revisiontype="Increment" path="${versionPath}${versionFile}" failonerror="true" prefix="admplugin"/>
   </target>
   
-  <target name="unittest" description="Execute unit tests using nUnit" basdir="." depends="build">
+  <target name="unittest" description="Execute unit tests using nUnit" basdir=".">
     <property name="test.wildcard" value="*Test.dll" />
     <call target="nunitTest" />
   </target>
 
-  <target name="acceptancetest" description="Execute Acceptance tests using MSTest" basedir="." depends="build">
+  <target name="acceptancetest" description="Execute Acceptance tests using MSTest" basedir=".">
     <property name="test.wildcard" value="*AcceptanceTests.dll" />
     <call target="nunitTest" />
   </target>
@@ -30,7 +30,7 @@
     <foreach item="File" property="pluginSolution" verbose="true">
       <in>
         <items basedir=".">
-          <include name=".\..\**\*.sln" />
+          <include name=".\..\*.sln" />
         </items>
       </in>
       <do>
