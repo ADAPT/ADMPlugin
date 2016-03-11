@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
+  <metadata>
+	<id>AgGatewayADMPlugin</id>
+	<version>$Version$</version>
+	<authors>AgGateway and contributors</authors>
+	<owners>AgGateway and contributors</owners>
+	<licenseUrl>https://www.eclipse.org/legal/epl-v10.html</licenseUrl>
+	<requireLicenseAcceptance>true</requireLicenseAcceptance>
+	<description>AgGateway ADAPT framework</description>
+	<dependencies>
+	  <dependency id="AgGatewayADAPTFramework" version="1.0.0" />
+      <dependency id="Newtonsoft.Json"/>
+	  <dependency id="protobuf-net"/>
+    </dependencies>
+	<references>
+		<reference file="ADMPlugin.dll"/>
+	</references>
+  </metadata>
+  <files>
+	<file src="ADMPlugin\bin\Release\ADMPlugin.dll" target="lib\ADMPlugin.dll"/>
+  </files>
+</package>

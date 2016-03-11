@@ -126,7 +126,8 @@ namespace PluginTest
         public void GivenPluginAndCardPathWhenImportThenSpatialRecordsAreImported()
         {
             var path = Path.Combine(_testCardPath, "adm", "documents", "OperationData-367.adm");
-            _protobufSerializerMock.Setup(x => x.ReadSpatialRecords(path));
+            var spatialRecords = new List<SpatialRecord>();
+            _protobufSerializerMock.Setup(x => x.ReadSpatialRecords(path)).Returns(spatialRecords);
 
             var result = _plugin.Import(_testCardPath);
             foreach (var loggedData in result.Documents.LoggedData)
@@ -141,6 +142,10 @@ namespace PluginTest
         [Test]
         public void GivenPluginAndCardPathWhenImportThenSectionsAreImported()
         {
+            var path = Path.Combine(_testCardPath, "adm", "documents", "Section-367.adm");
+            var pretendSections = new Dictionary<int, IEnumerable<Section>> {{0, new List<Section>()}};
+            _protobufSerializerMock.Setup(x => x.Read<Dictionary<int, IEnumerable<Section>>>(path)).Returns(pretendSections);
+
             var result = _plugin.Import(_testCardPath);
             foreach (var loggedData in result.Documents.LoggedData)
             {
@@ -155,6 +160,14 @@ namespace PluginTest
         [Test]
         public void GivenPluginAndCardPathWhenImportThenMetersAreImported()
         {
+            var sectionPath = Path.Combine(_testCardPath, "adm", "documents", "Section-367.adm");
+            var pretendSections = new Dictionary<int, IEnumerable<Section>> { { 0, new List<Section>() } };
+            _protobufSerializerMock.Setup(x => x.Read<Dictionary<int, IEnumerable<Section>>>(sectionPath)).Returns(pretendSections);
+
+            var meterPath = Path.Combine(_testCardPath, "adm", "documents", "Meter-367.adm");
+            var pretendMeters = new List<Meter>();
+            _protobufSerializerMock.Setup(x => x.Read<IEnumerable<Meter>>(meterPath)).Returns(pretendMeters);
+
             var result = _plugin.Import(_testCardPath);
             foreach (var loggedData in result.Documents.LoggedData)
             {
@@ -259,7 +272,7 @@ namespace PluginTest
 
             _plugin.Export(dataModel, _testCardPath);
             var expectedPath = Path.Combine(_testCardPath,string.Format(@"adm\documents\OperationData{0}.adm", operationData.Id.ReferenceId));
-            _protobufSerializerMock.Verify(x => x.WriteSpatialRecords(expectedPath, spatialRecords, It.IsAny<IEnumerable<Meter>>()), Times.Once);
+            _protobufSerializerMock.Verify(x => x.WriteSpatialRecords(expectedPath, operationData.GetSpatialRecords()), Times.Once);
         }
 
         [Test]
@@ -267,17 +280,12 @@ namespace PluginTest
         {
             _testCardPath = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
 
-            var sections = new List<Section>
-            {
-                new Section{ GetMeters = () => new List<Meter>{ new NumericMeter(), new EnumeratedMeter() } },
-                new Section{ GetMeters = () => new List<Meter>{ new NumericMeter(), new EnumeratedMeter() } },
-                new Section{ GetMeters = () => new List<Meter>{ new NumericMeter(), new EnumeratedMeter() } },
-            };
+            var sections = new Dictionary<int, IEnumerable<Section>> {{0, new List<Section>()}};
 
             var operationData = new OperationData
             {
                 GetSpatialRecords = () => new List<SpatialRecord>(),
-                GetSections = x => sections
+                GetSections = x => sections[x]
             };
             var dataModel = new ApplicationDataModel
             {
@@ -291,8 +299,9 @@ namespace PluginTest
             _plugin.Export(dataModel, _testCardPath);
 
             var fileName = String.Format("Section{0}.adm", operationData.Id.ReferenceId);
-            var fileExists = File.Exists(Path.Combine(_testCardPath, "adm", "documents", fileName));
-            Assert.IsTrue(fileExists);
+            var filePath = Path.Combine(_testCardPath, "adm", "documents", fileName);
+
+            _protobufSerializerMock.Verify(x => x.Write(filePath, sections));
         }
 
         [Test]
@@ -324,16 +333,16 @@ namespace PluginTest
                 Documents = new Documents
                 {
                     LoggedData = new List<LoggedData> { new LoggedData { OperationData = new List<OperationData> { operationData } } },
-                    //OperationData = new List<OperationData>(),
                     WorkItems = new List<WorkItem>()
                 }
             };
+            var fileName = String.Format("Meter{0}.adm", operationData.Id.ReferenceId);
+            var filePath = Path.Combine(_testCardPath, "adm", "documents", fileName);
+
 
             _plugin.Export(dataModel, _testCardPath);
 
-            var fileName = String.Format("Meter{0}.adm", operationData.Id.ReferenceId);
-            var fileExists = File.Exists(Path.Combine(_testCardPath, "adm", "documents", fileName));
-            Assert.IsTrue(fileExists);
+            _protobufSerializerMock.Verify(x => x.Write(filePath, sections.First().GetMeters()));
         }
 
         [Test]
