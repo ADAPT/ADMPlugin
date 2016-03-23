@@ -28,7 +28,6 @@ namespace ADMPlugin
         private const string SectionFile = "Section{0}." + PluginFolderAndExtension;
         private const string MeterFile = "Meter{0}." + PluginFolderAndExtension;
         private const string OperationDataFile = "OperationData{0}." + PluginFolderAndExtension;
-        private const string EquipmentConfigFile = "EquipmentConfig{0}." + PluginFolderAndExtension;
         private const string FileFormat =  "{0}." + PluginFolderAndExtension;
 
         public string Name
