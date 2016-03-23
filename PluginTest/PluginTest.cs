@@ -111,6 +111,9 @@ namespace PluginTest
         [Test]
         public void GivenPluginAndCardPathWhenImportThenCatalogIsImported()
         {
+            var path = Path.Combine(_testCardPath, "adm", "Catalog.adm");
+            _protobufSerializerMock.Setup(x => x.Read<Catalog>(path)).Returns(new Catalog());
+
             var result = _plugin.Import(_testCardPath);
             Assert.NotNull(result.Catalog);
         }
@@ -223,8 +226,8 @@ namespace PluginTest
 
             _plugin.Export(dataModel, _testCardPath);
 
-            var fileExists = File.Exists(Path.Combine(_testCardPath, "adm", "Catalog.adm"));
-            Assert.IsTrue(fileExists);
+            var fileExists = Path.Combine(_testCardPath, "adm", "Catalog.adm");
+            _protobufSerializerMock.Verify(x => x.Write(fileExists, dataModel.Catalog), Times.Once);
         }
 
         [Test]
