@@ -108,7 +108,7 @@ namespace ADMPlugin
             if (!IsDataCardSupported(path, properties))
                 return null;
             var documents = ImportData<Documents>(path, DocumentAdm);
-            var catalog = ImportData<Catalog>(path, CatalogAdm);
+            var catalog = _protobufSerializer.Read<Catalog>(Path.Combine(path, PluginFolderAndExtension, CatalogAdm));
             var proprietaryValues = ImportData<List<ProprietaryValue>>(path, ProprietaryValuesAdm);
             var referenceLayers = ImportData<List<ReferenceLayer>>(path, ReferencelayersAdm);
 
@@ -178,7 +178,9 @@ namespace ADMPlugin
                 Directory.CreateDirectory(path);
 
             ExportData(path, ProprietaryValuesAdm, dataModel.ProprietaryValues);
-            ExportData(path, CatalogAdm, dataModel.Catalog);
+            //ExportData(path, CatalogAdm, dataModel.Catalog);
+            var catalogFilePath = Path.Combine(path, CatalogAdm);
+            _protobufSerializer.Write(catalogFilePath, dataModel.Catalog);
             ExportData(path, DocumentAdm, dataModel.Documents);
             ExportData(path, ReferencelayersAdm, dataModel.ReferenceLayers);
             ExportProtobuf(path, dataModel.Documents);

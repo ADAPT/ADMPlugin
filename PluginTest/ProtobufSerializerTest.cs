@@ -3,7 +3,11 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using ADMPlugin;
+using AgGateway.ADAPT.ApplicationDataModel.ADM;
+using AgGateway.ADAPT.ApplicationDataModel.Common;
+using AgGateway.ADAPT.ApplicationDataModel.Equipment;
 using AgGateway.ADAPT.ApplicationDataModel.LoggedData;
+using AgGateway.ADAPT.ApplicationDataModel.Products;
 using AgGateway.ADAPT.ApplicationDataModel.Representations;
 using AgGateway.ADAPT.ApplicationDataModel.Shapes;
 using AgGateway.ADAPT.Representation.RepresentationSystem;
@@ -44,6 +48,24 @@ namespace PluginTest
 
             var filePath = Path.Combine(_testCardPath, "OperationData-1.adm");
             _protobufSerializer.Write(filePath, _spatialRecords);
+
+            var fileExists = File.Exists(filePath);
+            Assert.IsTrue(fileExists);
+        }
+
+        [Test]
+        public void GivenCatalogWhenWriteThenCatalogFileIsWritten()
+        {
+            var catalog = new Catalog
+            {
+                CropProtectionProducts = new List<CropProtectionProduct>{ new CropProtectionProduct() },
+                EquipmentConfigs = new List<EquipmentConfig>{ new EquipmentConfig() },
+                MachineModels = new List<MachineModel>{ new MachineModel() },
+                TimeScopes = new List<TimeScope>{ new TimeScope() }
+            };
+
+            var filePath = Path.Combine(_testCardPath, "Catalog.adm");
+            _protobufSerializer.Write(filePath, catalog);
 
             var fileExists = File.Exists(filePath);
             Assert.IsTrue(fileExists);
