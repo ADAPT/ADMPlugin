@@ -15,7 +15,9 @@ namespace ADMPlugin
 
             if (property.PropertyType == typeof(Func<IEnumerable<SpatialRecord>>) 
                 || property.PropertyType == typeof(Func<int, IEnumerable<Section>>) 
-                || property.PropertyType == typeof(Func<IEnumerable<Meter>>))
+                || property.PropertyType == typeof(Func<IEnumerable<Meter>>)
+                || property.PropertyType == typeof(IEnumerable<Section>)
+                || property.PropertyType == typeof(IEnumerable<Meter>))
             {
                 return null;
             }

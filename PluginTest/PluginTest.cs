@@ -140,7 +140,7 @@ namespace PluginTest
         }
 
         [Test]
-        public void GivenPluginAndCardPathWhenImportThenSectionsAreImported()
+        public void GivenPluginAndCardPathWhenImportThenOperationdDataSectionsAreImported()
         {
             var path = Path.Combine(_testCardPath, "adm", "documents", "Section-367.adm");
             var pretendSections = new Dictionary<int, IEnumerable<Section>> {{0, new List<Section>()}};
@@ -153,6 +153,71 @@ namespace PluginTest
                 {
                     var sections = operationData.GetSections(0);
                     Assert.NotNull(sections);
+                }
+            }
+        }
+
+        [Test]
+        public void GivenPluginAndCardPathWhenImportThenEquipmentConfigSectionsAreImported()
+        {
+            var path = Path.Combine(_testCardPath, "adm", "documents", "Section-367.adm");
+            var pretendSections = new Dictionary<int, IEnumerable<Section>> { { 0, new List<Section>{ new Section() } } };
+            _protobufSerializerMock.Setup(x => x.Read<Dictionary<int, IEnumerable<Section>>>(path)).Returns(pretendSections);
+
+            var result = _plugin.Import(_testCardPath);
+            foreach (var loggedData in result.Documents.LoggedData)
+            {
+                foreach (var operationData in loggedData.OperationData)
+                {
+                    var equipmentConfig = result.Catalog.EquipmentConfigs.Single(x => x.Id.ReferenceId == operationData.EquipmentConfigId);
+                    var sections = equipmentConfig.Sections;
+                    Assert.AreEqual(pretendSections[0], sections.ToList());
+                }
+            }
+        }
+
+        [Test]
+        public void GivenPluginAndCardPathWithNullSectionValueWhenImportThenEquipmentConfigSectionsAreImported()
+        {
+            var path = Path.Combine(_testCardPath, "adm", "documents", "Section-367.adm");
+            var pretendSections = new Dictionary<int, IEnumerable<Section>>
+            {
+                { 0, new List<Section>{ new Section() } },
+                { 1, null },
+                { 2, new List<Section>{ new Section() } }
+            };
+            _protobufSerializerMock.Setup(x => x.Read<Dictionary<int, IEnumerable<Section>>>(path)).Returns(pretendSections);
+
+            var result = _plugin.Import(_testCardPath);
+            var expectedSections = pretendSections.Where(x => x.Value != null).SelectMany(x => x.Value).ToList();
+
+            var operationData = result.Documents.LoggedData[0].OperationData[0];
+            var equipmentConfig = result.Catalog.EquipmentConfigs.Single(x => x.Id.ReferenceId == operationData.EquipmentConfigId);
+
+            Assert.AreEqual(expectedSections.Count, equipmentConfig.Sections.Count());
+            Assert.AreEqual(expectedSections[0], equipmentConfig.Sections.ToList()[0]);
+            Assert.AreEqual(expectedSections[1], equipmentConfig.Sections.ToList()[1]);
+        }
+
+        [Test]
+        public void GivenPluginAndCardPathWhenImportThenEquipmentConfigMetersAreImported()
+        {
+            var path = Path.Combine(_testCardPath, "adm", "documents", "Section-367.adm");
+            var pretendSections = new Dictionary<int, IEnumerable<Section>> { { 0, new List<Section> { new Section() } } };
+            _protobufSerializerMock.Setup(x => x.Read<Dictionary<int, IEnumerable<Section>>>(path)).Returns(pretendSections);
+
+            var meterPath = Path.Combine(_testCardPath, "adm", "documents", "Meter-367.adm");
+            var pretendMeters = new List<Meter>{ new NumericMeter()};
+            _protobufSerializerMock.Setup(x => x.Read<IEnumerable<Meter>>(meterPath)).Returns(pretendMeters);
+
+            var result = _plugin.Import(_testCardPath);
+            foreach (var loggedData in result.Documents.LoggedData)
+            {
+                foreach (var operationData in loggedData.OperationData)
+                {
+                    var equipmentConfig = result.Catalog.EquipmentConfigs.Single(x => x.Id.ReferenceId == operationData.EquipmentConfigId);
+                    var meters = equipmentConfig.Meters;
+                    Assert.AreEqual(pretendMeters, meters.ToList());
                 }
             }
         }
@@ -236,7 +301,6 @@ namespace PluginTest
                 Documents = new Documents
                 {
                     LoggedData = new List<LoggedData>(),
-                    //OperationData = new List<OperationData>(),
                     WorkItems = new List<WorkItem>()
                 }
             };
