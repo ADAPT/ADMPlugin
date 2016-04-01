@@ -120,24 +120,24 @@ namespace ADMPlugin
                 ReferenceLayers = referenceLayers
             };
 
-            ImportLoggingData(path, applicationDataModel.Documents.LoggedData);
+            ImportLoggingData(path, applicationDataModel.Documents.LoggedData, applicationDataModel.Catalog);
             return applicationDataModel;
         }
 
-        private void ImportLoggingData(string path, IEnumerable<LoggedData> loggedDatas)
+        private void ImportLoggingData(string path, IEnumerable<LoggedData> loggedDatas, Catalog catalog)
         {
             foreach (var loggedData in loggedDatas)
             {
                 foreach (var operationData in loggedData.OperationData)
                 {
                     ImportSpatialRecords(path, operationData);
-                    ImportSections(path, operationData);
-                    ImportMeters(path, operationData);
+                    ImportSections(path, operationData, catalog);
+                    ImportMeters(path, operationData, catalog);
                 }
             }
         }
 
-        private void ImportMeters(string path, OperationData operationData)
+        private void ImportMeters(string path, OperationData operationData, Catalog catalog)
         {
             var sections = GetAllSections(operationData).Where(x => x.Value != null).SelectMany(x => x.Value);
 
@@ -148,19 +148,27 @@ namespace ADMPlugin
             foreach (var section in sections)
             {
                 var sectionMeters = allMeters.Where(x => x.SectionId == section.Id.ReferenceId);
-                
                 section.GetMeters = () => sectionMeters;
             }
+
+            var equipmentConfig = catalog.EquipmentConfigs.SingleOrDefault(x => x.Id.ReferenceId == operationData.EquipmentConfigId);
+            if(equipmentConfig != null)
+                equipmentConfig.Meters = allMeters;
         }
 
-        private void ImportSections(string path, OperationData operationData)
+        private void ImportSections(string path, OperationData operationData, Catalog catalog)
         {
             var sectionsFileName = string.Format(SectionFile, operationData.Id.ReferenceId);
             var sectionsFilePath = Path.Combine(path, PluginFolderAndExtension, DocumentsFolder, sectionsFileName);
             var sections = _protobufSerializer.Read<Dictionary<int, IEnumerable<Section>>>(sectionsFilePath);
 
-            if(sections != null)
+            if (sections != null)
+            {
                 operationData.GetSections = x => sections[x] ?? new List<Section>();
+                var equipmentConfig = catalog.EquipmentConfigs.SingleOrDefault(x => x.Id.ReferenceId == operationData.EquipmentConfigId);
+                if(equipmentConfig != null)
+                    equipmentConfig.Sections = sections.Where(x => x.Value != null).SelectMany(x => x.Value);
+            }
         }
 
         private void ImportSpatialRecords(string path, OperationData operationData)

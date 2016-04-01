@@ -33,20 +33,20 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="AgGateway.ADAPT.ApplicationDataModel, Version=1.0.0.1, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\AgGatewayADAPTFramework.1.0.0.25\lib\AgGateway.ADAPT.ApplicationDataModel.dll</HintPath>
+      <HintPath>..\packages\AgGatewayADAPTFramework.1.0.0.29\lib\AgGateway.ADAPT.ApplicationDataModel.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="AgGateway.ADAPT.PluginManager, Version=1.0.0.1, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\AgGatewayADAPTFramework.1.0.0.25\lib\AgGateway.ADAPT.PluginManager.dll</HintPath>
+      <HintPath>..\packages\AgGatewayADAPTFramework.1.0.0.29\lib\AgGateway.ADAPT.PluginManager.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="AgGateway.ADAPT.Representation, Version=1.0.0.1, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\AgGatewayADAPTFramework.1.0.0.25\lib\AgGateway.ADAPT.Representation.dll</HintPath>
+      <HintPath>..\packages\AgGatewayADAPTFramework.1.0.0.29\lib\AgGateway.ADAPT.Representation.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Newtonsoft.Json, Version=8.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\Newtonsoft.Json.8.0.2\lib\net45\Newtonsoft.Json.dll</HintPath>
+      <HintPath>..\packages\Newtonsoft.Json.8.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="protobuf-net, Version=2.0.0.668, Culture=neutral, PublicKeyToken=257b51d87d2e4d67, processorArchitecture=MSIL">
       <HintPath>..\packages\protobuf-net.2.0.0.668\lib\net40\protobuf-net.dll</HintPath>
