@@ -98,12 +98,12 @@ namespace ADMPlugin
                 .Any();
         }
 
-        public List<IError> ValidateDataOnCard(string dataPath, Properties properties = null)
+        public IList<IError> ValidateDataOnCard(string dataPath, Properties properties = null)
         {
             return new List<IError>();
         }
 
-        public ApplicationDataModel Import(string path, Properties properties = null)
+        public IList<ApplicationDataModel> Import(string path, Properties properties = null)
         {
             if (!IsDataCardSupported(path, properties))
                 return null;
@@ -121,7 +121,7 @@ namespace ADMPlugin
             };
 
             ImportLoggingData(path, applicationDataModel.Documents.LoggedData, applicationDataModel.Catalog);
-            return applicationDataModel;
+            return new []{ applicationDataModel };
         }
 
         private void ImportLoggingData(string path, IEnumerable<LoggedData> loggedDatas, Catalog catalog)
