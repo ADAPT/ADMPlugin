@@ -73,13 +73,13 @@ namespace PluginTest
              var spatialRecords = _protobufSerializer.ReadSpatialRecords(filePath).ToList();
             
             Assert.AreEqual(spatialRecord1.Timestamp, spatialRecords[0].Timestamp);
-            Assert.AreEqual(spatialRecord1.Geometry.Id.ReferenceId, spatialRecords[0].Geometry.Id.ReferenceId);
+            Assert.AreEqual(spatialRecord1.Geometry.Id, spatialRecords[0].Geometry.Id);
             Assert.AreEqual(numericRepValue.Value.Value, ((NumericRepresentationValue)spatialRecords[0].GetMeterValue(meter)).Value.Value);
             Assert.AreEqual(numericRepValue.Representation.Code, ((NumericRepresentationValue)spatialRecords[0].GetMeterValue(meter)).Representation.Code);
             Assert.AreEqual(numericRepValue.Value.UnitOfMeasure.Code, ((NumericRepresentationValue)spatialRecords[0].GetMeterValue(meter)).Value.UnitOfMeasure.Code);
 
             Assert.AreEqual(spatialRecord2.Timestamp, spatialRecords[1].Timestamp);
-            Assert.AreEqual(spatialRecord2.Geometry.Id.ReferenceId, spatialRecords[1].Geometry.Id.ReferenceId);
+            Assert.AreEqual(spatialRecord2.Geometry.Id, spatialRecords[1].Geometry.Id);
             Assert.AreEqual(numericRepValue.Value.Value, ((NumericRepresentationValue)spatialRecords[1].GetMeterValue(meter)).Value.Value);
             Assert.AreEqual(numericRepValue.Representation.Code, ((NumericRepresentationValue)spatialRecords[1].GetMeterValue(meter)).Representation.Code);
             Assert.AreEqual(numericRepValue.Value.UnitOfMeasure.Code, ((NumericRepresentationValue)spatialRecords[1].GetMeterValue(meter)).Value.UnitOfMeasure.Code);

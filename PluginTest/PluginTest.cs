@@ -104,21 +104,21 @@ namespace PluginTest
         [Test]
         public void GivenPluginAndCardPathWhenImportThenProprietaryValuesAreImported()
         {
-            var result = _plugin.Import(_testCardPath);
+            var result = _plugin.Import(_testCardPath).First();
             Assert.IsNotEmpty(result.ProprietaryValues);
         }
 
         [Test]
         public void GivenPluginAndCardPathWhenImportThenCatalogIsImported()
         {
-            var result = _plugin.Import(_testCardPath);
+            var result = _plugin.Import(_testCardPath).First();
             Assert.NotNull(result.Catalog);
         }
 
         [Test]
         public void GivenPluginAndCardPathWhenImportThenDocumentsIsImported()
         {
-            var result = _plugin.Import(_testCardPath);
+            var result = _plugin.Import(_testCardPath).First();
             Assert.NotNull(result.Documents);
         }
 
@@ -129,7 +129,7 @@ namespace PluginTest
             var spatialRecords = new List<SpatialRecord>();
             _protobufSerializerMock.Setup(x => x.ReadSpatialRecords(path)).Returns(spatialRecords);
 
-            var result = _plugin.Import(_testCardPath);
+            var result = _plugin.Import(_testCardPath).First();
             foreach (var loggedData in result.Documents.LoggedData)
             {
                 foreach (var operationData in loggedData.OperationData)
@@ -146,7 +146,7 @@ namespace PluginTest
             var pretendSections = new Dictionary<int, IEnumerable<Section>> {{0, new List<Section>()}};
             _protobufSerializerMock.Setup(x => x.Read<Dictionary<int, IEnumerable<Section>>>(path)).Returns(pretendSections);
 
-            var result = _plugin.Import(_testCardPath);
+            var result = _plugin.Import(_testCardPath).First();
             foreach (var loggedData in result.Documents.LoggedData)
             {
                 foreach (var operationData in loggedData.OperationData)
@@ -164,7 +164,7 @@ namespace PluginTest
             var pretendSections = new Dictionary<int, IEnumerable<Section>> { { 0, new List<Section>{ new Section() } } };
             _protobufSerializerMock.Setup(x => x.Read<Dictionary<int, IEnumerable<Section>>>(path)).Returns(pretendSections);
 
-            var result = _plugin.Import(_testCardPath);
+            var result = _plugin.Import(_testCardPath).First();
             foreach (var loggedData in result.Documents.LoggedData)
             {
                 foreach (var operationData in loggedData.OperationData)
@@ -188,7 +188,7 @@ namespace PluginTest
             };
             _protobufSerializerMock.Setup(x => x.Read<Dictionary<int, IEnumerable<Section>>>(path)).Returns(pretendSections);
 
-            var result = _plugin.Import(_testCardPath);
+            var result = _plugin.Import(_testCardPath).First();
             var expectedSections = pretendSections.Where(x => x.Value != null).SelectMany(x => x.Value).ToList();
 
             var operationData = result.Documents.LoggedData[0].OperationData[0];
@@ -210,7 +210,7 @@ namespace PluginTest
             var pretendMeters = new List<Meter>{ new NumericMeter()};
             _protobufSerializerMock.Setup(x => x.Read<IEnumerable<Meter>>(meterPath)).Returns(pretendMeters);
 
-            var result = _plugin.Import(_testCardPath);
+            var result = _plugin.Import(_testCardPath).First();
             foreach (var loggedData in result.Documents.LoggedData)
             {
                 foreach (var operationData in loggedData.OperationData)
@@ -233,7 +233,7 @@ namespace PluginTest
             var pretendMeters = new List<Meter>();
             _protobufSerializerMock.Setup(x => x.Read<IEnumerable<Meter>>(meterPath)).Returns(pretendMeters);
 
-            var result = _plugin.Import(_testCardPath);
+            var result = _plugin.Import(_testCardPath).First();
             foreach (var loggedData in result.Documents.LoggedData)
             {
                 foreach (var operationData in loggedData.OperationData)
@@ -248,7 +248,7 @@ namespace PluginTest
         [Test]
         public void GivenPluginAndCardPathWhenImportThenReferenceLayersAreImported()
         {
-            var result = _plugin.Import(_testCardPath);
+            var result = _plugin.Import(_testCardPath).First();
             Assert.IsNotEmpty(result.ReferenceLayers);
         }
 
