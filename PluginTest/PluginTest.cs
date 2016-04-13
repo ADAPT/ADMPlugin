@@ -69,6 +69,7 @@ namespace PluginTest
         [Test]
         public void GivenPluginWithInvalidStructureWhenIsDataCardSupportedThenFalseIsReturned()
         {
+            Directory.Delete(_testCardPath, true);
             _testCardPath = DatacardUtility.WriteDataCard("IncorrectHierarchy");
 
             var result = _plugin.IsDataCardSupported(_testCardPath);
@@ -78,6 +79,7 @@ namespace PluginTest
         [Test]
         public void GivenPluginWithInvalidFileWhenIsDataCardSupportedThenFalseIsReturned()
         {
+            Directory.Delete(_testCardPath, true);
             _testCardPath = DatacardUtility.WriteDataCard("IncorrectFiles");
 
             var result = _plugin.IsDataCardSupported(_testCardPath);
@@ -255,6 +257,7 @@ namespace PluginTest
         [Test]
         public void GivenPluginAndDataModelWhenExportThenProprietaryValuesFileIsWritten()
         {
+            Directory.Delete(_testCardPath, true);
             _testCardPath = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
             var dataModel = new ApplicationDataModel
             {
@@ -275,6 +278,7 @@ namespace PluginTest
         [Test]
         public void GivenPluginAndDataModelWhenExportThenCatalogFileIsWritten()
         {
+            Directory.Delete(_testCardPath, true);
             _testCardPath = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
             var dataModel = new ApplicationDataModel
             {
@@ -295,6 +299,7 @@ namespace PluginTest
         [Test]
         public void GivenPluginAndDataModelWhenExportThenDocumentsFileIsWritten()
         {
+            Directory.Delete(_testCardPath, true);
             _testCardPath = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
             var dataModel = new ApplicationDataModel
             {
@@ -342,6 +347,7 @@ namespace PluginTest
         [Test]
         public void GivenPluginAndDataModelWhenExportThenSectionFileIsWritten()
         {
+            Directory.Delete(_testCardPath, true);
             _testCardPath = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
 
             var sections = new Dictionary<int, IEnumerable<Section>> {{0, new List<Section>()}};
@@ -371,6 +377,7 @@ namespace PluginTest
         [Test]
         public void GivenPluginAndDataModelWhenExportThenMeterFileIsWritten()
         {
+            Directory.Delete(_testCardPath, true);
             _testCardPath = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
 
             var meters = new List<Meter>
@@ -412,6 +419,7 @@ namespace PluginTest
         [Test]
         public void GivenPluginAndDataModelWhenExportThenReferenceLayersFileIsWritten()
         {
+            Directory.Delete(_testCardPath, true);
             _testCardPath = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
             var dataModel = new ApplicationDataModel
             {
