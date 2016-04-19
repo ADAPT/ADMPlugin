@@ -193,7 +193,7 @@ namespace PluginTest
             var result = _plugin.Import(_testCardPath).First();
             var expectedSections = pretendSections.Where(x => x.Value != null).SelectMany(x => x.Value).ToList();
 
-            var operationData = result.Documents.LoggedData[0].OperationData[0];
+            var operationData = result.Documents.LoggedData.First().OperationData.First();
             var equipmentConfig = result.Catalog.EquipmentConfigs.Single(x => x.Id.ReferenceId == operationData.EquipmentConfigId);
 
             Assert.AreEqual(expectedSections.Count, equipmentConfig.Sections.Count());
