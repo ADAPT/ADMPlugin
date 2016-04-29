@@ -59,7 +59,7 @@ namespace PluginTest
             var sourcePath = Path.Combine(_testCardPath, "adm");
             Directory.CreateDirectory(sourcePath);
 
-            using(File.Create(Path.Combine(sourcePath, "ILikeTurtles.adm")))
+            using (File.Create(Path.Combine(sourcePath, "ILikeTurtles.adm")))
             {
                 var result = _plugin.IsDataCardSupported(_testCardPath);
                 Assert.IsTrue(result);
@@ -120,13 +120,17 @@ namespace PluginTest
         [Test]
         public void GivenPluginAndCardPathWhenImportThenDocumentsIsImported()
         {
+            var documents = CreateDocuments();
+
             var result = _plugin.Import(_testCardPath).First();
-            Assert.NotNull(result.Documents);
+            Assert.AreSame(documents, result.Documents);
         }
 
         [Test]
         public void GivenPluginAndCardPathWhenImportThenSpatialRecordsAreImported()
         {
+            CreateDocuments();
+
             var path = Path.Combine(_testCardPath, "adm", "documents", "OperationData-367.adm");
             var spatialRecords = new List<SpatialRecord>();
             _protobufSerializerMock.Setup(x => x.ReadSpatialRecords(path)).Returns(spatialRecords);
@@ -145,8 +149,10 @@ namespace PluginTest
         public void GivenPluginAndCardPathWhenImportThenOperationdDataSectionsAreImported()
         {
             var path = Path.Combine(_testCardPath, "adm", "documents", "Section-367.adm");
-            var pretendSections = new Dictionary<int, IEnumerable<Section>> {{0, new List<Section>()}};
+            var pretendSections = new Dictionary<int, IEnumerable<Section>> { { 0, new List<Section>() } };
             _protobufSerializerMock.Setup(x => x.Read<Dictionary<int, IEnumerable<Section>>>(path)).Returns(pretendSections);
+
+            CreateDocuments();
 
             var result = _plugin.Import(_testCardPath).First();
             foreach (var loggedData in result.Documents.LoggedData)
@@ -163,8 +169,11 @@ namespace PluginTest
         public void GivenPluginAndCardPathWhenImportThenEquipmentConfigSectionsAreImported()
         {
             var path = Path.Combine(_testCardPath, "adm", "documents", "Section-367.adm");
-            var pretendSections = new Dictionary<int, IEnumerable<Section>> { { 0, new List<Section>{ new Section() } } };
+            var pretendSections = new Dictionary<int, IEnumerable<Section>> { { 0, new List<Section> { new Section() } } };
             _protobufSerializerMock.Setup(x => x.Read<Dictionary<int, IEnumerable<Section>>>(path)).Returns(pretendSections);
+
+            var documents = CreateDocuments();
+            documents.LoggedData.First().OperationData.First().EquipmentConfigId = -2;
 
             var result = _plugin.Import(_testCardPath).First();
             foreach (var loggedData in result.Documents.LoggedData)
@@ -181,13 +190,19 @@ namespace PluginTest
         [Test]
         public void GivenPluginAndCardPathWithNullSectionValueWhenImportThenEquipmentConfigSectionsAreImported()
         {
-            var path = Path.Combine(_testCardPath, "adm", "documents", "Section-367.adm");
+
             var pretendSections = new Dictionary<int, IEnumerable<Section>>
             {
                 { 0, new List<Section>{ new Section() } },
                 { 1, null },
                 { 2, new List<Section>{ new Section() } }
             };
+
+
+            var documents = CreateDocuments();
+            documents.LoggedData.First().OperationData.First().EquipmentConfigId = -2;
+
+            var path = Path.Combine(_testCardPath, "adm", "documents", "Section-367.adm");
             _protobufSerializerMock.Setup(x => x.Read<Dictionary<int, IEnumerable<Section>>>(path)).Returns(pretendSections);
 
             var result = _plugin.Import(_testCardPath).First();
@@ -209,8 +224,11 @@ namespace PluginTest
             _protobufSerializerMock.Setup(x => x.Read<Dictionary<int, IEnumerable<Section>>>(path)).Returns(pretendSections);
 
             var meterPath = Path.Combine(_testCardPath, "adm", "documents", "Meter-367.adm");
-            var pretendMeters = new List<Meter>{ new NumericMeter()};
+            var pretendMeters = new List<Meter> { new NumericMeter() };
             _protobufSerializerMock.Setup(x => x.Read<IEnumerable<Meter>>(meterPath)).Returns(pretendMeters);
+
+            var documents = CreateDocuments();
+            documents.LoggedData.First().OperationData.First().EquipmentConfigId = -2;
 
             var result = _plugin.Import(_testCardPath).First();
             foreach (var loggedData in result.Documents.LoggedData)
@@ -224,6 +242,28 @@ namespace PluginTest
             }
         }
 
+        private Documents CreateDocuments()
+        {
+            var operationData1 = new OperationData();
+            operationData1.Id.ReferenceId = -367;
+            var documents = new Documents
+            {
+                LoggedData = new List<LoggedData>
+                {
+                    new LoggedData
+                    {
+                        OperationData = new List<OperationData>
+                        {
+                            operationData1
+                        }
+                    }
+                }
+            };
+            var documentFilePath = Path.Combine(_testCardPath, "adm", "Document.adm");
+            _protobufSerializerMock.Setup(x => x.Read<Documents>(documentFilePath)).Returns(documents);
+            return documents;
+        }
+
         [Test]
         public void GivenPluginAndCardPathWhenImportThenMetersAreImported()
         {
@@ -234,6 +274,8 @@ namespace PluginTest
             var meterPath = Path.Combine(_testCardPath, "adm", "documents", "Meter-367.adm");
             var pretendMeters = new List<Meter>();
             _protobufSerializerMock.Setup(x => x.Read<IEnumerable<Meter>>(meterPath)).Returns(pretendMeters);
+
+            CreateDocuments();
 
             var result = _plugin.Import(_testCardPath).First();
             foreach (var loggedData in result.Documents.LoggedData)
@@ -311,9 +353,8 @@ namespace PluginTest
             };
 
             _plugin.Export(dataModel, _testCardPath);
-
-            var fileExists = File.Exists(Path.Combine(_testCardPath, "adm", "Document.adm"));
-            Assert.IsTrue(fileExists);
+            var filepath = Path.Combine(_testCardPath, "adm", "Document.adm");
+            _protobufSerializerMock.Verify(x => x.Write(filepath, dataModel.Documents));
         }
 
         [Test]
@@ -334,13 +375,13 @@ namespace PluginTest
             {
                 Documents = new Documents
                 {
-                    LoggedData = new List<LoggedData>{ new LoggedData{ OperationData = new List<OperationData>{operationData}}},
+                    LoggedData = new List<LoggedData> { new LoggedData { OperationData = new List<OperationData> { operationData } } },
                     WorkItems = new List<WorkItem>()
                 }
             };
 
             _plugin.Export(dataModel, _testCardPath);
-            var expectedPath = Path.Combine(_testCardPath,string.Format(@"adm\documents\OperationData{0}.adm", operationData.Id.ReferenceId));
+            var expectedPath = Path.Combine(_testCardPath, string.Format(@"adm\documents\OperationData{0}.adm", operationData.Id.ReferenceId));
             _protobufSerializerMock.Verify(x => x.WriteSpatialRecords(expectedPath, operationData.GetSpatialRecords()), Times.Once);
         }
 
@@ -350,7 +391,7 @@ namespace PluginTest
             Directory.Delete(_testCardPath, true);
             _testCardPath = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
 
-            var sections = new Dictionary<int, IEnumerable<Section>> {{0, new List<Section>()}};
+            var sections = new Dictionary<int, IEnumerable<Section>> { { 0, new List<Section>() } };
 
             var operationData = new OperationData
             {
@@ -361,7 +402,7 @@ namespace PluginTest
             {
                 Documents = new Documents
                 {
-                    LoggedData = new List<LoggedData>{ new LoggedData{ OperationData = new List<OperationData>{operationData}}},
+                    LoggedData = new List<LoggedData> { new LoggedData { OperationData = new List<OperationData> { operationData } } },
                     WorkItems = new List<WorkItem>()
                 }
             };

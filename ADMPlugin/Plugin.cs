@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 ﻿using AgGateway.ADAPT.ApplicationDataModel.ADM;
+using AgGateway.ADAPT.ApplicationDataModel.Documents;
 using AgGateway.ADAPT.ApplicationDataModel.LoggedData;
 using AgGateway.ADAPT.ApplicationDataModel.ReferenceLayers;
 using Newtonsoft.Json;
@@ -13,9 +14,10 @@ namespace ADMPlugin
     {
         private readonly IProtobufSerializer _protobufSerializer;
 
-        public Plugin() : this(new ProtobufSerializer())
+        public Plugin()
+            : this(new ProtobufSerializer())
         {
-            
+
         }
 
         public Plugin(IProtobufSerializer protobufSerializer)
@@ -28,7 +30,7 @@ namespace ADMPlugin
         private const string SectionFile = "Section{0}." + PluginFolderAndExtension;
         private const string MeterFile = "Meter{0}." + PluginFolderAndExtension;
         private const string OperationDataFile = "OperationData{0}." + PluginFolderAndExtension;
-        private const string FileFormat =  "{0}." + PluginFolderAndExtension;
+        private const string FileFormat = "{0}." + PluginFolderAndExtension;
 
         public string Name
         {
@@ -93,7 +95,7 @@ namespace ADMPlugin
         {
             var path = Path.Combine(dataPath, PluginFolderAndExtension);
 
-            return Directory.Exists(path) 
+            return Directory.Exists(path)
                 && Directory.GetFiles(path, String.Format(FileFormat, "*"), SearchOption.AllDirectories)
                 .Any();
         }
@@ -107,7 +109,7 @@ namespace ADMPlugin
         {
             if (!IsDataCardSupported(path, properties))
                 return null;
-            var documents = ImportData<Documents>(path, DocumentAdm);
+            var documents = ImportDocuments(path, DocumentAdm);
             var catalog = ImportData<Catalog>(path, CatalogAdm);
             var proprietaryValues = ImportData<List<ProprietaryValue>>(path, ProprietaryValuesAdm);
             var referenceLayers = ImportData<List<ReferenceLayer>>(path, ReferencelayersAdm);
@@ -120,12 +122,27 @@ namespace ADMPlugin
                 ReferenceLayers = referenceLayers
             };
 
-            ImportLoggingData(path, applicationDataModel.Documents.LoggedData, applicationDataModel.Catalog);
-            return new []{ applicationDataModel };
+            var loggedData = null as IEnumerable<LoggedData>;
+
+            if (applicationDataModel.Documents != null)
+                loggedData = applicationDataModel.Documents.LoggedData;
+
+            ImportLoggingData(path, loggedData, applicationDataModel.Catalog);
+            return new[] { applicationDataModel };
+        }
+
+        private Documents ImportDocuments(string path, string documentAdm)
+        {
+            var filename = Path.Combine(path, PluginFolderAndExtension, documentAdm);
+            var documents = _protobufSerializer.Read<Documents>(filename);
+            return documents;
         }
 
         private void ImportLoggingData(string path, IEnumerable<LoggedData> loggedDatas, Catalog catalog)
         {
+            if (loggedDatas == null)
+                return;
+
             foreach (var loggedData in loggedDatas)
             {
                 foreach (var operationData in loggedData.OperationData)
@@ -152,7 +169,7 @@ namespace ADMPlugin
             }
 
             var equipmentConfig = catalog.EquipmentConfigs.SingleOrDefault(x => x.Id.ReferenceId == operationData.EquipmentConfigId);
-            if(equipmentConfig != null)
+            if (equipmentConfig != null)
                 equipmentConfig.Meters = allMeters;
         }
 
@@ -166,7 +183,7 @@ namespace ADMPlugin
             {
                 operationData.GetSections = x => sections[x] ?? new List<Section>();
                 var equipmentConfig = catalog.EquipmentConfigs.SingleOrDefault(x => x.Id.ReferenceId == operationData.EquipmentConfigId);
-                if(equipmentConfig != null)
+                if (equipmentConfig != null)
                     equipmentConfig.Sections = sections.Where(x => x.Value != null).SelectMany(x => x.Value);
             }
         }
@@ -185,11 +202,10 @@ namespace ADMPlugin
             if (!Directory.Exists(path))
                 Directory.CreateDirectory(path);
 
-            ExportData(path, ProprietaryValuesAdm, dataModel.ProprietaryValues);
-            ExportData(path, CatalogAdm, dataModel.Catalog);
-            ExportData(path, DocumentAdm, dataModel.Documents);
-            ExportData(path, ReferencelayersAdm, dataModel.ReferenceLayers);
             ExportProtobuf(path, dataModel.Documents);
+            ExportData(path, ProprietaryValuesAdm, dataModel.ProprietaryValues);
+            ExportData(path, ReferencelayersAdm, dataModel.ReferenceLayers);
+            ExportData(path, CatalogAdm, dataModel.Catalog);
         }
 
         private void ExportProtobuf(string path, Documents documents)
@@ -197,7 +213,13 @@ namespace ADMPlugin
             if (documents == null || documents.LoggedData == null)
                 return;
 
-            foreach (var operationData in documents.LoggedData.SelectMany(x => x.OperationData))
+            var fileName = String.Format(FileFormat, "Document");
+            var filePath = Path.Combine(path, fileName);
+
+            var operationDatas = documents.LoggedData.SelectMany(x => x.OperationData).ToList();
+            ExportDocuments(filePath, documents);
+
+            foreach (var operationData in operationDatas)
             {
                 if (operationData == null)
                     continue;
@@ -209,6 +231,11 @@ namespace ADMPlugin
                 ExportSpatialRecords(documentsPath, operationData);
                 ExportSectionsAndMeters(documentsPath, operationData);
             }
+        }
+
+        private void ExportDocuments(string filePath, Documents documents)
+        {
+            _protobufSerializer.Write(filePath, documents);
         }
 
         private void ExportSpatialRecords(string documentsPath, OperationData operationData)
@@ -302,14 +329,14 @@ namespace ADMPlugin
 
         private static Dictionary<int, IEnumerable<Section>> GetAllSections(OperationData operationData)
         {
-            if(operationData == null)
+            if (operationData == null)
                 return null;
 
             var sections = new Dictionary<int, IEnumerable<Section>>();
 
             for (var depth = 0; depth <= operationData.MaxDepth; depth++)
             {
-                if(operationData.GetSections == null)
+                if (operationData.GetSections == null)
                     continue;
 
                 var levelSections = operationData.GetSections(depth);
@@ -318,5 +345,5 @@ namespace ADMPlugin
 
             return sections;
         }
-    } 
+    }
 }
