@@ -3,8 +3,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 ﻿using AgGateway.ADAPT.ApplicationDataModel.ADM;
-using AgGateway.ADAPT.ApplicationDataModel.Documents;
-using AgGateway.ADAPT.ApplicationDataModel.LoggedData;
 using AgGateway.ADAPT.ApplicationDataModel.ReferenceLayers;
 using Newtonsoft.Json;
 
@@ -12,29 +10,22 @@ namespace ADMPlugin
 {
     public class Plugin : IPlugin
     {
-        private readonly IProtobufSerializer _protobufSerializer;
+        private readonly DocumentsExporter _documentsExporter;
+        private readonly DocumentsImporter _documentsImporter;
 
-        public Plugin()
-            : this(new ProtobufSerializer())
+        public Plugin() : this(new ProtobufSerializer())
         {
-
         }
 
         public Plugin(IProtobufSerializer protobufSerializer)
         {
-            _protobufSerializer = protobufSerializer;
+            _documentsImporter = new DocumentsImporter(protobufSerializer);
+            _documentsExporter = new DocumentsExporter(protobufSerializer);
         }
-
-        private const string PluginFolderAndExtension = "adm";
-        private const string DocumentsFolder = "documents";
-        private const string SectionFile = "Section{0}." + PluginFolderAndExtension;
-        private const string MeterFile = "Meter{0}." + PluginFolderAndExtension;
-        private const string OperationDataFile = "OperationData{0}." + PluginFolderAndExtension;
-        private const string FileFormat = "{0}." + PluginFolderAndExtension;
 
         public string Name
         {
-            get { return PluginFolderAndExtension.ToUpper(); }
+            get { return DatacardConstants.PluginFolderAndExtension.ToUpper(); }
         }
 
         public string Version
@@ -49,22 +40,22 @@ namespace ADMPlugin
 
         private static string ProprietaryValuesAdm
         {
-            get { return String.Format(FileFormat, "ProprietaryValues"); }
+            get { return String.Format(DatacardConstants.FileFormat, "ProprietaryValues"); }
         }
 
         private static string CatalogAdm
         {
-            get { return String.Format(FileFormat, "Catalog"); }
+            get { return String.Format(DatacardConstants.FileFormat, "Catalog"); }
         }
 
         private static string DocumentAdm
         {
-            get { return String.Format(FileFormat, "Document"); }
+            get { return String.Format(DatacardConstants.FileFormat, "Document"); }
         }
 
         private static string ReferencelayersAdm
         {
-            get { return String.Format(FileFormat, "ReferenceLayers"); }
+            get { return String.Format(DatacardConstants.FileFormat, "ReferenceLayers"); }
         }
 
         private JsonSerializer Serializer
@@ -93,10 +84,10 @@ namespace ADMPlugin
 
         public bool IsDataCardSupported(string dataPath, Properties properties = null)
         {
-            var path = Path.Combine(dataPath, PluginFolderAndExtension);
+            var path = Path.Combine(dataPath, DatacardConstants.PluginFolderAndExtension);
 
             return Directory.Exists(path)
-                && Directory.GetFiles(path, String.Format(FileFormat, "*"), SearchOption.AllDirectories)
+                && Directory.GetFiles(path, String.Format(DatacardConstants.FileFormat, "*"), SearchOption.AllDirectories)
                 .Any();
         }
 
@@ -109,8 +100,8 @@ namespace ADMPlugin
         {
             if (!IsDataCardSupported(path, properties))
                 return null;
-            var documents = ImportDocuments(path, DocumentAdm);
             var catalog = ImportData<Catalog>(path, CatalogAdm);
+            var documents = _documentsImporter.ImportDocuments(path, DocumentAdm, catalog);
             var proprietaryValues = ImportData<List<ProprietaryValue>>(path, ProprietaryValuesAdm);
             var referenceLayers = ImportData<List<ReferenceLayer>>(path, ReferencelayersAdm);
 
@@ -122,144 +113,19 @@ namespace ADMPlugin
                 ReferenceLayers = referenceLayers
             };
 
-            var loggedData = null as IEnumerable<LoggedData>;
-
-            if (applicationDataModel.Documents != null)
-                loggedData = applicationDataModel.Documents.LoggedData;
-
-            ImportLoggingData(path, loggedData, applicationDataModel.Catalog);
             return new[] { applicationDataModel };
-        }
-
-        private Documents ImportDocuments(string path, string documentAdm)
-        {
-            var filename = Path.Combine(path, PluginFolderAndExtension, documentAdm);
-            var documents = _protobufSerializer.Read<Documents>(filename);
-            return documents;
-        }
-
-        private void ImportLoggingData(string path, IEnumerable<LoggedData> loggedDatas, Catalog catalog)
-        {
-            if (loggedDatas == null)
-                return;
-
-            foreach (var loggedData in loggedDatas)
-            {
-                foreach (var operationData in loggedData.OperationData)
-                {
-                    ImportSpatialRecords(path, operationData);
-                    ImportSections(path, operationData, catalog);
-                    ImportMeters(path, operationData, catalog);
-                }
-            }
-        }
-
-        private void ImportMeters(string path, OperationData operationData, Catalog catalog)
-        {
-            var sections = GetAllSections(operationData).Where(x => x.Value != null).SelectMany(x => x.Value);
-
-            var metersFileName = string.Format(MeterFile, operationData.Id.ReferenceId);
-            var metersFilePath = Path.Combine(path, PluginFolderAndExtension, DocumentsFolder, metersFileName);
-            var allMeters = _protobufSerializer.Read<IEnumerable<Meter>>(metersFilePath);
-
-            foreach (var section in sections)
-            {
-                var sectionMeters = allMeters.Where(x => x.SectionId == section.Id.ReferenceId);
-                section.GetMeters = () => sectionMeters;
-            }
-
-            var equipmentConfig = catalog.EquipmentConfigs.SingleOrDefault(x => x.Id.ReferenceId == operationData.EquipmentConfigId);
-            if (equipmentConfig != null)
-                equipmentConfig.Meters = allMeters;
-        }
-
-        private void ImportSections(string path, OperationData operationData, Catalog catalog)
-        {
-            var sectionsFileName = string.Format(SectionFile, operationData.Id.ReferenceId);
-            var sectionsFilePath = Path.Combine(path, PluginFolderAndExtension, DocumentsFolder, sectionsFileName);
-            var sections = _protobufSerializer.Read<Dictionary<int, IEnumerable<Section>>>(sectionsFilePath);
-
-            if (sections != null)
-            {
-                operationData.GetSections = x => sections[x] ?? new List<Section>();
-                var equipmentConfig = catalog.EquipmentConfigs.SingleOrDefault(x => x.Id.ReferenceId == operationData.EquipmentConfigId);
-                if (equipmentConfig != null)
-                    equipmentConfig.Sections = sections.Where(x => x.Value != null).SelectMany(x => x.Value);
-            }
-        }
-
-        private void ImportSpatialRecords(string path, OperationData operationData)
-        {
-            var spatialRecordFileName = string.Format(OperationDataFile, operationData.Id.ReferenceId);
-            var spatialRecordFilePath = Path.Combine(path, PluginFolderAndExtension, DocumentsFolder, spatialRecordFileName);
-
-            operationData.GetSpatialRecords = () => _protobufSerializer.ReadSpatialRecords(spatialRecordFilePath);
         }
 
         public void Export(ApplicationDataModel dataModel, string exportPath, Properties properties = null)
         {
-            var path = Path.Combine(exportPath, PluginFolderAndExtension);
+            var path = Path.Combine(exportPath, DatacardConstants.PluginFolderAndExtension);
             if (!Directory.Exists(path))
                 Directory.CreateDirectory(path);
 
-            ExportProtobuf(path, dataModel.Documents);
+            _documentsExporter.ExportDocuments(path, dataModel.Documents);
             ExportData(path, ProprietaryValuesAdm, dataModel.ProprietaryValues);
             ExportData(path, ReferencelayersAdm, dataModel.ReferenceLayers);
             ExportData(path, CatalogAdm, dataModel.Catalog);
-        }
-
-        private void ExportProtobuf(string path, Documents documents)
-        {
-            if (documents == null || documents.LoggedData == null)
-                return;
-
-            var fileName = String.Format(FileFormat, "Document");
-            var filePath = Path.Combine(path, fileName);
-
-            var operationDatas = documents.LoggedData.SelectMany(x => x.OperationData).ToList();
-            ExportDocuments(filePath, documents);
-
-            foreach (var operationData in operationDatas)
-            {
-                if (operationData == null)
-                    continue;
-
-                var documentsPath = Path.Combine(path, DocumentsFolder);
-                if (!Directory.Exists(documentsPath))
-                    Directory.CreateDirectory(documentsPath);
-
-                ExportSpatialRecords(documentsPath, operationData);
-                ExportSectionsAndMeters(documentsPath, operationData);
-            }
-        }
-
-        private void ExportDocuments(string filePath, Documents documents)
-        {
-            _protobufSerializer.Write(filePath, documents);
-        }
-
-        private void ExportSpatialRecords(string documentsPath, OperationData operationData)
-        {
-            var spatialRecords = operationData.GetSpatialRecords();
-
-            var fileName = string.Format(OperationDataFile, operationData.Id.ReferenceId);
-            var filePath = Path.Combine(documentsPath, fileName);
-
-            _protobufSerializer.WriteSpatialRecords(filePath, spatialRecords);
-        }
-
-        private void ExportSectionsAndMeters(string documentsPath, OperationData operationData)
-        {
-            var sections = GetAllSections(operationData);
-            var sectionsFileName = string.Format(SectionFile, operationData.Id.ReferenceId);
-            var sectionsFilePath = Path.Combine(documentsPath, sectionsFileName);
-
-            var meters = sections.SelectMany(section => section.Value.SelectMany(x => x.GetMeters()));
-            var metersFileName = string.Format(MeterFile, operationData.Id.ReferenceId);
-            var metersFilePath = Path.Combine(documentsPath, metersFileName);
-
-            _protobufSerializer.Write(sectionsFilePath, sections);
-            _protobufSerializer.Write(metersFilePath, meters);
         }
 
         private T ImportData<T>(string path, string searchPattern)
@@ -325,25 +191,6 @@ namespace ADMPlugin
             {
                 return Serializer.Deserialize<T>(textReader);
             }
-        }
-
-        private static Dictionary<int, IEnumerable<Section>> GetAllSections(OperationData operationData)
-        {
-            if (operationData == null)
-                return null;
-
-            var sections = new Dictionary<int, IEnumerable<Section>>();
-
-            for (var depth = 0; depth <= operationData.MaxDepth; depth++)
-            {
-                if (operationData.GetSections == null)
-                    continue;
-
-                var levelSections = operationData.GetSections(depth);
-                sections.Add(depth, levelSections);
-            }
-
-            return sections;
         }
     }
 }

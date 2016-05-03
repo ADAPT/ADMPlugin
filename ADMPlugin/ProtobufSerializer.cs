@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using AgGateway.ADAPT.ApplicationDataModel;
 using AgGateway.ADAPT.ApplicationDataModel.ADM;
@@ -24,7 +25,7 @@ namespace ADMPlugin
 
     public class ProtobufSerializer : IProtobufSerializer
     {
-        private RuntimeTypeModel _model;
+        private readonly RuntimeTypeModel _model;
 
         public ProtobufSerializer()
         {
@@ -34,7 +35,16 @@ namespace ADMPlugin
 
         public void Write<T>(string path, T content)
         {
-            Write<T>(path, content, _model);
+            var type = content.GetType();
+            if (!type.Namespace.StartsWith("System") && !type.Namespace.StartsWith("AgGateway.ADAPT.ApplicationDataModel"))
+            {
+                var baseType = type.BaseType;
+                Write(path, Convert.ChangeType(content, baseType));
+            }
+            else
+            {
+                Write<T>(path, content, _model);
+            }
         }
 
         private void Write<T>(string path, T content, RuntimeTypeModel model)
