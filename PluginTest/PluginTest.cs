@@ -20,16 +20,20 @@ namespace PluginTest
     public class PluginTest
     {
         private Plugin _plugin;
-        private string _testCardPath;
+        private string _cardPath;
         private Mock<IProtobufSerializer> _protobufSerializerMock;
+        private Mock<IProtobufReferenceLayerSerializer> _protobufReferenceSerializerMock;
+        private string _tempPath;
 
         [SetUp]
         public void Setup()
         {
             _protobufSerializerMock = new Mock<IProtobufSerializer>();
+            _protobufReferenceSerializerMock = new Mock<IProtobufReferenceLayerSerializer>();
 
-            _testCardPath = DatacardUtility.WriteDataCard("TestDatacard");
-            _plugin = new Plugin(_protobufSerializerMock.Object);
+            _cardPath = DatacardUtility.WriteDataCard("TestDatacard");
+            _tempPath = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
+            _plugin = new Plugin(_protobufSerializerMock.Object, _protobufReferenceSerializerMock.Object);
         }
 
         [Test]
@@ -56,12 +60,12 @@ namespace PluginTest
         [Test]
         public void GivenPluginAndDataCardWhenIsDataCardSupportedThenTrueIsReturned()
         {
-            var sourcePath = Path.Combine(_testCardPath, "adm");
+            var sourcePath = Path.Combine(_cardPath, "adm");
             Directory.CreateDirectory(sourcePath);
 
             using (File.Create(Path.Combine(sourcePath, "ILikeTurtles.adm")))
             {
-                var result = _plugin.IsDataCardSupported(_testCardPath);
+                var result = _plugin.IsDataCardSupported(_cardPath);
                 Assert.IsTrue(result);
             }
         }
@@ -69,34 +73,34 @@ namespace PluginTest
         [Test]
         public void GivenPluginWithInvalidStructureWhenIsDataCardSupportedThenFalseIsReturned()
         {
-            Directory.Delete(_testCardPath, true);
-            _testCardPath = DatacardUtility.WriteDataCard("IncorrectHierarchy");
+            Directory.Delete(_cardPath, true);
+            _cardPath = DatacardUtility.WriteDataCard("IncorrectHierarchy");
 
-            var result = _plugin.IsDataCardSupported(_testCardPath);
+            var result = _plugin.IsDataCardSupported(_cardPath);
             Assert.IsFalse(result);
         }
 
         [Test]
         public void GivenPluginWithInvalidFileWhenIsDataCardSupportedThenFalseIsReturned()
         {
-            Directory.Delete(_testCardPath, true);
-            _testCardPath = DatacardUtility.WriteDataCard("IncorrectFiles");
+            Directory.Delete(_cardPath, true);
+            _cardPath = DatacardUtility.WriteDataCard("IncorrectFiles");
 
-            var result = _plugin.IsDataCardSupported(_testCardPath);
+            var result = _plugin.IsDataCardSupported(_cardPath);
             Assert.IsFalse(result);
         }
 
         [Test]
         public void GivenPluginWhenValidateDataOnCardThenNewListReturned()
         {
-            var result = _plugin.ValidateDataOnCard(_testCardPath);
+            var result = _plugin.ValidateDataOnCard(_cardPath);
             Assert.IsEmpty(result);
         }
 
         [Test]
         public void GivenPluginWhenGetPropertiesThenNewPropertiesIsReturned()
         {
-            var sourcePath = Path.Combine(_testCardPath, "adm");
+            var sourcePath = Path.Combine(_cardPath, "adm");
             Directory.CreateDirectory(sourcePath);
 
             var result = _plugin.GetProperties(sourcePath);
@@ -106,14 +110,14 @@ namespace PluginTest
         [Test]
         public void GivenPluginAndCardPathWhenImportThenProprietaryValuesAreImported()
         {
-            var result = _plugin.Import(_testCardPath).First();
+            var result = _plugin.Import(_cardPath).First();
             Assert.IsNotEmpty(result.ProprietaryValues);
         }
 
         [Test]
         public void GivenPluginAndCardPathWhenImportThenCatalogIsImported()
         {
-            var result = _plugin.Import(_testCardPath).First();
+            var result = _plugin.Import(_cardPath).First();
             Assert.NotNull(result.Catalog);
         }
 
@@ -122,7 +126,7 @@ namespace PluginTest
         {
             var documents = CreateDocuments();
 
-            var result = _plugin.Import(_testCardPath).First();
+            var result = _plugin.Import(_cardPath).First();
             Assert.AreSame(documents, result.Documents);
         }
 
@@ -131,11 +135,11 @@ namespace PluginTest
         {
             CreateDocuments();
 
-            var path = Path.Combine(_testCardPath, "adm", "documents", "OperationData-367.adm");
+            var path = Path.Combine(_cardPath, "adm", "documents", "OperationData-367.adm");
             var spatialRecords = new List<SpatialRecord>();
             _protobufSerializerMock.Setup(x => x.ReadSpatialRecords(path)).Returns(spatialRecords);
 
-            var result = _plugin.Import(_testCardPath).First();
+            var result = _plugin.Import(_cardPath).First();
             foreach (var loggedData in result.Documents.LoggedData)
             {
                 foreach (var operationData in loggedData.OperationData)
@@ -148,13 +152,13 @@ namespace PluginTest
         [Test]
         public void GivenPluginAndCardPathWhenImportThenOperationdDataSectionsAreImported()
         {
-            var path = Path.Combine(_testCardPath, "adm", "documents", "Section-367.adm");
+            var path = Path.Combine(_cardPath, "adm", "documents", "Section-367.adm");
             var pretendSections = new Dictionary<int, IEnumerable<Section>> { { 0, new List<Section>() } };
             _protobufSerializerMock.Setup(x => x.Read<Dictionary<int, IEnumerable<Section>>>(path)).Returns(pretendSections);
 
             CreateDocuments();
 
-            var result = _plugin.Import(_testCardPath).First();
+            var result = _plugin.Import(_cardPath).First();
             foreach (var loggedData in result.Documents.LoggedData)
             {
                 foreach (var operationData in loggedData.OperationData)
@@ -168,14 +172,14 @@ namespace PluginTest
         [Test]
         public void GivenPluginAndCardPathWhenImportThenEquipmentConfigSectionsAreImported()
         {
-            var path = Path.Combine(_testCardPath, "adm", "documents", "Section-367.adm");
+            var path = Path.Combine(_cardPath, "adm", "documents", "Section-367.adm");
             var pretendSections = new Dictionary<int, IEnumerable<Section>> { { 0, new List<Section> { new Section() } } };
             _protobufSerializerMock.Setup(x => x.Read<Dictionary<int, IEnumerable<Section>>>(path)).Returns(pretendSections);
 
             var documents = CreateDocuments();
             documents.LoggedData.First().OperationData.First().EquipmentConfigId = -2;
 
-            var result = _plugin.Import(_testCardPath).First();
+            var result = _plugin.Import(_cardPath).First();
             foreach (var loggedData in result.Documents.LoggedData)
             {
                 foreach (var operationData in loggedData.OperationData)
@@ -202,10 +206,10 @@ namespace PluginTest
             var documents = CreateDocuments();
             documents.LoggedData.First().OperationData.First().EquipmentConfigId = -2;
 
-            var path = Path.Combine(_testCardPath, "adm", "documents", "Section-367.adm");
+            var path = Path.Combine(_cardPath, "adm", "documents", "Section-367.adm");
             _protobufSerializerMock.Setup(x => x.Read<Dictionary<int, IEnumerable<Section>>>(path)).Returns(pretendSections);
 
-            var result = _plugin.Import(_testCardPath).First();
+            var result = _plugin.Import(_cardPath).First();
             var expectedSections = pretendSections.Where(x => x.Value != null).SelectMany(x => x.Value).ToList();
 
             var operationData = result.Documents.LoggedData.First().OperationData.First();
@@ -219,18 +223,18 @@ namespace PluginTest
         [Test]
         public void GivenPluginAndCardPathWhenImportThenEquipmentConfigMetersAreImported()
         {
-            var path = Path.Combine(_testCardPath, "adm", "documents", "Section-367.adm");
+            var path = Path.Combine(_cardPath, "adm", "documents", "Section-367.adm");
             var pretendSections = new Dictionary<int, IEnumerable<Section>> { { 0, new List<Section> { new Section() } } };
             _protobufSerializerMock.Setup(x => x.Read<Dictionary<int, IEnumerable<Section>>>(path)).Returns(pretendSections);
 
-            var meterPath = Path.Combine(_testCardPath, "adm", "documents", "Meter-367.adm");
+            var meterPath = Path.Combine(_cardPath, "adm", "documents", "Meter-367.adm");
             var pretendMeters = new List<Meter> { new NumericMeter() };
             _protobufSerializerMock.Setup(x => x.Read<IEnumerable<Meter>>(meterPath)).Returns(pretendMeters);
 
             var documents = CreateDocuments();
             documents.LoggedData.First().OperationData.First().EquipmentConfigId = -2;
 
-            var result = _plugin.Import(_testCardPath).First();
+            var result = _plugin.Import(_cardPath).First();
             foreach (var loggedData in result.Documents.LoggedData)
             {
                 foreach (var operationData in loggedData.OperationData)
@@ -259,7 +263,7 @@ namespace PluginTest
                     }
                 }
             };
-            var documentFilePath = Path.Combine(_testCardPath, "adm", "Document.adm");
+            var documentFilePath = Path.Combine(_cardPath, "adm", "Document.adm");
             _protobufSerializerMock.Setup(x => x.Read<Documents>(documentFilePath)).Returns(documents);
             return documents;
         }
@@ -267,17 +271,17 @@ namespace PluginTest
         [Test]
         public void GivenPluginAndCardPathWhenImportThenMetersAreImported()
         {
-            var sectionPath = Path.Combine(_testCardPath, "adm", "documents", "Section-367.adm");
+            var sectionPath = Path.Combine(_cardPath, "adm", "documents", "Section-367.adm");
             var pretendSections = new Dictionary<int, IEnumerable<Section>> { { 0, new List<Section>() } };
             _protobufSerializerMock.Setup(x => x.Read<Dictionary<int, IEnumerable<Section>>>(sectionPath)).Returns(pretendSections);
 
-            var meterPath = Path.Combine(_testCardPath, "adm", "documents", "Meter-367.adm");
+            var meterPath = Path.Combine(_cardPath, "adm", "documents", "Meter-367.adm");
             var pretendMeters = new List<Meter>();
             _protobufSerializerMock.Setup(x => x.Read<IEnumerable<Meter>>(meterPath)).Returns(pretendMeters);
 
             CreateDocuments();
 
-            var result = _plugin.Import(_testCardPath).First();
+            var result = _plugin.Import(_cardPath).First();
             foreach (var loggedData in result.Documents.LoggedData)
             {
                 foreach (var operationData in loggedData.OperationData)
@@ -290,17 +294,8 @@ namespace PluginTest
         }
 
         [Test]
-        public void GivenPluginAndCardPathWhenImportThenReferenceLayersAreImported()
-        {
-            var result = _plugin.Import(_testCardPath).First();
-            Assert.IsNotEmpty(result.ReferenceLayers);
-        }
-
-        [Test]
         public void GivenPluginAndDataModelWhenExportThenProprietaryValuesFileIsWritten()
         {
-            Directory.Delete(_testCardPath, true);
-            _testCardPath = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
             var dataModel = new ApplicationDataModel
             {
                 ProprietaryValues = new List<ProprietaryValue>
@@ -311,17 +306,15 @@ namespace PluginTest
                 }
             };
 
-            _plugin.Export(dataModel, _testCardPath);
+            _plugin.Export(dataModel, _tempPath);
 
-            var fileExists = File.Exists(Path.Combine(_testCardPath, "adm", "ProprietaryValues.adm"));
+            var fileExists = File.Exists(Path.Combine(_tempPath, "adm", "ProprietaryValues.adm"));
             Assert.IsTrue(fileExists);
         }
 
         [Test]
         public void GivenPluginAndDataModelWhenExportThenCatalogFileIsWritten()
         {
-            Directory.Delete(_testCardPath, true);
-            _testCardPath = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
             var dataModel = new ApplicationDataModel
             {
                 Catalog = new Catalog
@@ -332,17 +325,15 @@ namespace PluginTest
                 }
             };
 
-            _plugin.Export(dataModel, _testCardPath);
+            _plugin.Export(dataModel, _tempPath);
 
-            var fileExists = File.Exists(Path.Combine(_testCardPath, "adm", "Catalog.adm"));
+            var fileExists = File.Exists(Path.Combine(_tempPath, "adm", "Catalog.adm"));
             Assert.IsTrue(fileExists);
         }
 
         [Test]
         public void GivenPluginAndDataModelWhenExportThenDocumentsFileIsWritten()
         {
-            Directory.Delete(_testCardPath, true);
-            _testCardPath = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
             var dataModel = new ApplicationDataModel
             {
                 Documents = new Documents
@@ -352,8 +343,8 @@ namespace PluginTest
                 }
             };
 
-            _plugin.Export(dataModel, _testCardPath);
-            var filepath = Path.Combine(_testCardPath, "adm", "Document.adm");
+            _plugin.Export(dataModel, _tempPath);
+            var filepath = Path.Combine(_tempPath, "adm", "Document.adm");
             _protobufSerializerMock.Verify(x => x.Write(filepath, dataModel.Documents));
         }
 
@@ -380,17 +371,14 @@ namespace PluginTest
                 }
             };
 
-            _plugin.Export(dataModel, _testCardPath);
-            var expectedPath = Path.Combine(_testCardPath, string.Format(@"adm\documents\OperationData{0}.adm", operationData.Id.ReferenceId));
+            _plugin.Export(dataModel, _tempPath);
+            var expectedPath = Path.Combine(_tempPath, string.Format(@"adm\documents\OperationData{0}.adm", operationData.Id.ReferenceId));
             _protobufSerializerMock.Verify(x => x.WriteSpatialRecords(expectedPath, operationData.GetSpatialRecords()), Times.Once);
         }
 
         [Test]
         public void GivenPluginAndDataModelWhenExportThenSectionFileIsWritten()
         {
-            Directory.Delete(_testCardPath, true);
-            _testCardPath = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
-
             var sections = new Dictionary<int, IEnumerable<Section>> { { 0, new List<Section>() } };
 
             var operationData = new OperationData
@@ -407,10 +395,10 @@ namespace PluginTest
                 }
             };
 
-            _plugin.Export(dataModel, _testCardPath);
+            _plugin.Export(dataModel, _tempPath);
 
             var fileName = String.Format("Section{0}.adm", operationData.Id.ReferenceId);
-            var filePath = Path.Combine(_testCardPath, "adm", "documents", fileName);
+            var filePath = Path.Combine(_tempPath, "adm", "documents", fileName);
 
             _protobufSerializerMock.Verify(x => x.Write(filePath, sections));
         }
@@ -418,9 +406,6 @@ namespace PluginTest
         [Test]
         public void GivenPluginAndDataModelWhenExportThenMeterFileIsWritten()
         {
-            Directory.Delete(_testCardPath, true);
-            _testCardPath = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
-
             var meters = new List<Meter>
             {
                 new NumericMeter(),
@@ -449,10 +434,10 @@ namespace PluginTest
                 }
             };
             var fileName = String.Format("Meter{0}.adm", operationData.Id.ReferenceId);
-            var filePath = Path.Combine(_testCardPath, "adm", "documents", fileName);
+            var filePath = Path.Combine(_tempPath, "adm", "documents", fileName);
 
 
-            _plugin.Export(dataModel, _testCardPath);
+            _plugin.Export(dataModel, _tempPath);
 
             _protobufSerializerMock.Verify(x => x.Write(filePath, sections.First().GetMeters()));
         }
@@ -460,8 +445,6 @@ namespace PluginTest
         [Test]
         public void GivenPluginAndDataModelWhenExportThenReferenceLayersFileIsWritten()
         {
-            Directory.Delete(_testCardPath, true);
-            _testCardPath = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
             var dataModel = new ApplicationDataModel
             {
                 ReferenceLayers = new List<ReferenceLayer>
@@ -471,16 +454,18 @@ namespace PluginTest
                 }
             };
 
-            _plugin.Export(dataModel, _testCardPath);
-
-            var fileExists = File.Exists(Path.Combine(_testCardPath, "adm", "ReferenceLayers.adm"));
-            Assert.IsTrue(fileExists);
+            _plugin.Export(dataModel, _tempPath);
+            var filepath = Path.Combine(_tempPath, "adm");
+            var filename = "ReferenceLayers.adm";
+            _protobufReferenceSerializerMock.Verify(x => x.Export(filepath, filename, dataModel.ReferenceLayers));
         }
 
         [TearDown]
         public void Teardown()
         {
-            Directory.Delete(_testCardPath, true);
+            Directory.Delete(_cardPath, true);
+            if(Directory.Exists(_tempPath))
+                Directory.Delete(_tempPath, true);
         }
     }
 }

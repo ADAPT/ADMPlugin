@@ -13,16 +13,18 @@ namespace ADMPlugin
     public class Plugin : IPlugin
     {
         private readonly IProtobufSerializer _protobufSerializer;
+        private readonly IProtobufReferenceLayerSerializer _protobufReferenceLayerSerializer;
 
         public Plugin()
-            : this(new ProtobufSerializer())
+            : this(new ProtobufSerializer(), new ProtobufReferenceLayerSerializer())
         {
 
         }
 
-        public Plugin(IProtobufSerializer protobufSerializer)
+        public Plugin(IProtobufSerializer protobufSerializer, IProtobufReferenceLayerSerializer protobufReferenceLayerSerializer)
         {
             _protobufSerializer = protobufSerializer;
+            _protobufReferenceLayerSerializer = protobufReferenceLayerSerializer;
         }
 
         private const string PluginFolderAndExtension = "adm";
@@ -112,7 +114,7 @@ namespace ADMPlugin
             var documents = ImportDocuments(path, DocumentAdm);
             var catalog = ImportData<Catalog>(path, CatalogAdm);
             var proprietaryValues = ImportData<List<ProprietaryValue>>(path, ProprietaryValuesAdm);
-            var referenceLayers = ImportData<List<ReferenceLayer>>(path, ReferencelayersAdm);
+            var referenceLayers = ImportReferenceLayers(path, ReferencelayersAdm); 
 
             var applicationDataModel = new ApplicationDataModel
             {
@@ -129,6 +131,12 @@ namespace ADMPlugin
 
             ImportLoggingData(path, loggedData, applicationDataModel.Catalog);
             return new[] { applicationDataModel };
+        }
+
+        private IEnumerable<ReferenceLayer> ImportReferenceLayers(string path, string filename)
+        {
+            var filepath = Path.Combine(path, PluginFolderAndExtension);
+            return _protobufReferenceLayerSerializer.Import(filepath, filename);
         }
 
         private Documents ImportDocuments(string path, string documentAdm)
@@ -203,9 +211,14 @@ namespace ADMPlugin
                 Directory.CreateDirectory(path);
 
             ExportProtobuf(path, dataModel.Documents);
+            ExportReferenceLayers(path, ReferencelayersAdm, dataModel.ReferenceLayers);
             ExportData(path, ProprietaryValuesAdm, dataModel.ProprietaryValues);
-            ExportData(path, ReferencelayersAdm, dataModel.ReferenceLayers);
             ExportData(path, CatalogAdm, dataModel.Catalog);
+        }
+
+        private void ExportReferenceLayers(string filePath, string fileName, IEnumerable<ReferenceLayer> referenceLayers)
+        {
+            _protobufReferenceLayerSerializer.Export(filePath, fileName, referenceLayers);
         }
 
         private void ExportProtobuf(string path, Documents documents)

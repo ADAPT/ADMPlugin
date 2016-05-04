@@ -83,6 +83,9 @@ namespace TestUtilities.ProtobufContract
                 var typeWithNamespace = namespaceToLoad + "." + type.Name + "." + field;
                 var id = _mapper.Map(typeWithNamespace);
                 
+                if(type.GetGenericArguments().Count() > 1)
+                    continue;
+
                 _model[type].Add(id, field);
 
                 var sb = new StringBuilder();

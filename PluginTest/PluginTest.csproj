@@ -68,6 +68,8 @@
   <ItemGroup>
     <Compile Include="PluginTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ProtobufReferenceLayerConverterTest.cs" />
+    <Compile Include="ProtobufReferenceLayerSerializerTest.cs" />
     <Compile Include="ProtobufSerializerTest.cs" />
   </ItemGroup>
   <ItemGroup>
