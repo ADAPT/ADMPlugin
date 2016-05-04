@@ -59,6 +59,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AdaptContractResolver.cs" />
+    <Compile Include="DatacardConstants.cs" />
+    <Compile Include="DocumentsExporter.cs" />
+    <Compile Include="DocumentsImporter.cs" />
     <Compile Include="Plugin.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ProtobufReferenceLayerConverter.cs" />

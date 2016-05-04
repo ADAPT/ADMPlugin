@@ -122,15 +122,6 @@ namespace PluginTest
         }
 
         [Test]
-        public void GivenPluginAndCardPathWhenImportThenDocumentsIsImported()
-        {
-            var documents = CreateDocuments();
-
-            var result = _plugin.Import(_cardPath).First();
-            Assert.AreSame(documents, result.Documents);
-        }
-
-        [Test]
         public void GivenPluginAndCardPathWhenImportThenSpatialRecordsAreImported()
         {
             CreateDocuments();
@@ -189,35 +180,6 @@ namespace PluginTest
                     Assert.AreEqual(pretendSections[0], sections.ToList());
                 }
             }
-        }
-
-        [Test]
-        public void GivenPluginAndCardPathWithNullSectionValueWhenImportThenEquipmentConfigSectionsAreImported()
-        {
-
-            var pretendSections = new Dictionary<int, IEnumerable<Section>>
-            {
-                { 0, new List<Section>{ new Section() } },
-                { 1, null },
-                { 2, new List<Section>{ new Section() } }
-            };
-
-
-            var documents = CreateDocuments();
-            documents.LoggedData.First().OperationData.First().EquipmentConfigId = -2;
-
-            var path = Path.Combine(_cardPath, "adm", "documents", "Section-367.adm");
-            _protobufSerializerMock.Setup(x => x.Read<Dictionary<int, IEnumerable<Section>>>(path)).Returns(pretendSections);
-
-            var result = _plugin.Import(_cardPath).First();
-            var expectedSections = pretendSections.Where(x => x.Value != null).SelectMany(x => x.Value).ToList();
-
-            var operationData = result.Documents.LoggedData.First().OperationData.First();
-            var equipmentConfig = result.Catalog.EquipmentConfigs.Single(x => x.Id.ReferenceId == operationData.EquipmentConfigId);
-
-            Assert.AreEqual(expectedSections.Count, equipmentConfig.Sections.Count());
-            Assert.AreEqual(expectedSections[0], equipmentConfig.Sections.ToList()[0]);
-            Assert.AreEqual(expectedSections[1], equipmentConfig.Sections.ToList()[1]);
         }
 
         [Test]
@@ -329,117 +291,6 @@ namespace PluginTest
 
             var fileExists = File.Exists(Path.Combine(_tempPath, "adm", "Catalog.adm"));
             Assert.IsTrue(fileExists);
-        }
-
-        [Test]
-        public void GivenPluginAndDataModelWhenExportThenDocumentsFileIsWritten()
-        {
-            var dataModel = new ApplicationDataModel
-            {
-                Documents = new Documents
-                {
-                    LoggedData = new List<LoggedData>(),
-                    WorkItems = new List<WorkItem>()
-                }
-            };
-
-            _plugin.Export(dataModel, _tempPath);
-            var filepath = Path.Combine(_tempPath, "adm", "Document.adm");
-            _protobufSerializerMock.Verify(x => x.Write(filepath, dataModel.Documents));
-        }
-
-        [Test]
-        public void GivenPluginAndDataModelWhenExportThenOperationDataFileIsWritten()
-        {
-            var spatialRecords = new List<SpatialRecord>
-            {
-                new SpatialRecord(),
-                new SpatialRecord(),
-                new SpatialRecord()
-            };
-
-            var operationData = new OperationData
-            {
-                GetSpatialRecords = () => spatialRecords,
-            };
-            var dataModel = new ApplicationDataModel
-            {
-                Documents = new Documents
-                {
-                    LoggedData = new List<LoggedData> { new LoggedData { OperationData = new List<OperationData> { operationData } } },
-                    WorkItems = new List<WorkItem>()
-                }
-            };
-
-            _plugin.Export(dataModel, _tempPath);
-            var expectedPath = Path.Combine(_tempPath, string.Format(@"adm\documents\OperationData{0}.adm", operationData.Id.ReferenceId));
-            _protobufSerializerMock.Verify(x => x.WriteSpatialRecords(expectedPath, operationData.GetSpatialRecords()), Times.Once);
-        }
-
-        [Test]
-        public void GivenPluginAndDataModelWhenExportThenSectionFileIsWritten()
-        {
-            var sections = new Dictionary<int, IEnumerable<Section>> { { 0, new List<Section>() } };
-
-            var operationData = new OperationData
-            {
-                GetSpatialRecords = () => new List<SpatialRecord>(),
-                GetSections = x => sections[x]
-            };
-            var dataModel = new ApplicationDataModel
-            {
-                Documents = new Documents
-                {
-                    LoggedData = new List<LoggedData> { new LoggedData { OperationData = new List<OperationData> { operationData } } },
-                    WorkItems = new List<WorkItem>()
-                }
-            };
-
-            _plugin.Export(dataModel, _tempPath);
-
-            var fileName = String.Format("Section{0}.adm", operationData.Id.ReferenceId);
-            var filePath = Path.Combine(_tempPath, "adm", "documents", fileName);
-
-            _protobufSerializerMock.Verify(x => x.Write(filePath, sections));
-        }
-
-        [Test]
-        public void GivenPluginAndDataModelWhenExportThenMeterFileIsWritten()
-        {
-            var meters = new List<Meter>
-            {
-                new NumericMeter(),
-                new NumericMeter()
-            };
-            var sections = new List<Section>
-            {
-                new Section
-                {
-                    GetMeters = () => meters
-                }
-            };
-
-            var operationData = new OperationData
-            {
-                GetSpatialRecords = () => new List<SpatialRecord>(),
-                GetSections = x => sections
-            };
-
-            var dataModel = new ApplicationDataModel
-            {
-                Documents = new Documents
-                {
-                    LoggedData = new List<LoggedData> { new LoggedData { OperationData = new List<OperationData> { operationData } } },
-                    WorkItems = new List<WorkItem>()
-                }
-            };
-            var fileName = String.Format("Meter{0}.adm", operationData.Id.ReferenceId);
-            var filePath = Path.Combine(_tempPath, "adm", "documents", fileName);
-
-
-            _plugin.Export(dataModel, _tempPath);
-
-            _protobufSerializerMock.Verify(x => x.Write(filePath, sections.First().GetMeters()));
         }
 
         [Test]

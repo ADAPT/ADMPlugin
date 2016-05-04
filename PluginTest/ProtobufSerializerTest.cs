@@ -15,8 +15,6 @@ using AgGateway.ADAPT.Representation.RepresentationSystem.ExtensionMethods;
 using AgGateway.ADAPT.Representation.UnitSystem;
 using NUnit.Framework;
 using TestUtilities;
-using NumericRepresentation = AgGateway.ADAPT.ApplicationDataModel.Representations.NumericRepresentation;
-using UnitOfMeasure = AgGateway.ADAPT.ApplicationDataModel.Common.UnitOfMeasure;
 
 namespace PluginTest
 {
@@ -34,23 +32,6 @@ namespace PluginTest
             _testCardPath = DatacardUtility.WriteDataCard("TestDatacard");
             _spatialRecords = new List<SpatialRecord>();
             _meters = new List<Meter>();
-        }
-
-        [Test]
-        public void GivenSpatialRecordsWhenWriteSpatialRecordsThenOperationDataFileIsWritten()
-        {
-            var meter1 = new NumericMeter();
-            _meters.Add(meter1);
-
-            var spatialRecord1 = new SpatialRecord { Timestamp = DateTime.Now, Geometry = new Point { X = 45.123456, Y = -65.456789 } };
-            spatialRecord1.SetMeterValue(meter1, new NumericRepresentationValue(new NumericRepresentation(), new NumericValue(new UnitOfMeasure(), 21.2)));
-            _spatialRecords.Add(spatialRecord1);
-
-            var filePath = Path.Combine(_testCardPath, "OperationData-1.adm");
-            _protobufSerializer.Write(filePath, _spatialRecords);
-
-            var fileExists = File.Exists(filePath);
-            Assert.IsTrue(fileExists);
         }
 
         [Test]
@@ -87,56 +68,6 @@ namespace PluginTest
             Assert.AreEqual(numericRepValue.Value.Value, ((NumericRepresentationValue)spatialRecords[1].GetMeterValue(meter)).Value.Value);
             Assert.AreEqual(numericRepValue.Representation.Code, ((NumericRepresentationValue)spatialRecords[1].GetMeterValue(meter)).Representation.Code);
             Assert.AreEqual(numericRepValue.Value.UnitOfMeasure.Code, ((NumericRepresentationValue)spatialRecords[1].GetMeterValue(meter)).Value.UnitOfMeasure.Code);
-        }
-
-        [Test]
-        public void GivenMeterDataFileWhenReadThenMetersAreReturned()
-        {
-
-            var meter1 = new NumericMeter { SectionId = 1, Representation = RepresentationInstanceList.vrABRowSpacing.ToModelRepresentation() };
-            var meter2 = new NumericMeter { SectionId = 2, Representation = RepresentationInstanceList.vrABShiftTrack.ToModelRepresentation() };
-            var meter3 = new EnumeratedMeter { SectionId = 3, Representation = RepresentationInstanceList.dtDrainType.ToModelRepresentation() };
-
-            var meters = new List<Meter> { meter1, meter3, meter2 };
-
-
-            var filePath = Path.Combine(_testCardPath, "adm", "documents", "Meter-1.adm");
-            _protobufSerializer.Write(filePath, meters);
-
-            var metersIn = _protobufSerializer.Read<IEnumerable<Meter>>(filePath).ToList();
-
-            Assert.AreEqual(3, metersIn.Count());
-            Assert.AreEqual(meter1.SectionId, metersIn[0].SectionId);
-            Assert.AreEqual(meter1.Representation.Code, metersIn[0].Representation.Code);
-            Assert.AreEqual(meter1.Id.ReferenceId, metersIn[0].Id.ReferenceId);
-            Assert.AreEqual(meter2.SectionId, metersIn[2].SectionId);
-            Assert.AreEqual(meter2.Representation.Code, metersIn[2].Representation.Code);
-            Assert.AreEqual(meter2.Id.ReferenceId, metersIn[2].Id.ReferenceId);
-            Assert.AreEqual(meter3.SectionId, metersIn[1].SectionId);
-            Assert.AreEqual(meter3.Representation.Code, metersIn[1].Representation.Code);
-            Assert.AreEqual(meter3.Id.ReferenceId, metersIn[1].Id.ReferenceId);
-        }
-
-        [Test]
-        public void GivenSectionDataFileWhenReadThensectionsAreReturned()
-        {
-            var section1 = new Section { Depth = 0, OperationDataId = 100, Order = 3 };
-            var section2 = new Section { Depth = 1, OperationDataId = 200, Order = 3 };
-
-            var sections = new List<Section> { section1, section2 };
-
-            var sectionDictionary = new Dictionary<int, List<Section>>();
-            sectionDictionary.Add(1, sections);
-
-            var filePath = Path.Combine(_testCardPath, "adm", "documents", "Section-1.adm");
-            _protobufSerializer.Write(filePath, sectionDictionary);
-
-            var sectionsDictionaryIn = _protobufSerializer.Read<Dictionary<int, List<Section>>>(filePath);
-
-            Assert.AreEqual(1, sectionsDictionaryIn.Keys.Count());
-            Assert.AreEqual(sections[0].Depth, sectionsDictionaryIn[1][0].Depth);
-            Assert.AreEqual(sections[0].OperationDataId, sectionsDictionaryIn[1][0].OperationDataId);
-            Assert.AreEqual(sections[0].Order, sectionsDictionaryIn[1][0].Order);
         }
 
         [Test]

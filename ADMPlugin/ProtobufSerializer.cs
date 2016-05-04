@@ -27,7 +27,7 @@ namespace ADMPlugin
 
     public class ProtobufSerializer : IProtobufSerializer
     {
-        private RuntimeTypeModel _model;
+        private readonly RuntimeTypeModel _model;
 
         public ProtobufSerializer()
         {
@@ -37,12 +37,16 @@ namespace ADMPlugin
 
         public void Write<T>(string path, T content)
         {
+            var type = content.GetType();
+            if (!type.Namespace.StartsWith("System") && !type.Namespace.StartsWith("AgGateway.ADAPT.ApplicationDataModel"))
+            {
+                var baseType = type.BaseType;
+                Write(path, Convert.ChangeType(content, baseType));
+            }
+            else
+            {
             Write<T>(path, content, _model);
         }
-
-        public void WriteWithModel<T>(string path, T content, RuntimeTypeModel model)
-        {
-            Write<T>(path, content, model);
         }
 
         private void Write<T>(string path, T content, RuntimeTypeModel model)
@@ -56,11 +60,6 @@ namespace ADMPlugin
         public T Read<T>(string path)
         {
             return Read<T>(path, _model);
-        }
-
-        public T ReadWithModel<T>(string path, RuntimeTypeModel model)
-        {
-            return Read<T>(path, model);
         }
 
         private T Read<T>(string path, RuntimeTypeModel model)
@@ -102,7 +101,7 @@ namespace ADMPlugin
 
 
 
-        public RuntimeTypeModel GetProtobufModel()
+        RuntimeTypeModel GetProtobufModel()
         {
             var model = RuntimeTypeModel.Create();
 
