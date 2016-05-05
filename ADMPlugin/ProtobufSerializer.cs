@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using AgGateway.ADAPT.ApplicationDataModel;
 using AgGateway.ADAPT.ApplicationDataModel.ADM;
@@ -6,7 +7,9 @@ using AgGateway.ADAPT.ApplicationDataModel.Common;
 using AgGateway.ADAPT.ApplicationDataModel.Documents;
 using AgGateway.ADAPT.ApplicationDataModel.Guidance;
 using AgGateway.ADAPT.ApplicationDataModel.LoggedData;
+using AgGateway.ADAPT.ApplicationDataModel.Logistics;
 using AgGateway.ADAPT.ApplicationDataModel.Notes;
+using AgGateway.ADAPT.ApplicationDataModel.ReferenceLayers;
 using AgGateway.ADAPT.ApplicationDataModel.Representations;
 using AgGateway.ADAPT.ApplicationDataModel.Shapes;
 using ProtoBuf;
@@ -24,7 +27,7 @@ namespace ADMPlugin
 
     public class ProtobufSerializer : IProtobufSerializer
     {
-        private RuntimeTypeModel _model;
+        private readonly RuntimeTypeModel _model;
 
         public ProtobufSerializer()
         {
@@ -34,7 +37,16 @@ namespace ADMPlugin
 
         public void Write<T>(string path, T content)
         {
+            var type = content.GetType();
+            if (!type.Namespace.StartsWith("System") && !type.Namespace.StartsWith("AgGateway.ADAPT.ApplicationDataModel"))
+            {
+                var baseType = type.BaseType;
+                Write(path, Convert.ChangeType(content, baseType));
+            }
+            else
+            {
             Write<T>(path, content, _model);
+        }
         }
 
         private void Write<T>(string path, T content, RuntimeTypeModel model)
@@ -414,6 +426,136 @@ namespace ADMPlugin
             model[typeof(Note)].Add(316, "Value");
             model[typeof(Note)].Add(330, "TimeStamps");
             model[typeof(Note)].Add(318, "SpatialContext");
+            model[typeof(ReferenceLayer)].Add(333, "Id");
+            model[typeof(ReferenceLayer)].Add(334, "Description");
+            model[typeof(ReferenceLayer)].Add(335, "LayerType");
+            model[typeof(ReferenceLayer)].Add(336, "TimeScopes");
+            model[typeof(ReferenceLayer)].Add(337, "BoundingPolygon");
+            model[typeof(ReferenceLayer)].Add(338, "ContextItems");
+            model[typeof(ReferenceLayer)].Add(339, "FieldIds");
+            model[typeof(ReferenceLayer)].Add(340, "CropZoneIds");
+            model[typeof(ReferenceLayer)].AddSubType(341, typeof(RasterReferenceLayer));
+            model[typeof(RasterReferenceLayer)].Add(342, "Origin");
+            model[typeof(RasterReferenceLayer)].Add(343, "RowCount");
+            model[typeof(RasterReferenceLayer)].Add(344, "ColumnCount");
+            model[typeof(RasterReferenceLayer)].Add(345, "CellWidth");
+            model[typeof(RasterReferenceLayer)].Add(346, "CellHeight");
+            model[typeof(RasterReferenceLayer)].Add(347, "EnumeratedRasterValues");
+            model[typeof(RasterReferenceLayer)].Add(348, "StringRasterValues");
+            model[typeof(RasterReferenceLayer)].Add(349, "NumericRasterValues");
+            model[typeof(ShapeLookup)].Add(350, "Shape");
+            model[typeof(ShapeLookup)].Add(351, "SpatialAttribute");
+            model[typeof(ReferenceLayer)].AddSubType(352, typeof(ShapeReferenceLayer));
+            model[typeof(ShapeReferenceLayer)].Add(353, "ShapeLookups");
+            model[typeof(SpatialAttribute)].Add(354, "Values");
+            model[typeof(CropZone)].Add(368, "Id");
+            model[typeof(CropZone)].Add(369, "TimeScopeIds");
+            model[typeof(CropZone)].Add(370, "Description");
+            model[typeof(CropZone)].Add(371, "FieldId");
+            model[typeof(CropZone)].Add(372, "CropId");
+            model[typeof(CropZone)].Add(373, "Area");
+            model[typeof(CropZone)].Add(374, "BoundingRegion");
+            model[typeof(CropZone)].Add(375, "BoundarySource");
+            model[typeof(CropZone)].Add(376, "Notes");
+            model[typeof(CropZone)].Add(377, "GuidanceGroupIds");
+            model[typeof(CropZone)].Add(378, "ContextItems");
+            model[typeof(Brand)].Add(379, "Id");
+            model[typeof(Brand)].Add(380, "Description");
+            model[typeof(Brand)].Add(381, "ManufacturerId");
+            model[typeof(Brand)].Add(382, "ContextItems");
+            model[typeof(Company)].Add(383, "Id");
+            model[typeof(Company)].Add(384, "Name");
+            model[typeof(Company)].Add(385, "ContactInfoId");
+            model[typeof(Company)].Add(386, "ContextItems");
+            model[typeof(Contact)].Add(387, "Number");
+            model[typeof(Contact)].Add(388, "Type");
+            model[typeof(ContactInfo)].Add(389, "Id");
+            model[typeof(ContactInfo)].Add(390, "AddressLine1");
+            model[typeof(ContactInfo)].Add(391, "AddressLine2");
+            model[typeof(ContactInfo)].Add(392, "PoBoxNumber");
+            model[typeof(ContactInfo)].Add(393, "PostalCode");
+            model[typeof(ContactInfo)].Add(394, "City");
+            model[typeof(ContactInfo)].Add(395, "StateOrProvince");
+            model[typeof(ContactInfo)].Add(396, "Country");
+            model[typeof(ContactInfo)].Add(397, "CountryCode");
+            model[typeof(ContactInfo)].Add(398, "Contacts");
+            model[typeof(ContactInfo)].Add(399, "Location");
+            model[typeof(ContactInfo)].Add(400, "ContextItems");
+            model[typeof(Facility)].Add(401, "Id");
+            model[typeof(Facility)].Add(402, "CompanyId");
+            model[typeof(Facility)].Add(403, "Description");
+            model[typeof(Facility)].Add(404, "ContactInfo");
+            model[typeof(Facility)].Add(405, "FacilityType");
+            model[typeof(Facility)].Add(406, "ContextItems");
+            model[typeof(Farm)].Add(407, "Id");
+            model[typeof(Farm)].Add(408, "Description");
+            model[typeof(Farm)].Add(409, "GrowerId");
+            model[typeof(Farm)].Add(410, "ContactInfo");
+            model[typeof(Farm)].Add(411, "TimeScopeIds");
+            model[typeof(Farm)].Add(412, "ContextItems");
+            model[typeof(Field)].Add(413, "Id");
+            model[typeof(Field)].Add(414, "Description");
+            model[typeof(Field)].Add(415, "FarmId");
+            model[typeof(Field)].Add(416, "Area");
+            model[typeof(Field)].Add(417, "ActiveBoundaryId");
+            model[typeof(Field)].Add(418, "ContextItems");
+            model[typeof(Field)].Add(419, "Slope");
+            model[typeof(Field)].Add(420, "Aspect");
+            model[typeof(Field)].Add(421, "SlopeLength");
+            model[typeof(Field)].Add(422, "GuidanceGroupIds");
+            model[typeof(Field)].Add(423, "TimeScopeIds");
+            model[typeof(ValueType)].AddSubType(424, typeof(Enum));
+            model[typeof(Enum)].AddSubType(425, typeof(GLNEnum));
+            model[typeof(GpsSource)].Add(426, "SourceType");
+            model[typeof(GpsSource)].Add(427, "EstimatedPrecision");
+            model[typeof(GpsSource)].Add(428, "HorizontalAccuracy");
+            model[typeof(GpsSource)].Add(429, "VerticalAccuracy");
+            model[typeof(GpsSource)].Add(430, "NumberOfSatellites");
+            model[typeof(GpsSource)].Add(431, "GpsUtcTime");
+            model[typeof(Grower)].Add(432, "Id");
+            model[typeof(Grower)].Add(433, "Name");
+            model[typeof(Grower)].Add(434, "ContactInfo");
+            model[typeof(Grower)].Add(435, "ContextItems");
+            model[typeof(Location)].Add(436, "Position");
+            model[typeof(Location)].Add(437, "ContextItems");
+            model[typeof(Location)].Add(438, "GpsSource");
+            model[typeof(Destination)].Add(439, "Id");
+            model[typeof(Destination)].Add(440, "Description");
+            model[typeof(Destination)].Add(441, "Location");
+            model[typeof(Destination)].Add(442, "FacilityId");
+            model[typeof(Manufacturer)].Add(443, "Id");
+            model[typeof(Manufacturer)].Add(444, "Description");
+            model[typeof(PermittedProduct)].Add(445, "Id");
+            model[typeof(PermittedProduct)].Add(446, "TimeScopes");
+            model[typeof(PermittedProduct)].Add(447, "GrowerId");
+            model[typeof(PermittedProduct)].Add(448, "ProductId");
+            model[typeof(PermittedProduct)].Add(449, "ContextItems");
+            model[typeof(Person)].Add(450, "Id");
+            model[typeof(Person)].Add(451, "FirstName");
+            model[typeof(Person)].Add(452, "MiddleName");
+            model[typeof(Person)].Add(453, "LastName");
+            model[typeof(Person)].Add(454, "CombinedName");
+            model[typeof(Person)].Add(455, "ContactInfoId");
+            model[typeof(Person)].Add(456, "ContextItems");
+            model[typeof(PersonRole)].Add(457, "Id");
+            model[typeof(PersonRole)].Add(458, "PersonId");
+            model[typeof(PersonRole)].Add(459, "Role");
+            model[typeof(PersonRole)].Add(460, "GrowerId");
+            model[typeof(PersonRole)].Add(461, "TimeScopes");
+            model[typeof(PersonRole)].Add(462, "CompanyId");
+            model[typeof(RasterData<EnumeratedRepresentation, EnumerationMember>)].Add(463, "Representation");
+            model[typeof(RasterData<StringRepresentation, string>)].Add(464, "Representation");
+            model[typeof(RasterData<NumericRepresentation, NumericValue>)].Add(465, "Representation");
+            model[typeof(SerializableRasterData<string>)].Add(466, "values");
+            model[typeof(SerializableRasterData<EnumerationMember>)].Add(467, "values");
+            model[typeof(SerializableRasterData<NumericValue>)].Add(468, "values");
+            model[typeof(SerializableRasterData<string>)].Add(469, "Representation");
+            model[typeof(SerializableRasterData<EnumerationMember>)].Add(470, "Representation");
+            model[typeof(SerializableRasterData<NumericValue>)].Add(471, "Representation");
+            model[typeof(SerializableReferenceLayer)].Add(472, "ReferenceLayer");
+            model[typeof(SerializableReferenceLayer)].Add(473, "StringValues");
+            model[typeof(SerializableReferenceLayer)].Add(474, "EnumerationMemberValues");
+            model[typeof(SerializableReferenceLayer)].Add(475, "NumericValueValues");
             // END OF GENERATED CODE:
             //
             //
@@ -421,4 +563,5 @@ namespace ADMPlugin
             return model;
         }
     }
+
 }
