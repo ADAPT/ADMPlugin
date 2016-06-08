@@ -14,10 +14,10 @@ namespace ADMPlugin
             var property = base.CreateProperty(member, memberSerialization);
 
             if (property.PropertyType == typeof(Func<IEnumerable<SpatialRecord>>) 
-                || property.PropertyType == typeof(Func<int, IEnumerable<Section>>) 
-                || property.PropertyType == typeof(Func<IEnumerable<Meter>>)
-                || property.PropertyType == typeof(IEnumerable<Section>)
-                || property.PropertyType == typeof(IEnumerable<Meter>))
+                || property.PropertyType == typeof(Func<int, IEnumerable<DeviceElementUse>>) 
+                || property.PropertyType == typeof(Func<IEnumerable<WorkingData>>)
+                || property.PropertyType == typeof(IEnumerable<DeviceElementUse>)
+                || property.PropertyType == typeof(IEnumerable<WorkingData>))
             {
                 return null;
             }

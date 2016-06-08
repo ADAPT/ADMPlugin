@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using AgGateway.ADAPT.ApplicationDataModel;
 using AgGateway.ADAPT.ApplicationDataModel.ADM;
 using AgGateway.ADAPT.ApplicationDataModel.Documents;
 using AgGateway.ADAPT.ApplicationDataModel.Guidance;
@@ -29,7 +28,7 @@ namespace ADMPlugin
                 return null;
 
             var documents = new Documents();
-            documents.LoggedData = ReadLoggedData(documentsPath, catalog);
+            documents.LoggedData = ReadLoggedData(documentsPath);
             documents.GuidanceAllocations = ReadGuidanceAllocations(documentsPath);
             documents.Plans = ReadPlans(documentsPath);
             documents.Recommendations = ReadRecommendations(documentsPath);
@@ -85,7 +84,7 @@ namespace ADMPlugin
             return loggedDataFiles.Select(loggedDataFile => _protobufSerializer.Read<GuidanceAllocation>(loggedDataFile));
         }
 
-        private IEnumerable<LoggedData> ReadLoggedData(string documentsPath, Catalog catalog)
+        private IEnumerable<LoggedData> ReadLoggedData(string documentsPath)
         {
             var loggedDataFiles = Directory.EnumerateFiles(documentsPath, DatacardConstants.ConvertToSearchPattern(DatacardConstants.LoggedDataFile));
             foreach (var loggedDataFile in loggedDataFiles)
@@ -94,65 +93,56 @@ namespace ADMPlugin
                 foreach (var operationData in loggedData.OperationData)
                 {
                     ImportSpatialRecords(documentsPath, operationData);
-                    ImportSections(documentsPath, operationData, catalog);
-                    ImportMeters(documentsPath, operationData, catalog);
+                    ImportSections(documentsPath, operationData);
+                    ImportMeters(documentsPath, operationData);
                 }
 
                 yield return loggedData;
             }
         }
 
-        private void ImportMeters(string documentsPath, OperationData operationData, Catalog catalog)
+        private void ImportMeters(string documentsPath, OperationData operationData)
         {
-            var sections = GetAllSections(operationData).Where(x => x.Value != null).SelectMany(x => x.Value);
+            var deviceElementUses = GetAllDeviceElementUses(operationData).Where(x => x.Value != null).SelectMany(x => x.Value);
 
-            var metersFileName = string.Format(DatacardConstants.MeterFile, operationData.Id.ReferenceId);
-            var metersFilePath = Path.Combine(documentsPath, metersFileName);
-            var allMeters = _protobufSerializer.Read<IEnumerable<Meter>>(metersFilePath);
+            var workingDataFileName = string.Format(DatacardConstants.WorkingDataFile, operationData.Id.ReferenceId);
+            var workingDataFilePath = Path.Combine(documentsPath, workingDataFileName);
+            var allWorkingData = _protobufSerializer.Read<IEnumerable<WorkingData>>(workingDataFilePath);
 
-            foreach (var section in sections)
+            foreach (var deviceElementUse in deviceElementUses)
             {
-                var sectionMeters = allMeters.Where(x => x.SectionId == section.Id.ReferenceId);
-                section.GetMeters = () => sectionMeters;
+                var deviceElementUseWorkingData = allWorkingData.Where(x => x.DeviceElementUseId == deviceElementUse.Id.ReferenceId);
+                deviceElementUse.GetWorkingDatas = () => deviceElementUseWorkingData;
             }
-
-            var equipmentConfig = catalog.EquipmentConfigs.SingleOrDefault(x => x.Id.ReferenceId == operationData.EquipmentConfigId);
-            if (equipmentConfig != null)
-                equipmentConfig.Meters = allMeters;
         }
 
-        private static Dictionary<int, IEnumerable<Section>> GetAllSections(OperationData operationData)
+        private static Dictionary<int, IEnumerable<DeviceElementUse>> GetAllDeviceElementUses(OperationData operationData)
         {
             if (operationData == null)
                 return null;
 
-            var sections = new Dictionary<int, IEnumerable<Section>>();
+            var sections = new Dictionary<int, IEnumerable<DeviceElementUse>>();
 
             for (var depth = 0; depth <= operationData.MaxDepth; depth++)
             {
-                if (operationData.GetSections == null)
+                if (operationData.GetDeviceElementUses == null)
                     continue;
 
-                var levelSections = operationData.GetSections(depth);
+                var levelSections = operationData.GetDeviceElementUses(depth);
                 sections.Add(depth, levelSections);
             }
 
             return sections;
         }
 
-        private void ImportSections(string documentsPath, OperationData operationData, Catalog catalog)
+        private void ImportSections(string documentsPath, OperationData operationData)
         {
             var sectionsFileName = string.Format(DatacardConstants.SectionFile, operationData.Id.ReferenceId);
             var sectionsFilePath = Path.Combine(documentsPath, sectionsFileName);
-            var sections = _protobufSerializer.Read<Dictionary<int, IEnumerable<Section>>>(sectionsFilePath);
+            var sections = _protobufSerializer.Read<Dictionary<int, IEnumerable<DeviceElementUse>>>(sectionsFilePath);
 
             if (sections != null)
-            {
-                operationData.GetSections = x => sections[x] ?? new List<Section>();
-                var equipmentConfig = catalog.EquipmentConfigs.SingleOrDefault(x => x.Id.ReferenceId == operationData.EquipmentConfigId);
-                if (equipmentConfig != null)
-                    equipmentConfig.Sections = sections.Where(x => x.Value != null).SelectMany(x => x.Value);
-            }
+                operationData.GetDeviceElementUses = x => sections[x] ?? new List<DeviceElementUse>();
         }
 
         private void ImportSpatialRecords(string documentsPath, OperationData operationData)

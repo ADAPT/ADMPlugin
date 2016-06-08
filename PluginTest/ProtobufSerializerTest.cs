@@ -24,20 +24,20 @@ namespace PluginTest
         private readonly ProtobufSerializer _protobufSerializer = new ProtobufSerializer();
         private string _testCardPath;
         private List<SpatialRecord> _spatialRecords;
-        private List<Meter> _meters;
+        private List<WorkingData> _meters;
 
         [SetUp]
         public void Setup()
         {
             _testCardPath = DatacardUtility.WriteDataCard("TestDatacard");
             _spatialRecords = new List<SpatialRecord>();
-            _meters = new List<Meter>();
+            _meters = new List<WorkingData>();
         }
 
         [Test]
         public void GivenOperationDataFileWhenReadSpatialRecordsThenSpatialRecordsAreReturned()
         {
-            var meter = new NumericMeter();
+            var meter = new NumericWorkingData();
             _meters.Add(meter);
 
             var numericRepValue = new NumericRepresentationValue(RepresentationInstanceList.vrABLineHeading.ToModelRepresentation(), new NumericValue(UnitSystemManager.GetUnitOfMeasure("m"), 21.2));
