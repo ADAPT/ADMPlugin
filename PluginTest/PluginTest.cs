@@ -233,7 +233,7 @@ namespace PluginTest
                 {
                     Containers = new List<Container>(),
                     Farms = new List<Farm>(),
-                    Machines = new List<Machine>()
+                    DeviceElements = new List<DeviceElement>()
                 }
             };
 
