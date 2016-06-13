@@ -148,7 +148,7 @@ namespace ADMPlugin
             model[typeof(LoggedData)].Add(53, "FieldId");
             model[typeof(LoggedData)].Add(679, "GrowerId");
             model[typeof(LoggedData)].Add(54, "CropZoneId");
-            model[typeof(LoggedData)].Add(486, "PersonRoles");
+            model[typeof(LoggedData)].Add(690, "PersonRoleIds");
             model[typeof(LoggedData)].Add(55, "OperationData");
             model[typeof(LoggedData)].Add(56, "SummaryId");
             model[typeof(LoggedData)].Add(487, "ContainerUseIDs");
@@ -361,7 +361,7 @@ namespace ADMPlugin
             model[typeof(Summary)].Add(684, "FarmId");
             model[typeof(Summary)].Add(685, "FieldId");
             model[typeof(Summary)].Add(686, "CropZoneId");
-            model[typeof(Summary)].Add(687, "PersonRoles");
+            model[typeof(Summary)].Add(520, "PersonRoleIds");
             model[typeof(Summary)].Add(522, "Notes");
             model[typeof(Summary)].Add(523, "LoggedDataIds");
             model[typeof(Summary)].Add(524, "WorkItemIds");
@@ -698,7 +698,6 @@ namespace ADMPlugin
             // END OF GENERATED CODE:
             //
             //
-
             return model;
         }
     }

@@ -2756,4 +2756,8 @@
     <Name>AgGateway.ADAPT.ApplicationDataModel.LoggedData.LoggedData.Id</Name>
     <Id>689</Id>
   </MappedElement>
+  <MappedElement>
+    <Name>AgGateway.ADAPT.ApplicationDataModel.LoggedData.LoggedData.PersonRoleIds</Name>
+    <Id>690</Id>
+  </MappedElement>
 </ProtobufMapping>
