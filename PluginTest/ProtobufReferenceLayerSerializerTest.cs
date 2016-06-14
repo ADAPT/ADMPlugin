@@ -2,12 +2,8 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using ADMPlugin;
-using AgGateway.ADAPT.ApplicationDataModel.Common;
 using AgGateway.ADAPT.ApplicationDataModel.ReferenceLayers;
-using AgGateway.ADAPT.ApplicationDataModel.Shapes;
 using Moq;
 using NUnit.Framework;
 
@@ -50,7 +46,7 @@ namespace PluginTest
         [Test]
         public void GivenFilenameAndRefenceLayerWhenExportThenSeralizableReferenceLayersAreSerialized()
         {
-            string filename = "file.bin";
+            const string filename = "file.bin";
             var output = Path.Combine(_filepath, filename);
             _referenceLayers.Add(new RasterReferenceLayer());
 
@@ -64,7 +60,7 @@ namespace PluginTest
         [Test]
         public void GivenFilenameAndMultipleRefenceLayersWhenExportThenSeralizableReferenceLayersAreSerialized()
         {
-            string filename = "file.bin";
+            const string filename = "file.bin";
             var output = Path.Combine(_filepath, filename);
             _referenceLayers.Add(new RasterReferenceLayer());
             _referenceLayers.Add(new RasterReferenceLayer());
@@ -81,7 +77,7 @@ namespace PluginTest
         [Test]
         public void GivenFilenameWhenImportThenSerializerReadIsCalled()
         {
-            string filename = "file.bin";
+            const string filename = "file.bin";
             var output = Path.Combine(_filepath, filename);
             File.Create(output).Close();
 
@@ -99,7 +95,7 @@ namespace PluginTest
         [Test]
         public void GivenFilenameWhenImportThenMultipleReferenceLayersReturned()
         {
-            string filename = "file.bin";
+            const string filename = "file.bin";
             var output = Path.Combine(_filepath, filename);
             File.Create(output).Close();
 

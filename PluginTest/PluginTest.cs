@@ -5,7 +5,6 @@ using System.Linq;
 using ADMPlugin;
 using AgGateway.ADAPT.ApplicationDataModel;
 using AgGateway.ADAPT.ApplicationDataModel.ADM;
-using AgGateway.ADAPT.ApplicationDataModel.Documents;
 using AgGateway.ADAPT.ApplicationDataModel.Equipment;
 using AgGateway.ADAPT.ApplicationDataModel.LoggedData;
 using AgGateway.ADAPT.ApplicationDataModel.Logistics;
@@ -144,8 +143,8 @@ namespace PluginTest
         public void GivenPluginAndCardPathWhenImportThenOperationdDataSectionsAreImported()
         {
             var path = Path.Combine(_cardPath, "adm", "documents", "Section-367.adm");
-            var pretendSections = new Dictionary<int, IEnumerable<Section>> { { 0, new List<Section>() } };
-            _protobufSerializerMock.Setup(x => x.Read<Dictionary<int, IEnumerable<Section>>>(path)).Returns(pretendSections);
+            var pretendSections = new Dictionary<int, IEnumerable<DeviceElementUse>> { { 0, new List<DeviceElementUse>() } };
+            _protobufSerializerMock.Setup(x => x.Read<Dictionary<int, IEnumerable<DeviceElementUse>>>(path)).Returns(pretendSections);
 
             CreateDocuments();
 
@@ -154,61 +153,13 @@ namespace PluginTest
             {
                 foreach (var operationData in loggedData.OperationData)
                 {
-                    var sections = operationData.GetSections(0);
+                    var sections = operationData.GetDeviceElementUses(0);
                     Assert.NotNull(sections);
                 }
             }
         }
 
-        [Test]
-        public void GivenPluginAndCardPathWhenImportThenEquipmentConfigSectionsAreImported()
-        {
-            var path = Path.Combine(_cardPath, "adm", "documents", "Section-367.adm");
-            var pretendSections = new Dictionary<int, IEnumerable<Section>> { { 0, new List<Section> { new Section() } } };
-            _protobufSerializerMock.Setup(x => x.Read<Dictionary<int, IEnumerable<Section>>>(path)).Returns(pretendSections);
-
-            var documents = CreateDocuments();
-            documents.LoggedData.First().OperationData.First().EquipmentConfigId = -2;
-
-            var result = _plugin.Import(_cardPath).First();
-            foreach (var loggedData in result.Documents.LoggedData)
-            {
-                foreach (var operationData in loggedData.OperationData)
-                {
-                    var equipmentConfig = result.Catalog.EquipmentConfigs.Single(x => x.Id.ReferenceId == operationData.EquipmentConfigId);
-                    var sections = equipmentConfig.Sections;
-                    Assert.AreEqual(pretendSections[0], sections.ToList());
-                }
-            }
-        }
-
-        [Test]
-        public void GivenPluginAndCardPathWhenImportThenEquipmentConfigMetersAreImported()
-        {
-            var path = Path.Combine(_cardPath, "adm", "documents", "Section-367.adm");
-            var pretendSections = new Dictionary<int, IEnumerable<Section>> { { 0, new List<Section> { new Section() } } };
-            _protobufSerializerMock.Setup(x => x.Read<Dictionary<int, IEnumerable<Section>>>(path)).Returns(pretendSections);
-
-            var meterPath = Path.Combine(_cardPath, "adm", "documents", "Meter-367.adm");
-            var pretendMeters = new List<Meter> { new NumericMeter() };
-            _protobufSerializerMock.Setup(x => x.Read<IEnumerable<Meter>>(meterPath)).Returns(pretendMeters);
-
-            var documents = CreateDocuments();
-            documents.LoggedData.First().OperationData.First().EquipmentConfigId = -2;
-
-            var result = _plugin.Import(_cardPath).First();
-            foreach (var loggedData in result.Documents.LoggedData)
-            {
-                foreach (var operationData in loggedData.OperationData)
-                {
-                    var equipmentConfig = result.Catalog.EquipmentConfigs.Single(x => x.Id.ReferenceId == operationData.EquipmentConfigId);
-                    var meters = equipmentConfig.Meters;
-                    Assert.AreEqual(pretendMeters, meters.ToList());
-                }
-            }
-        }
-
-        private Documents CreateDocuments()
+        private void CreateDocuments()
         {
             var operationData1 = new OperationData();
             operationData1.Id.ReferenceId = -367;
@@ -227,19 +178,18 @@ namespace PluginTest
             };
             var documentFilePath = Path.Combine(_cardPath, "adm", "Document.adm");
             _protobufSerializerMock.Setup(x => x.Read<Documents>(documentFilePath)).Returns(documents);
-            return documents;
         }
 
         [Test]
         public void GivenPluginAndCardPathWhenImportThenMetersAreImported()
         {
             var sectionPath = Path.Combine(_cardPath, "adm", "documents", "Section-367.adm");
-            var pretendSections = new Dictionary<int, IEnumerable<Section>> { { 0, new List<Section>() } };
-            _protobufSerializerMock.Setup(x => x.Read<Dictionary<int, IEnumerable<Section>>>(sectionPath)).Returns(pretendSections);
+            var pretendSections = new Dictionary<int, IEnumerable<DeviceElementUse>> { { 0, new List<DeviceElementUse>() } };
+            _protobufSerializerMock.Setup(x => x.Read<Dictionary<int, IEnumerable<DeviceElementUse>>>(sectionPath)).Returns(pretendSections);
 
             var meterPath = Path.Combine(_cardPath, "adm", "documents", "Meter-367.adm");
-            var pretendMeters = new List<Meter>();
-            _protobufSerializerMock.Setup(x => x.Read<IEnumerable<Meter>>(meterPath)).Returns(pretendMeters);
+            var pretendMeters = new List<WorkingData>();
+            _protobufSerializerMock.Setup(x => x.Read<IEnumerable<WorkingData>>(meterPath)).Returns(pretendMeters);
 
             CreateDocuments();
 
@@ -248,8 +198,8 @@ namespace PluginTest
             {
                 foreach (var operationData in loggedData.OperationData)
                 {
-                    var sections = operationData.GetSections(0);
-                    var meters = sections.SelectMany(x => x.GetMeters());
+                    var sections = operationData.GetDeviceElementUses(0);
+                    var meters = sections.SelectMany(x => x.GetWorkingDatas());
                     Assert.NotNull(meters);
                 }
             }
@@ -283,7 +233,7 @@ namespace PluginTest
                 {
                     Containers = new List<Container>(),
                     Farms = new List<Farm>(),
-                    Machines = new List<Machine>()
+                    DeviceElements = new List<DeviceElement>()
                 }
             };
 

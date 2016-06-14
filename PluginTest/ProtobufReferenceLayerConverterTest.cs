@@ -1,13 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using ADMPlugin;
 using AgGateway.ADAPT.ApplicationDataModel.Common;
 using AgGateway.ADAPT.ApplicationDataModel.ReferenceLayers;
 using AgGateway.ADAPT.ApplicationDataModel.Representations;
-using Newtonsoft.Json.Linq;
 using NUnit.Framework;
 
 namespace PluginTest
@@ -30,7 +26,7 @@ namespace PluginTest
         public void GivenRasterLayerWhenConvertToSerialThenIsConverted()
         {
             var rasterData = new RasterData<StringRepresentation, string>();
-            var array2Db = new string[3, 2] { { "one", "two" }, { "three", "four" },
+            var array2Db = new[,] { { "one", "two" }, { "three", "four" },
                                         { "five", "six" } };
             rasterData.Values = array2Db;
             var rasterDatas = new List<RasterData<StringRepresentation, string>> { rasterData };
@@ -56,11 +52,11 @@ namespace PluginTest
         public void GivenRasterLayersWhenConvertToSerialThenStringValuesAreConverted()
         {
             var rasterData = new RasterData<StringRepresentation, string>();
-            var array2Db = new string[3, 2] {{"one", "two"}, {"three", "four"}, {"five", "six"}};
+            var array2Db = new[,] {{"one", "two"}, {"three", "four"}, {"five", "six"}};
             rasterData.Values = array2Db;
 
             var rasterData2 = new RasterData<StringRepresentation, string>();
-            var array2Db2 = new string[3, 2] {{"11", "12"}, {"13", "14"}, {"15", "16"}};
+            var array2Db2 = new[,] {{"11", "12"}, {"13", "14"}, {"15", "16"}};
             rasterData2.Values = array2Db2;
 
             var rasterDatas = new List<RasterData<StringRepresentation, string>> {rasterData, rasterData2};
@@ -95,7 +91,7 @@ namespace PluginTest
         public void GivenRasterLayerWithEnumeratedRepWhenConvertToSerialThenIsConverted()
         {
             var rasterData = new RasterData<EnumeratedRepresentation, EnumerationMember>();
-            var array2Db = new EnumerationMember[3, 2] { { new EnumerationMember{Value = "1"}, new EnumerationMember{Value = "2"} }, { new EnumerationMember{Value = "3"}, new EnumerationMember{Value = "4"} },
+            var array2Db = new[,] { { new EnumerationMember{Value = "1"}, new EnumerationMember{Value = "2"} }, { new EnumerationMember{Value = "3"}, new EnumerationMember{Value = "4"} },
                                         { new EnumerationMember{Value = "5"}, new EnumerationMember{Value = "6"} } };
             rasterData.Values = array2Db;
             var rasterDatas = new List<RasterData<EnumeratedRepresentation, EnumerationMember>> { rasterData };
@@ -121,12 +117,12 @@ namespace PluginTest
         public void GivenRasterLayersWithEnumeratedRepWhenConvertToSerialThenEmnumeratedValuesAreConverted()
         {
             var rasterData = new RasterData<EnumeratedRepresentation, EnumerationMember>();
-            var array2Db = new EnumerationMember[3, 2] { { new EnumerationMember{Value = "1"}, new EnumerationMember{Value = "2"} }, { new EnumerationMember{Value = "3"}, new EnumerationMember{Value = "4"} },
+            var array2Db = new[,] { { new EnumerationMember{Value = "1"}, new EnumerationMember{Value = "2"} }, { new EnumerationMember{Value = "3"}, new EnumerationMember{Value = "4"} },
                                         { new EnumerationMember{Value = "5"}, new EnumerationMember{Value = "6"} } };
             rasterData.Values = array2Db;
 
             var rasterData2 = new RasterData<EnumeratedRepresentation, EnumerationMember>();
-            var array2Db2 = new EnumerationMember[3, 2] { { new EnumerationMember{Value = "7"}, new EnumerationMember{Value = "8"} }, { new EnumerationMember{Value = "9"}, new EnumerationMember{Value = "10"} },
+            var array2Db2 = new[,] { { new EnumerationMember{Value = "7"}, new EnumerationMember{Value = "8"} }, { new EnumerationMember{Value = "9"}, new EnumerationMember{Value = "10"} },
                                         { new EnumerationMember{Value = "11"}, new EnumerationMember{Value = "13"} } };
             rasterData2.Values = array2Db2;
 
@@ -161,7 +157,7 @@ namespace PluginTest
         public void GivenRasterLayerWithNumericRepWhenConvertToSerialThenIsConverted()
         {
             var rasterData = new RasterData<NumericRepresentation, NumericValue>();
-            var array2Db = new NumericValue[3, 2] { { new NumericValue(new UnitOfMeasure(), 1), new NumericValue(new UnitOfMeasure(), 2) },
+            var array2Db = new[,] { { new NumericValue(new UnitOfMeasure(), 1), new NumericValue(new UnitOfMeasure(), 2) },
                                                     { new NumericValue(new UnitOfMeasure(), 3), new NumericValue(new UnitOfMeasure(), 4) },
                                                     { new NumericValue(new UnitOfMeasure(), 5), new NumericValue(new UnitOfMeasure(), 6) }};
 
@@ -189,13 +185,13 @@ namespace PluginTest
         public void GivenRasterLayersWithNumericRepWhenConvertToSerialThenNumericValuesAreConverted()
         {
             var rasterData = new RasterData<NumericRepresentation, NumericValue>();
-            var array2Db = new NumericValue[3, 2] { { new NumericValue(new UnitOfMeasure(), 1), new NumericValue(new UnitOfMeasure(), 2) },
+            var array2Db = new[,] { { new NumericValue(new UnitOfMeasure(), 1), new NumericValue(new UnitOfMeasure(), 2) },
                                                     { new NumericValue(new UnitOfMeasure(), 3), new NumericValue(new UnitOfMeasure(), 4) },
                                                     { new NumericValue(new UnitOfMeasure(), 5), new NumericValue(new UnitOfMeasure(), 6) }};
             rasterData.Values = array2Db;
 
             var rasterData2 = new RasterData<NumericRepresentation, NumericValue>();
-            var array2Db2 = new NumericValue[3, 2] { { new NumericValue(new UnitOfMeasure(), 7), new NumericValue(new UnitOfMeasure(), 8) },
+            var array2Db2 = new[,] { { new NumericValue(new UnitOfMeasure(), 7), new NumericValue(new UnitOfMeasure(), 8) },
                                                     { new NumericValue(new UnitOfMeasure(), 9), new NumericValue(new UnitOfMeasure(), 11) },
                                                     { new NumericValue(new UnitOfMeasure(), 12), new NumericValue(new UnitOfMeasure(), 13) }};
             rasterData2.Values = array2Db2;
@@ -240,7 +236,7 @@ namespace PluginTest
 
             var referenceLayer = _converter.ConvertToReferenceLayer(serialzedReferenceLayer) as RasterReferenceLayer;
 
-            var expected = new string[3, 2] { { "one", "two" }, { "three", "four" },
+            var expected = new[,] { { "one", "two" }, { "three", "four" },
                                         { "five", "six" } };
 
             for (int i = 0; i < _referenceLayer.ColumnCount; i++)
@@ -255,22 +251,24 @@ namespace PluginTest
         [Test]
         public void GivenSerializedRasterLayesrWhenConvertToReferenceLayerThenStringValuesAreConverted()
         {
-            var serialzedReferenceLayer = new SerializableReferenceLayer();
-            serialzedReferenceLayer.StringValues = new List<SerializableRasterData<string>>
+            var serialzedReferenceLayer = new SerializableReferenceLayer
             {
-                new SerializableRasterData<string> { values = new List<string> { "one", "two", "three", "four", "five", "six" } },
-                new SerializableRasterData<string> { values = new List<string> { "11", "12", "13", "14", "15", "16" } }
+                StringValues = new List<SerializableRasterData<string>>
+                {
+                    new SerializableRasterData<string>
+                    {
+                        values = new List<string> {"one", "two", "three", "four", "five", "six"}
+                    },
+                    new SerializableRasterData<string> {values = new List<string> {"11", "12", "13", "14", "15", "16"}}
+                },
+                ReferenceLayer = _referenceLayer
             };
-            serialzedReferenceLayer.ReferenceLayer = _referenceLayer;
 
             _referenceLayer.StringRasterValues = null;
             _referenceLayer.ColumnCount = 3;
             _referenceLayer.RowCount = 2;
 
             var referenceLayer = _converter.ConvertToReferenceLayer(serialzedReferenceLayer) as RasterReferenceLayer;
-
-            var expected = new string[3, 2] { { "one", "two" }, { "three", "four" },
-                                        { "five", "six" } };
 
             for (int rasterDataIndex = 0;
                 rasterDataIndex < serialzedReferenceLayer.StringValues.Count;
@@ -305,12 +303,12 @@ namespace PluginTest
 
             var referenceLayer = _converter.ConvertToReferenceLayer(serialzedReferenceLayer) as RasterReferenceLayer;
 
-            var expected = new string[3, 2] { { "one", "two" }, { "three", "four" },
+            var expected = new[,]{ { "one", "two" }, { "three", "four" },
                                         { "five", "six" } };
 
-            for (int i = 0; i < _referenceLayer.ColumnCount; i++)
+            for (var i = 0; i < _referenceLayer.ColumnCount; i++)
             {
-                for (int j = 0; j < _referenceLayer.RowCount; j++)
+                for (var j = 0; j < _referenceLayer.RowCount; j++)
                 {
                     Assert.AreEqual(expected[i, j], referenceLayer.EnumeratedRasterValues.First().Values[i, j].Value);
                 }
@@ -320,17 +318,38 @@ namespace PluginTest
         [Test]
         public void GivenSerializedRasterLayersWhenConvertToReferenceLayerThenEnumeratedValuesAreConverted()
         {
-            var serialzedReferenceLayer = new SerializableReferenceLayer();
-            serialzedReferenceLayer.EnumerationMemberValues = new List<SerializableRasterData<EnumerationMember>>{ 
-                new SerializableRasterData<EnumerationMember>{ values = new List<EnumerationMember>{ new EnumerationMember {Value = "one" },  new EnumerationMember {Value = "two"},
-                                                                                            new EnumerationMember {Value = "three"},  new EnumerationMember {Value = "four"},
-                                                                                            new EnumerationMember {Value = "five"},  new EnumerationMember {Value = "six" } } },
-                
-                new SerializableRasterData<EnumerationMember>{ values = new List<EnumerationMember>{ new EnumerationMember {Value = "1" },  new EnumerationMember {Value = "2"},
-                new EnumerationMember {Value = "3"},  new EnumerationMember {Value = "4"},
-                new EnumerationMember {Value = "5"},  new EnumerationMember {Value = "6" } } }
+            var serialzedReferenceLayer = new SerializableReferenceLayer
+            {
+                EnumerationMemberValues = new List<SerializableRasterData<EnumerationMember>>
+                {
+                    new SerializableRasterData<EnumerationMember>
+                    {
+                        values = new List<EnumerationMember>
+                        {
+                            new EnumerationMember {Value = "one"},
+                            new EnumerationMember {Value = "two"},
+                            new EnumerationMember {Value = "three"},
+                            new EnumerationMember {Value = "four"},
+                            new EnumerationMember {Value = "five"},
+                            new EnumerationMember {Value = "six"}
+                        }
+                    },
+
+                    new SerializableRasterData<EnumerationMember>
+                    {
+                        values = new List<EnumerationMember>
+                        {
+                            new EnumerationMember {Value = "1"},
+                            new EnumerationMember {Value = "2"},
+                            new EnumerationMember {Value = "3"},
+                            new EnumerationMember {Value = "4"},
+                            new EnumerationMember {Value = "5"},
+                            new EnumerationMember {Value = "6"}
+                        }
+                    }
+                },
+                ReferenceLayer = _referenceLayer
             };
-            serialzedReferenceLayer.ReferenceLayer = _referenceLayer;
 
             _referenceLayer.EnumeratedRasterValues = null;
             _referenceLayer.ColumnCount = 3;
@@ -356,22 +375,32 @@ namespace PluginTest
         [Test]
         public void GivenSerializedRasterLayerWhenConvertToReferenceLayerThenNumericValuesAreConverted()
         {
-            var serialzedReferenceLayer = new SerializableReferenceLayer();
-            serialzedReferenceLayer.NumericValueValues = new List<SerializableRasterData<NumericValue>> { new SerializableRasterData<NumericValue> { values = new List<NumericValue> { new NumericValue(new UnitOfMeasure(), 1),
-                new NumericValue(new UnitOfMeasure(), 2),
-                new NumericValue(new UnitOfMeasure(), 3),
-                new NumericValue(new UnitOfMeasure(), 4),
-                new NumericValue(new UnitOfMeasure(), 5),
-                new NumericValue(new UnitOfMeasure(), 6)}}};
-
-            serialzedReferenceLayer.ReferenceLayer = _referenceLayer;
+            var serialzedReferenceLayer = new SerializableReferenceLayer
+            {
+                NumericValueValues = new List<SerializableRasterData<NumericValue>>
+                {
+                    new SerializableRasterData<NumericValue>
+                    {
+                        values = new List<NumericValue>
+                        {
+                            new NumericValue(new UnitOfMeasure(), 1),
+                            new NumericValue(new UnitOfMeasure(), 2),
+                            new NumericValue(new UnitOfMeasure(), 3),
+                            new NumericValue(new UnitOfMeasure(), 4),
+                            new NumericValue(new UnitOfMeasure(), 5),
+                            new NumericValue(new UnitOfMeasure(), 6)
+                        }
+                    }
+                },
+                ReferenceLayer = _referenceLayer
+            };
 
             _referenceLayer.ColumnCount = 3;
             _referenceLayer.RowCount = 2;
 
             var referenceLayer = _converter.ConvertToReferenceLayer(serialzedReferenceLayer) as RasterReferenceLayer;
 
-            var expected = new double[3, 2] { { 1, 2}, { 3, 4 }, { 5, 6 } };
+            var expected = new[,] { { 1, 2 }, { 3, 4 }, { 5, 6 } };
 
             for (int i = 0; i < _referenceLayer.ColumnCount; i++)
             {
@@ -385,22 +414,37 @@ namespace PluginTest
         [Test]
         public void GivenSerializedRasterLayersWhenConvertToReferenceLayerThenNumericValuesAreConverted()
         {
-            var serialzedReferenceLayer = new SerializableReferenceLayer();
-            serialzedReferenceLayer.NumericValueValues = new List<SerializableRasterData<NumericValue>> { new SerializableRasterData<NumericValue> { values = new List<NumericValue> { new NumericValue(new UnitOfMeasure(), 1),
-                new NumericValue(new UnitOfMeasure(), 2),
-                new NumericValue(new UnitOfMeasure(), 3),
-                new NumericValue(new UnitOfMeasure(), 4),
-                new NumericValue(new UnitOfMeasure(), 5),
-                new NumericValue(new UnitOfMeasure(), 6)}},
-                new SerializableRasterData<NumericValue> { values = new List<NumericValue> { new NumericValue(new UnitOfMeasure(), 7),
-                new NumericValue(new UnitOfMeasure(), 8),
-                new NumericValue(new UnitOfMeasure(), 9),
-                new NumericValue(new UnitOfMeasure(), 10),
-                new NumericValue(new UnitOfMeasure(), 11),
-                new NumericValue(new UnitOfMeasure(), 14)}},
+            var serialzedReferenceLayer = new SerializableReferenceLayer
+            {
+                NumericValueValues = new List<SerializableRasterData<NumericValue>>
+                {
+                    new SerializableRasterData<NumericValue>
+                    {
+                        values = new List<NumericValue>
+                        {
+                            new NumericValue(new UnitOfMeasure(), 1),
+                            new NumericValue(new UnitOfMeasure(), 2),
+                            new NumericValue(new UnitOfMeasure(), 3),
+                            new NumericValue(new UnitOfMeasure(), 4),
+                            new NumericValue(new UnitOfMeasure(), 5),
+                            new NumericValue(new UnitOfMeasure(), 6)
+                        }
+                    },
+                    new SerializableRasterData<NumericValue>
+                    {
+                        values = new List<NumericValue>
+                        {
+                            new NumericValue(new UnitOfMeasure(), 7),
+                            new NumericValue(new UnitOfMeasure(), 8),
+                            new NumericValue(new UnitOfMeasure(), 9),
+                            new NumericValue(new UnitOfMeasure(), 10),
+                            new NumericValue(new UnitOfMeasure(), 11),
+                            new NumericValue(new UnitOfMeasure(), 14)
+                        }
+                    },
+                },
+                ReferenceLayer = _referenceLayer
             };
-
-            serialzedReferenceLayer.ReferenceLayer = _referenceLayer;
 
             _referenceLayer.ColumnCount = 3;
             _referenceLayer.RowCount = 2;
@@ -425,22 +469,26 @@ namespace PluginTest
         [Test]
         public void GivenRasterLayersWhenConvertToSerialThenStringRepresentationsAreConverted()
         {
-            var rasterData = new RasterData<StringRepresentation, string>();
-            rasterData.Representation = new StringRepresentation
+            var rasterData = new RasterData<StringRepresentation, string>
             {
-                Description = "First One",
-                Code = "Code1",
-                CodeSource = RepresentationCodeSourceEnum.ISO11783_DDI,
-                LongDescription = "Long Description 1"
+                Representation = new StringRepresentation
+                {
+                    Description = "First One",
+                    Code = "Code1",
+                    CodeSource = RepresentationCodeSourceEnum.ISO11783_DDI,
+                    LongDescription = "Long Description 1"
+                }
             };
 
-            var rasterData2 = new RasterData<StringRepresentation, string>();
-            rasterData2.Representation = new StringRepresentation
+            var rasterData2 = new RasterData<StringRepresentation, string>
             {
-                Description = "Second One",
-                Code = "Code2",
-                CodeSource = RepresentationCodeSourceEnum.ADAPT,
-                LongDescription = "Long Description"
+                Representation = new StringRepresentation
+                {
+                    Description = "Second One",
+                    Code = "Code2",
+                    CodeSource = RepresentationCodeSourceEnum.ADAPT,
+                    LongDescription = "Long Description"
+                }
             };
 
             var rasterDatas = new List<RasterData<StringRepresentation, string>> { rasterData, rasterData2 };
@@ -462,22 +510,26 @@ namespace PluginTest
         [Test]
         public void GivenRasterLayersWhenConvertToSerialThenNumericRepresentationsAreConverted()
         {
-            var rasterData = new RasterData<NumericRepresentation, NumericValue>();
-            rasterData.Representation = new NumericRepresentation
+            var rasterData = new RasterData<NumericRepresentation, NumericValue>
             {
-                Description = "First One",
-                Code = "Code1",
-                CodeSource = RepresentationCodeSourceEnum.ISO11783_DDI,
-                LongDescription = "Long Description 1"
+                Representation = new NumericRepresentation
+                {
+                    Description = "First One",
+                    Code = "Code1",
+                    CodeSource = RepresentationCodeSourceEnum.ISO11783_DDI,
+                    LongDescription = "Long Description 1"
+                }
             };
 
-            var rasterData2 = new RasterData<NumericRepresentation, NumericValue>();
-            rasterData2.Representation = new NumericRepresentation
+            var rasterData2 = new RasterData<NumericRepresentation, NumericValue>
             {
-                Description = "Second One",
-                Code = "Code2",
-                CodeSource = RepresentationCodeSourceEnum.ADAPT,
-                LongDescription = "Long Description"
+                Representation = new NumericRepresentation
+                {
+                    Description = "Second One",
+                    Code = "Code2",
+                    CodeSource = RepresentationCodeSourceEnum.ADAPT,
+                    LongDescription = "Long Description"
+                }
             };
 
             var rasterDatas = new List<RasterData<NumericRepresentation, NumericValue>> { rasterData, rasterData2 };
@@ -499,22 +551,26 @@ namespace PluginTest
         [Test]
         public void GivenRasterLayersWhenConvertToSerialThenEnumeratedRepresentationsAreConverted()
         {
-            var rasterData = new RasterData<EnumeratedRepresentation, EnumerationMember>();
-            rasterData.Representation = new EnumeratedRepresentation
+            var rasterData = new RasterData<EnumeratedRepresentation, EnumerationMember>
             {
-                Description = "First One",
-                Code = "Code1",
-                CodeSource = RepresentationCodeSourceEnum.ISO11783_DDI,
-                LongDescription = "Long Description 1"
+                Representation = new EnumeratedRepresentation
+                {
+                    Description = "First One",
+                    Code = "Code1",
+                    CodeSource = RepresentationCodeSourceEnum.ISO11783_DDI,
+                    LongDescription = "Long Description 1"
+                }
             };
 
-            var rasterData2 = new RasterData<EnumeratedRepresentation, EnumerationMember>();
-            rasterData2.Representation = new EnumeratedRepresentation
+            var rasterData2 = new RasterData<EnumeratedRepresentation, EnumerationMember>
             {
-                Description = "Second One",
-                Code = "Code2",
-                CodeSource = RepresentationCodeSourceEnum.ADAPT,
-                LongDescription = "Long Description"
+                Representation = new EnumeratedRepresentation
+                {
+                    Description = "Second One",
+                    Code = "Code2",
+                    CodeSource = RepresentationCodeSourceEnum.ADAPT,
+                    LongDescription = "Long Description"
+                }
             };
 
             var rasterDatas = new List<RasterData<EnumeratedRepresentation, EnumerationMember>> { rasterData, rasterData2 };

@@ -3,8 +3,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 ﻿using AgGateway.ADAPT.ApplicationDataModel.ADM;
-using AgGateway.ADAPT.ApplicationDataModel.Documents;
-using AgGateway.ADAPT.ApplicationDataModel.LoggedData;
 using AgGateway.ADAPT.ApplicationDataModel.ReferenceLayers;
 using Newtonsoft.Json;
 
@@ -12,7 +10,6 @@ namespace ADMPlugin
 {
     public class Plugin : IPlugin
     {
-        private readonly IProtobufSerializer _protobufSerializer;
         private readonly IProtobufReferenceLayerSerializer _protobufReferenceLayerSerializer;
         private readonly DocumentsExporter _documentsExporter;
         private readonly DocumentsImporter _documentsImporter;
@@ -26,7 +23,6 @@ namespace ADMPlugin
         {
             _documentsImporter = new DocumentsImporter(protobufSerializer);
             _documentsExporter = new DocumentsExporter(protobufSerializer);
-            _protobufSerializer = protobufSerializer;
             _protobufReferenceLayerSerializer = protobufReferenceLayerSerializer;
         }
 

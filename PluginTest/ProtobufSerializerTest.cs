@@ -24,20 +24,20 @@ namespace PluginTest
         private readonly ProtobufSerializer _protobufSerializer = new ProtobufSerializer();
         private string _testCardPath;
         private List<SpatialRecord> _spatialRecords;
-        private List<Meter> _meters;
+        private List<WorkingData> _meters;
 
         [SetUp]
         public void Setup()
         {
             _testCardPath = DatacardUtility.WriteDataCard("TestDatacard");
             _spatialRecords = new List<SpatialRecord>();
-            _meters = new List<Meter>();
+            _meters = new List<WorkingData>();
         }
 
         [Test]
         public void GivenOperationDataFileWhenReadSpatialRecordsThenSpatialRecordsAreReturned()
         {
-            var meter = new NumericMeter();
+            var meter = new NumericWorkingData();
             _meters.Add(meter);
 
             var numericRepValue = new NumericRepresentationValue(RepresentationInstanceList.vrABLineHeading.ToModelRepresentation(), new NumericValue(UnitSystemManager.GetUnitOfMeasure("m"), 21.2));
@@ -81,7 +81,6 @@ namespace PluginTest
                 {
                     new LoggedData
                     {
-                        CropIds = new List<int> { 1,2,3},
                         OperationData = new List<OperationData>{ new OperationData() }
                     },
                 },
@@ -95,9 +94,6 @@ namespace PluginTest
 
             Assert.AreEqual(documents.WorkItems.First().BoundaryId, documentsIn.WorkItems.First().BoundaryId);
             Assert.AreEqual(documents.WorkItemOperations.First().Description, documentsIn.WorkItemOperations.First().Description);
-            Assert.AreEqual(documents.LoggedData.First().CropIds[0], documentsIn.LoggedData.First().CropIds[0]);
-            Assert.AreEqual(documents.LoggedData.First().CropIds[1], documentsIn.LoggedData.First().CropIds[1]);
-            Assert.AreEqual(documents.LoggedData.First().CropIds[2], documentsIn.LoggedData.First().CropIds[2]);
             Assert.AreEqual(documents.LoggedData.First().Id.ReferenceId, documentsIn.LoggedData.First().Id.ReferenceId);
             Assert.AreEqual(documents.LoggedData.First().OperationData.First().Id.ReferenceId, documentsIn.LoggedData.First().OperationData.First().Id.ReferenceId);
         }
@@ -107,8 +103,7 @@ namespace PluginTest
         {
             var contextItem = new ContextItem
             {
-                ContextItemType = 5,
-                Value = new EnumeratedValue { Color = 3 }
+                Value = "red"
             };
 
             var filePath = Path.Combine(_testCardPath, "adm", "document.adm");
@@ -116,8 +111,7 @@ namespace PluginTest
 
             var contextItemIn = _protobufSerializer.Read<ContextItem>(filePath);
 
-            Assert.AreEqual(contextItem.ContextItemType, contextItemIn.ContextItemType);
-            Assert.AreEqual(contextItem.Value.Color, contextItemIn.Value.Color);
+            Assert.AreEqual(contextItem.Value, contextItemIn.Value);
         }
 
         [Test]

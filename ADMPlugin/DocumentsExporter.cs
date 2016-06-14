@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using AgGateway.ADAPT.ApplicationDataModel.ADM;
+using AgGateway.ADAPT.ApplicationDataModel.Equipment;
 using AgGateway.ADAPT.ApplicationDataModel.LoggedData;
 
 namespace ADMPlugin
@@ -174,31 +175,31 @@ namespace ADMPlugin
 
         private void ExportSectionsAndMeters(string documentsPath, OperationData operationData)
         {
-            var sections = GetAllSections(operationData);
-            var sectionsFileName = string.Format(DatacardConstants.SectionFile, operationData.Id.ReferenceId);
-            var sectionsFilePath = Path.Combine(documentsPath, sectionsFileName);
+            var deviceElementUses = GetAllDeviceElementUses(operationData);
+            var deviceElementUseFileName = string.Format(DatacardConstants.SectionFile, operationData.Id.ReferenceId);
+            var deviceElementUseFilePath = Path.Combine(documentsPath, deviceElementUseFileName);
 
-            var meters = sections.SelectMany(section => section.Value.SelectMany(x => x.GetMeters()));
-            var metersFileName = string.Format(DatacardConstants.MeterFile, operationData.Id.ReferenceId);
-            var metersFilePath = Path.Combine(documentsPath, metersFileName);
+            var workingData = deviceElementUses.SelectMany(deviceElementUse => deviceElementUse.Value.SelectMany(x => x.GetWorkingDatas()));
+            var workingDataFileName = string.Format(DatacardConstants.WorkingDataFile, operationData.Id.ReferenceId);
+            var workingDataFilePath = Path.Combine(documentsPath, workingDataFileName);
 
-            _protobufSerializer.Write(sectionsFilePath, sections);
-            _protobufSerializer.Write(metersFilePath, meters);
+            _protobufSerializer.Write(deviceElementUseFilePath, deviceElementUses);
+            _protobufSerializer.Write(workingDataFilePath, workingData);
         }
 
-        private static Dictionary<int, IEnumerable<Section>> GetAllSections(OperationData operationData)
+        private static Dictionary<int, IEnumerable<DeviceElementUse>> GetAllDeviceElementUses(OperationData operationData)
         {
             if (operationData == null)
                 return null;
 
-            var sections = new Dictionary<int, IEnumerable<Section>>();
+            var sections = new Dictionary<int, IEnumerable<DeviceElementUse>>();
 
             for (var depth = 0; depth <= operationData.MaxDepth; depth++)
             {
-                if (operationData.GetSections == null)
+                if (operationData.GetDeviceElementUses == null)
                     continue;
 
-                var levelSections = operationData.GetSections(depth);
+                var levelSections = operationData.GetDeviceElementUses(depth);
                 sections.Add(depth, levelSections);
             }
 
