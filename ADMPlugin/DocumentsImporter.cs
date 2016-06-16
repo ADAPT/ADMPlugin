@@ -142,7 +142,7 @@ namespace ADMPlugin
             var sectionsFilePath = Path.Combine(documentsPath, sectionsFileName);
             var sections = _protobufSerializer.Read<Dictionary<int, IEnumerable<DeviceElementUse>>>(sectionsFilePath);
 
-            if (sections != null)
+            if (sections != null && sections.Any())
                 operationData.GetDeviceElementUses = x => sections[x] ?? new List<DeviceElementUse>();
         }
 

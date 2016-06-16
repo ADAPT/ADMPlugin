@@ -165,11 +165,17 @@ namespace ADMPlugin
 
         private void ExportSpatialRecords(string documentsPath, OperationData operationData)
         {
-            var spatialRecords = operationData.GetSpatialRecords();
-
             var fileName = string.Format(DatacardConstants.OperationDataFile, operationData.Id.ReferenceId);
             var filePath = Path.Combine(documentsPath, fileName);
 
+            if (operationData.GetSpatialRecords == null)
+            {
+                _protobufSerializer.WriteSpatialRecords(filePath, new List<SpatialRecord>());
+                return;
+            }
+
+            var spatialRecords = operationData.GetSpatialRecords();
+            
             _protobufSerializer.WriteSpatialRecords(filePath, spatialRecords);
         }
 
