@@ -140,6 +140,32 @@ namespace PluginTest
             _protobufSerialierMock.Verify(s => s.Write(It.IsAny<string>(), It.IsAny<object>()), Times.Never);
         }
 
+        [Test]
+        public void GivenNullGetSpatialRecordsWhenMapThenWritesEmptySpatialRecords()
+        {
+            var operationData = new OperationData
+            {
+                GetSpatialRecords = null
+            };
+            _documents.LoggedData = new List<LoggedData>
+            {
+                new LoggedData
+                {
+                    OperationData = new List<OperationData>
+                    {
+                        operationData
+                    }
+                }
+            };
+
+            _documentsExport.ExportDocuments(_path, _documents);
+
+            var expectedFileName = String.Format(DatacardConstants.OperationDataFile, operationData.Id.ReferenceId);
+            var expectedPath = Path.Combine(_path, DatacardConstants.DocumentsFolder, expectedFileName);
+
+            _protobufSerialierMock.Verify(s => s.WriteSpatialRecords(expectedPath, new List<SpatialRecord>()), Times.Once);
+        }
+
         [TearDown]
         public void TearDown()
         {
