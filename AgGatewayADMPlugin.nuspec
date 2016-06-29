@@ -10,7 +10,7 @@
 	<description>AgGateway ADAPT framework</description>
 	<dependencies>
 	  <dependency id="AgGatewayADAPTFramework" version="1.1.0" />
-      <dependency id="Newtonsoft.Json"/>
+      <dependency id="Newtonsoft.Json" version="8.0.1" />
 	  <dependency id="protobuf-net"/>
     </dependencies>
 	<references>
