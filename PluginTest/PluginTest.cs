@@ -229,12 +229,7 @@ namespace PluginTest
         {
             var dataModel = new ApplicationDataModel
             {
-                Catalog = new Catalog
-                {
-                    Containers = new List<Container>(),
-                    Farms = new List<Farm>(),
-                    DeviceElements = new List<DeviceElement>()
-                }
+                Catalog = new Catalog()
             };
 
             _plugin.Export(dataModel, _tempPath);
