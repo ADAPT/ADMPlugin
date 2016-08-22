@@ -329,7 +329,7 @@ namespace PluginTest
             _admVersionInfoReaderMock.Setup(x => x.ReadVersionInfoModel(It.IsAny<string>())).Returns(null as AdmVersionInfoModel);
             var result = _plugin.IsDataCardSupported(_cardPath);
 
-            Assert.That(result, Is.False);
+            Assert.That(result, Is.True);
         }
 
         [TearDown]
