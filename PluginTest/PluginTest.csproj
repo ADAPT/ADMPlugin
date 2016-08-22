@@ -70,6 +70,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AdmVersionInfoReaderTest.cs" />
+    <Compile Include="AdmVersionInfoWriterTest.cs" />
     <Compile Include="DocumentsExporterTest.cs" />
     <Compile Include="PluginTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

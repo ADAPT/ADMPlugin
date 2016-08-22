@@ -3,11 +3,9 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using ADMPlugin;
-using AgGateway.ADAPT.ApplicationDataModel;
 using AgGateway.ADAPT.ApplicationDataModel.ADM;
 using AgGateway.ADAPT.ApplicationDataModel.Equipment;
 using AgGateway.ADAPT.ApplicationDataModel.LoggedData;
-using AgGateway.ADAPT.ApplicationDataModel.Logistics;
 using AgGateway.ADAPT.ApplicationDataModel.ReferenceLayers;
 using Moq;
 using NUnit.Framework;
@@ -22,17 +20,36 @@ namespace PluginTest
         private string _cardPath;
         private Mock<IProtobufSerializer> _protobufSerializerMock;
         private Mock<IProtobufReferenceLayerSerializer> _protobufReferenceSerializerMock;
+        private Mock<IAdmVersionInfoWriter> _admVersionInfoWriterMock;
+        private Mock<IAdmVersionInfoReader> _admVersionInfoReaderMock;
         private string _tempPath;
+
+        private const string AdmVersionFilename = "AdmVersion.info";
 
         [SetUp]
         public void Setup()
         {
             _protobufSerializerMock = new Mock<IProtobufSerializer>();
             _protobufReferenceSerializerMock = new Mock<IProtobufReferenceLayerSerializer>();
+            _admVersionInfoWriterMock = new Mock<IAdmVersionInfoWriter>();
+            _admVersionInfoReaderMock = new Mock<IAdmVersionInfoReader>();
 
             _cardPath = DatacardUtility.WriteDataCard("TestDatacard");
             _tempPath = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
-            _plugin = new Plugin(_protobufSerializerMock.Object, _protobufReferenceSerializerMock.Object);
+            SetupVersionInfoMock();
+
+            _plugin = new Plugin(_protobufSerializerMock.Object, _protobufReferenceSerializerMock.Object, _admVersionInfoWriterMock.Object, _admVersionInfoReaderMock.Object);
+        }
+
+        private void SetupVersionInfoMock()
+        {
+            var currentVersion = typeof(Plugin).Assembly.GetName().Version.ToString();
+            var currentMajorVersion = currentVersion.Substring(0, currentVersion.IndexOf('.'));
+            var version = currentMajorVersion + ".x.y.z";
+
+            var versionInfoModel = new AdmVersionInfoModel { AdmVersion = version };
+            var expectedFilename = Path.Combine(_cardPath, AdmVersionFilename);
+            _admVersionInfoReaderMock.Setup(x => x.ReadVersionInfoModel(expectedFilename)).Returns(versionInfoModel);
         }
 
         [Test]
@@ -45,8 +62,10 @@ namespace PluginTest
         [Test]
         public void GivenPluginWhenGetVersionThenOnePopIntOIsReturned()
         {
+            var currentVersion = typeof(Plugin).Assembly.GetName().Version.ToString();
+
             var result = _plugin.Version;
-            Assert.AreEqual("1.0", result);
+            Assert.AreEqual(currentVersion, result);
         }
 
         [Test]
@@ -254,6 +273,63 @@ namespace PluginTest
             var filepath = Path.Combine(_tempPath, "adm");
             var filename = "ReferenceLayers.adm";
             _protobufReferenceSerializerMock.Verify(x => x.Export(filepath, filename, dataModel.ReferenceLayers));
+        }
+
+        [Test]
+        public void GivenPluginAndDataModelWhenExportThenVersionFileIsWritten()
+        {
+            var dataModel = new ApplicationDataModel
+            {
+                ReferenceLayers = new List<ReferenceLayer>
+                {
+                    new RasterReferenceLayer(),
+                    new ShapeReferenceLayer()
+                }
+            };
+
+            _plugin.Export(dataModel, _tempPath);
+
+            var expectedFilename = Path.Combine(_tempPath, "adm", AdmVersionFilename);
+            _admVersionInfoWriterMock.Verify(x => x.WriteVersionInfoFile(expectedFilename), Times.Once);
+        }
+
+        [Test]
+        public void GivenDatapathWhenIsSupportedThenTrueIfMajorVersionsMatch()
+        {
+            var currentVersion = typeof (Plugin).Assembly.GetName().Version.ToString();
+            var currentMajorVersion = currentVersion.Substring(0, currentVersion.IndexOf('.'));
+            var version = currentMajorVersion + ".x.y.z";
+
+            var versionInfoModel = new AdmVersionInfoModel {AdmVersion = version};
+            var expectedFilename = Path.Combine(_cardPath, AdmVersionFilename);
+            _admVersionInfoReaderMock.Setup(x => x.ReadVersionInfoModel(expectedFilename)).Returns(versionInfoModel);
+
+            var result =_plugin.IsDataCardSupported(_cardPath);
+
+            Assert.That(result, Is.True);
+        }
+
+        [Test]
+        public void GivenDatapathWhenIsSupportedThenFalseIfMajorVersionsDoNotMatch()
+        {
+            var version = "z.x.y.z";
+
+            var versionInfoModel = new AdmVersionInfoModel { AdmVersion = version };
+            var expectedFilename = Path.Combine(_cardPath, AdmVersionFilename);
+            _admVersionInfoReaderMock.Setup(x => x.ReadVersionInfoModel(expectedFilename)).Returns(versionInfoModel);
+
+            var result = _plugin.IsDataCardSupported(_cardPath);
+
+            Assert.That(result, Is.False);
+        }
+
+        [Test]
+        public void GivenDatapathWithoutVersionFileWhenIsSupportedThenFalse()
+        {
+            _admVersionInfoReaderMock.Setup(x => x.ReadVersionInfoModel(It.IsAny<string>())).Returns(null as AdmVersionInfoModel);
+            var result = _plugin.IsDataCardSupported(_cardPath);
+
+            Assert.That(result, Is.False);
         }
 
         [TearDown]

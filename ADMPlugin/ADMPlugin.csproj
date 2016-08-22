@@ -63,6 +63,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AdaptContractResolver.cs" />
+    <Compile Include="AdmVersionInfoModel.cs" />
+    <Compile Include="AdmVersionInfoReader.cs" />
+    <Compile Include="AdmVersionInfoWriter.cs" />
     <Compile Include="DatacardConstants.cs" />
     <Compile Include="DocumentsExporter.cs" />
     <Compile Include="DocumentsImporter.cs" />

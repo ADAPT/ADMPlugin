@@ -2,7 +2,8 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-﻿using AgGateway.ADAPT.ApplicationDataModel.ADM;
+using System.Reflection;
+using AgGateway.ADAPT.ApplicationDataModel.ADM;
 using AgGateway.ADAPT.ApplicationDataModel.ReferenceLayers;
 using Newtonsoft.Json;
 
@@ -11,19 +12,25 @@ namespace ADMPlugin
     public class Plugin : IPlugin
     {
         private readonly IProtobufReferenceLayerSerializer _protobufReferenceLayerSerializer;
+        private readonly IAdmVersionInfoWriter _admVersionInfoWriter;
+        private readonly IAdmVersionInfoReader _admVersionInfoReader;
         private readonly DocumentsExporter _documentsExporter;
         private readonly DocumentsImporter _documentsImporter;
 
+        private const string AdmVersionFilename = "AdmVersion.info";
+
         public Plugin()
-            : this(new ProtobufSerializer(), new ProtobufReferenceLayerSerializer())
+            : this(new ProtobufSerializer(), new ProtobufReferenceLayerSerializer(), new AdmVersionInfoWriter(), new AdmVersionInfoReader())
         {
         }
 
-        public Plugin(IProtobufSerializer protobufSerializer, IProtobufReferenceLayerSerializer protobufReferenceLayerSerializer)
+        public Plugin(IProtobufSerializer protobufSerializer, IProtobufReferenceLayerSerializer protobufReferenceLayerSerializer, IAdmVersionInfoWriter admVersionInfoWriter, IAdmVersionInfoReader admVersionInfoReader)
         {
             _documentsImporter = new DocumentsImporter(protobufSerializer);
             _documentsExporter = new DocumentsExporter(protobufSerializer);
             _protobufReferenceLayerSerializer = protobufReferenceLayerSerializer;
+            _admVersionInfoWriter = admVersionInfoWriter;
+            _admVersionInfoReader = admVersionInfoReader;
         }
 
         public string Name
@@ -33,7 +40,11 @@ namespace ADMPlugin
 
         public string Version
         {
-            get { return "1.0"; }
+            get
+            {
+                var version = Assembly.GetExecutingAssembly().GetName().Version;
+                return version.ToString();
+            }
         }
 
         public string Owner
@@ -89,9 +100,25 @@ namespace ADMPlugin
         {
             var path = Path.Combine(dataPath, DatacardConstants.PluginFolderAndExtension);
 
-            return Directory.Exists(path)
-                && Directory.GetFiles(path, String.Format(DatacardConstants.FileFormat, "*"), SearchOption.AllDirectories)
-                .Any();
+            if (! (Directory.Exists(path) && Directory.GetFiles(path, String.Format(DatacardConstants.FileFormat, "*"), SearchOption.AllDirectories).Any()))
+                return false;
+
+            var currentVersion = Assembly.GetExecutingAssembly().GetName().Version.ToString();
+            var currentMajorVersion = currentVersion.Substring(0, currentVersion.IndexOf('.'));
+
+            var filename = Path.Combine(dataPath, AdmVersionFilename);
+            var dataVersionModel = _admVersionInfoReader.ReadVersionInfoModel(filename);
+
+            if (dataVersionModel == null)
+                return true;
+            
+            var dataVersion = dataVersionModel.AdmVersion;
+            var dataMajorVersion = dataVersion.Substring(0, currentVersion.IndexOf('.'));
+
+            if (currentMajorVersion == dataMajorVersion)
+                return true;
+
+            return false;
         }
 
         public IList<IError> ValidateDataOnCard(string dataPath, Properties properties = null)
@@ -130,6 +157,9 @@ namespace ADMPlugin
             var path = Path.Combine(exportPath, DatacardConstants.PluginFolderAndExtension);
             if (!Directory.Exists(path))
                 Directory.CreateDirectory(path);
+
+            var versionFile = Path.Combine(path, AdmVersionFilename);
+            _admVersionInfoWriter.WriteVersionInfoFile(versionFile);
 
             _documentsExporter.ExportDocuments(path, dataModel.Documents);
             ExportReferenceLayers(path, ReferencelayersAdm, dataModel.ReferenceLayers);
