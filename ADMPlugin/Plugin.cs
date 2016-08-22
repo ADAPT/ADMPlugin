@@ -110,7 +110,7 @@ namespace ADMPlugin
             var dataVersionModel = _admVersionInfoReader.ReadVersionInfoModel(filename);
 
             if (dataVersionModel == null)
-                return false;
+                return true;
             
             var dataVersion = dataVersionModel.AdmVersion;
             var dataMajorVersion = dataVersion.Substring(0, currentVersion.IndexOf('.'));
