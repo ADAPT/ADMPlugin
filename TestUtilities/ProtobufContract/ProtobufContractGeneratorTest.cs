@@ -53,6 +53,9 @@ namespace TestUtilities.ProtobufContract
                 "AgGateway.ADAPT.ApplicationDataModel.ReferenceLayers",
                 "AgGateway.ADAPT.ApplicationDataModel.Logistics",
                 "AgGateway.ADAPT.ApplicationDataModel.Equipment",
+                "AgGateway.ADAPT.ApplicationDataModel.FieldBoundaries",
+                "AgGateway.ADAPT.ApplicationDataModel.Prescriptions",
+                "AgGateway.ADAPT.ApplicationDataModel.Products",
             };
 
             // BEGINNING OF GENERATED CODE:
