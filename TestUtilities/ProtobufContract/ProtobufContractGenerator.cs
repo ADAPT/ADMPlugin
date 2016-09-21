@@ -25,7 +25,7 @@ namespace TestUtilities.ProtobufContract
         }
 
 
-        public RuntimeTypeModel GenerateContractCode(List<String> namespaces, string assemblyName)
+        public RuntimeTypeModel GenerateContractCode(string assemblyName)
         {
             if (_mapper == null)
                 return null;
@@ -36,6 +36,7 @@ namespace TestUtilities.ProtobufContract
             _model = TypeModel.Create();
 
             var assembly = Assembly.LoadFrom(assemblyName);
+            var namespaces = assembly.GetTypes().Select(x => x.Namespace).Distinct();
             
             foreach(string ns in namespaces)
                 LoadNamespace(ns, assembly);
