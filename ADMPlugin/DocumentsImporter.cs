@@ -151,7 +151,8 @@ namespace ADMPlugin
             var spatialRecordFileName = string.Format(DatacardConstants.OperationDataFile, operationData.Id.ReferenceId);
             var spatialRecordFilePath = Path.Combine(documentsPath, spatialRecordFileName);
 
-            operationData.GetSpatialRecords = () => _protobufSerializer.ReadSpatialRecords(spatialRecordFilePath);
+            var spatialRecords = _protobufSerializer.ReadSpatialRecords(spatialRecordFilePath);
+            operationData.GetSpatialRecords = () => spatialRecords;
         }
     }
 }
