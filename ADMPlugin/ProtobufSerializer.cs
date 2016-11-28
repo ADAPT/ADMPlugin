@@ -169,7 +169,7 @@ namespace ADMPlugin
             model[typeof(TimeScope)].Add(503, "Location2");
             model[typeof(TimeScope)].Add(504, "Duration");
             model[typeof(UniqueId)].Add(99, "Id");
-            model[typeof(UniqueId)].Add(100, "CiTypeEnum");
+            model[typeof(UniqueId)].Add(820, "IdType");
             model[typeof(UniqueId)].Add(101, "Source");
             model[typeof(UniqueId)].Add(102, "SourceType");
             model[typeof(UnitOfMeasure)].Add(103, "Id");
@@ -209,7 +209,7 @@ namespace ADMPlugin
             model[typeof(Document)].Add(363, "GrowerId");
             model[typeof(Document)].Add(364, "Notes");
             model[typeof(Document)].Add(365, "PersonRoleIds");
-            model[typeof(Document)].Add(366, "TimeScopeIds");
+            model[typeof(Document)].Add(821, "TimeScopes");
             model[typeof(Document)].Add(367, "Version");
             model[typeof(DocumentCorrelation)].Add(216, "Id");
             model[typeof(DocumentCorrelation)].Add(217, "RelationshipType");
@@ -226,7 +226,7 @@ namespace ADMPlugin
             model[typeof(StatusUpdate)].Add(227, "TimeStamp");
             model[typeof(WorkItem)].Add(228, "Id");
             model[typeof(WorkItem)].Add(232, "Notes");
-            model[typeof(WorkItem)].Add(234, "TimeScopeIds");
+            model[typeof(WorkItem)].Add(822, "TimeScopes");
             model[typeof(WorkItem)].Add(233, "WorkItemPriority");
             model[typeof(WorkItem)].Add(235, "PeopleRoleIds");
             model[typeof(WorkItem)].Add(236, "GrowerId");
@@ -365,7 +365,7 @@ namespace ADMPlugin
             model[typeof(GuidancePattern)].AddSubType(304, typeof(Spiral));
             model[typeof(Spiral)].Add(305, "Shape");
             model[typeof(CropZone)].Add(368, "Id");
-            model[typeof(CropZone)].Add(369, "TimeScopeIds");
+            model[typeof(CropZone)].Add(823, "TimeScopes");
             model[typeof(CropZone)].Add(370, "Description");
             model[typeof(CropZone)].Add(371, "FieldId");
             model[typeof(CropZone)].Add(372, "CropId");
@@ -407,7 +407,7 @@ namespace ADMPlugin
             model[typeof(Farm)].Add(408, "Description");
             model[typeof(Farm)].Add(409, "GrowerId");
             model[typeof(Farm)].Add(410, "ContactInfo");
-            model[typeof(Farm)].Add(411, "TimeScopeIds");
+            model[typeof(Farm)].Add(824, "TimeScopes");
             model[typeof(Farm)].Add(412, "ContextItems");
             model[typeof(Field)].Add(413, "Id");
             model[typeof(Field)].Add(414, "Description");
@@ -419,7 +419,7 @@ namespace ADMPlugin
             model[typeof(Field)].Add(420, "Aspect");
             model[typeof(Field)].Add(421, "SlopeLength");
             model[typeof(Field)].Add(422, "GuidanceGroupIds");
-            model[typeof(Field)].Add(423, "TimeScopeIds");
+            model[typeof(Field)].Add(825, "TimeScopes");
             model[typeof(ValueType)].AddSubType(424, typeof(Enum));
             model[typeof(Enum)].AddSubType(425, typeof(GLNEnum));
             model[typeof(GpsSource)].Add(426, "SourceType");
@@ -581,6 +581,7 @@ namespace ADMPlugin
             model[typeof(Documents)].Add(177, "GuidanceAllocations");
             model[typeof(Documents)].Add(178, "Summaries");
             model[typeof(Documents)].Add(179, "LoggedDataCatalog");
+            model[typeof(Documents)].Add(826, "DeviceElementUses");
             model[typeof(Properties)].Add(180, "_properties");
             model[typeof(ProprietaryValue)].Add(181, "Key");
             model[typeof(ProprietaryValue)].Add(182, "Value");
@@ -594,7 +595,6 @@ namespace ADMPlugin
             model[typeof(Catalog)].Add(505, "DeviceElements");
             model[typeof(Catalog)].Add(506, "DeviceModels");
             model[typeof(Catalog)].Add(507, "DeviceElementConfigurations");
-            model[typeof(Catalog)].Add(598, "DeviceElementUses");
             model[typeof(Catalog)].Add(599, "EquipmentConfigurations");
             model[typeof(Catalog)].Add(600, "EquipmentConfigurationGroups");
             model[typeof(Catalog)].Add(193, "Farms");
@@ -711,7 +711,7 @@ namespace ADMPlugin
             model[typeof(FieldBoundary)].Add(700, "Description");
             model[typeof(FieldBoundary)].Add(701, "FieldId");
             model[typeof(FieldBoundary)].Add(702, "SpatialData");
-            model[typeof(FieldBoundary)].Add(703, "TimeScopeIds");
+            model[typeof(FieldBoundary)].Add(827, "TimeScopes");
             model[typeof(FieldBoundary)].Add(704, "Headlands");
             model[typeof(FieldBoundary)].Add(705, "GpsSource");
             model[typeof(FieldBoundary)].Add(706, "OriginalEpsgCode");

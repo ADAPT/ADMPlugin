@@ -3276,4 +3276,36 @@
     <Name>AgGateway.ADAPT.ApplicationDataModel.Products.Trait.CropIds</Name>
     <Id>819</Id>
   </MappedElement>
+  <MappedElement>
+    <Name>AgGateway.ADAPT.ApplicationDataModel.Common.UniqueId.IdType</Name>
+    <Id>820</Id>
+  </MappedElement>
+  <MappedElement>
+    <Name>AgGateway.ADAPT.ApplicationDataModel.Documents.Document.TimeScopes</Name>
+    <Id>821</Id>
+  </MappedElement>
+  <MappedElement>
+    <Name>AgGateway.ADAPT.ApplicationDataModel.Documents.WorkItem.TimeScopes</Name>
+    <Id>822</Id>
+  </MappedElement>
+  <MappedElement>
+    <Name>AgGateway.ADAPT.ApplicationDataModel.Logistics.CropZone.TimeScopes</Name>
+    <Id>823</Id>
+  </MappedElement>
+  <MappedElement>
+    <Name>AgGateway.ADAPT.ApplicationDataModel.Logistics.Farm.TimeScopes</Name>
+    <Id>824</Id>
+  </MappedElement>
+  <MappedElement>
+    <Name>AgGateway.ADAPT.ApplicationDataModel.Logistics.Field.TimeScopes</Name>
+    <Id>825</Id>
+  </MappedElement>
+  <MappedElement>
+    <Name>AgGateway.ADAPT.ApplicationDataModel.ADM.Documents.DeviceElementUses</Name>
+    <Id>826</Id>
+  </MappedElement>
+  <MappedElement>
+    <Name>AgGateway.ADAPT.ApplicationDataModel.FieldBoundaries.FieldBoundary.TimeScopes</Name>
+    <Id>827</Id>
+  </MappedElement>
 </ProtobufMapping>
