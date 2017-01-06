@@ -95,4 +95,119 @@
     <call target="settestfileslist" />
     <exec program="${nunit.exe}" commandline="${nunittest.filelist} /framework=4.0" failonerror="true" />
   </target>
+  
+  <target name="getversion" description="Populate the version properties based on the version file">
+    <echo message="${project::get-base-directory()}"/>
+    <script language="C#">
+        <code>
+            <![CDATA[
+            public static void ScriptMain(Project project)
+            {
+			string cwd = System.IO.Directory.GetCurrentDirectory();
+			string verPath = Path.Combine(cwd, "..", "versions", project.Properties["versionFile"]);
+			string buildnumber;
+            StreamReader reader = new StreamReader(verPath.ToString());
+            string versionInfo = reader.ReadLine();
+            reader.Close();
+            Regex pattern = new Regex("[0-9]+");
+            MatchCollection matches = pattern.Matches(versionInfo);
+            if (matches.Count != 4)
+				throw new Exception(string.Format("Version number {0} in Build version file has incorrect format.", versionInfo));
+            int major = int.Parse(matches[0].Value);
+            int minor = int.Parse(matches[1].Value);
+            int build = int.Parse(matches[2].Value);
+            int revision = int.Parse(matches[3].Value);                                                          
+              
+            project.Properties.Add("build.version.major", major.ToString());
+            project.Properties.Add("build.version.minor", minor.ToString());
+            if (project.Properties["jenkinsnumber"] != null)                {
+				int jenkinsnum = int.Parse(project.Properties["jenkinsnumber"]);
+				project.Properties.Add("build.version.build", jenkinsnum.ToString());
+				buildnumber = major.ToString() + "." + minor.ToString() + "." + jenkinsnum.ToString() + "." + revision.ToString();
+            }
+            else {
+				project.Properties.Add("build.version.build", build.ToString());
+				buildnumber = major.ToString() + "." + minor.ToString() + "." + build.ToString() + "." + revision.ToString();
+            }
+            project.Properties.Add("build.version.revision", revision.ToString());                                                     
+            
+            project.Properties.Add("buildnumber", buildnumber.ToString());                                                                                                                                            
+                    
+            } 
+            ]]>
+        </code>
+        <imports>
+            <import namespace="System.Text.RegularExpressions"/>
+        </imports>
+        <references>
+            <include name="System.dll"/>
+        </references>
+	</script>
+</target>
+
+<target name="setversion" description="Stamp the version info onto assemblyinfo.cs files" depends="getversion">
+    <foreach item="File" property="filename">
+        <in>
+            <items basedir=".\${solutionDir}">
+                            <include name="**\**\AssemblyInfo.cs"/>
+            </items>
+        </in
+        <do>
+            <echo message="Updating ${filename}"/>
+            <script language="C#">
+                <code>
+                    <![CDATA[
+                    public static void ScriptMain(Project project)
+                    {
+                    //FileStream file = File.Open(project.Properties["filename"], FileMode.Open, FileAccess.ReadWrite);
+                    StreamReader reader = new StreamReader(project.Properties["filename"]);
+                    string contents = reader.ReadToEnd();
+                    reader.Close();
+                    string replacement = string.Format("[assembly: AssemblyCopyright(\"Copyright © Deere & Company 2003-2012\")]", "");
+                    StreamWriter writer = new StreamWriter(project.Properties["filename"], false);
+                    string newText = Regex.Replace(contents, @"\[assembly: AssemblyCopyright\("".*""\)\]", replacement);
+                    writer.Write(newText);
+                    writer.Close();
+
+                    reader = new StreamReader(project.Properties["filename"]);
+                    contents = reader.ReadToEnd();
+                    reader.Close();
+                    replacement = string.Format("[assembly: AssemblyVersion(\"{0}.{1}.{2}.{3}\")]", project.Properties["build.version.major"], project.Properties["build.version.minor"], project.Properties["build.version.build"], project.Properties["build.version.revision"]);
+                    writer = new StreamWriter(project.Properties["filename"], false);
+                    newText = Regex.Replace(contents, @"\[assembly: AssemblyVersion\("".*""\)\]", replacement);
+                    writer.Write(newText);
+                    writer.Close();
+
+                    reader = new StreamReader(project.Properties["filename"]);
+                    contents = reader.ReadToEnd();
+                    reader.Close();
+                    replacement = string.Format("[assembly: AssemblyCompany(\"John Deere Ag Management Solutions\")]", "");
+                    writer = new StreamWriter(project.Properties["filename"], false);
+                    newText = Regex.Replace(contents, @"\[assembly: AssemblyCompany\("".*""\)\]", replacement);
+                    writer.Write(newText);
+                    writer.Close();
+
+                    reader = new StreamReader(project.Properties["filename"]);
+                    contents = reader.ReadToEnd();
+                    reader.Close();
+                    replacement = string.Format("[assembly: AssemblyFileVersion(\"{0}.{1}.{2}.{3}\")]", project.Properties["build.version.major"], project.Properties["build.version.minor"], project.Properties["build.version.build"], project.Properties["build.version.revision"]);
+                    writer = new StreamWriter(project.Properties["filename"], false);
+                    newText = Regex.Replace(contents, @"\[assembly: AssemblyFileVersion\("".*""\)\]", replacement);
+                    writer.Write(newText);
+                    writer.Close();
+
+                    }
+                    ]]>
+                </code>
+                <imports>
+                    <import namespace="System.Text.RegularExpressions"/>
+                </imports>
+                <references>
+                    <include name="System.dll"/>
+                </references>
+            </script>
+        </do>
+    </foreach>
+</target>
+  
 </project>
