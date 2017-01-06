@@ -151,7 +151,7 @@
             <items basedir=".\${solutionDir}">
                             <include name="**\**\AssemblyInfo.cs"/>
             </items>
-        </in
+        </in>
         <do>
             <echo message="Updating ${filename}"/>
             <script language="C#">
