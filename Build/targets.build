@@ -95,4 +95,5 @@
     <call target="settestfileslist" />
     <exec program="${nunit.exe}" commandline="${nunittest.filelist} /framework=4.0" failonerror="true" />
   </target>
+    
 </project>
