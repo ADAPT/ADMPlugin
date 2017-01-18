@@ -15,6 +15,7 @@ namespace ADMPlugin
         public static string SectionFile = "Section{0}." + PluginFolderAndExtension;
         public static string WorkingDataFile = "Meter{0}." + PluginFolderAndExtension;
         public static string OperationDataFile = "OperationData{0}." + PluginFolderAndExtension;
+        public static string WorkRecordFile = "WorkRecord{0}." + PluginFolderAndExtension;
         public static string FileFormat = "{0}." + PluginFolderAndExtension;
 
         public static string ConvertToSearchPattern(string filePattern)

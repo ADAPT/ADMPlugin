@@ -34,11 +34,17 @@ namespace ADMPlugin
             documents.Plans = ReadPlans(documentsPath);
             documents.Recommendations = ReadRecommendations(documentsPath);
             documents.Summaries = ReadSummaries(documentsPath);
+            documents.WorkRecords = ReadWorkRecords(documentsPath);
             documents.WorkItemOperations = ReadWorkItemOperations(documentsPath);
             documents.WorkItems = ReadWorkItems(documentsPath);
             documents.WorkOrders = ReadWorkOrders(documentsPath);
 
             return documents;
+        }
+        private IEnumerable<WorkRecord> ReadWorkRecords(string documentsPath)
+        {
+            var loggedDataFiles = Directory.EnumerateFiles(documentsPath, DatacardConstants.ConvertToSearchPattern(DatacardConstants.WorkRecordFile));
+            return loggedDataFiles.Select(loggedDataFile => _protobufSerializer.Read<WorkRecord>(loggedDataFile));
         }
 
         private IEnumerable<WorkOrder> ReadWorkOrders(string documentsPath)
@@ -61,10 +67,18 @@ namespace ADMPlugin
 
         private IEnumerable<Summary> ReadSummaries(string documentsPath)
         {
-            var summaryFile = Path.Combine(documentsPath, DatacardConstants.SummariesFile);
-            if (File.Exists(summaryFile))
-                return _protobufSerializer.Read<IEnumerable<Summary>>(summaryFile);
-            return Enumerable.Empty<Summary>();
+            /*
+                        var summaryFile = Path.Combine(documentsPath, DatacardConstants.SummariesFile);
+                        if (File.Exists(summaryFile))
+                            return _protobufSerializer.Read<IEnumerable<Summary>>(summaryFile);
+                        return Enumerable.Empty<Summary>();
+            */
+            var loggedDataFiles = Directory.EnumerateFiles(documentsPath, DatacardConstants.ConvertToSearchPattern(DatacardConstants.SummariesFile));
+            foreach (var loggedDataFile in loggedDataFiles)
+            {
+                var loggedData = _protobufSerializer.Read<Summary>(loggedDataFile);
+                yield return loggedData;
+            }
         }
 
         private IEnumerable<Recommendation> ReadRecommendations(string documentsPath)

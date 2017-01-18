@@ -35,9 +35,24 @@ namespace ADMPlugin
             WritePlans(documents, documentsPath);
             WriteRecommendations(documents, documentsPath);
             WriteSummaries(documents, documentsPath);
+            WriteWorkRecords(documents, documentsPath);
             WriteWorkItemOperations(documents, documentsPath);
             WriteWorkItems(documents, documentsPath);
             WriteWorkOrders(documents, documentsPath);
+        }
+
+        private void WriteWorkRecords(Documents documents, string documentsPath)
+        {
+            if (documents.WorkRecords == null)
+                return;
+
+            foreach (var workRecord in documents.WorkRecords)
+            {
+                if (workRecord != null)
+                {
+                    WriteObject(documentsPath, workRecord, workRecord.Id.ReferenceId, DatacardConstants.WorkRecordFile);
+                }
+            }
         }
 
         private void WriteWorkOrders(Documents documents, string documentsPath)
