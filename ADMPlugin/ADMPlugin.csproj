@@ -34,15 +34,15 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="AgGateway.ADAPT.ApplicationDataModel, Version=1.0.0.1, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\AgGatewayADAPTFramework.1.1.0.8\lib\AgGateway.ADAPT.ApplicationDataModel.dll</HintPath>
+      <HintPath>..\packages\AgGatewayADAPTFramework.1.1.0.10\lib\AgGateway.ADAPT.ApplicationDataModel.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="AgGateway.ADAPT.PluginManager, Version=1.0.0.1, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\AgGatewayADAPTFramework.1.1.0.8\lib\AgGateway.ADAPT.PluginManager.dll</HintPath>
+      <HintPath>..\packages\AgGatewayADAPTFramework.1.1.0.10\lib\AgGateway.ADAPT.PluginManager.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="AgGateway.ADAPT.Representation, Version=1.0.0.1, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\AgGatewayADAPTFramework.1.1.0.8\lib\AgGateway.ADAPT.Representation.dll</HintPath>
+      <HintPath>..\packages\AgGatewayADAPTFramework.1.1.0.10\lib\AgGateway.ADAPT.Representation.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Newtonsoft.Json, Version=8.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
@@ -84,12 +84,12 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\RepresentationSystem.xml">
+    <Content Include="Resources\RepresentationSystem.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Include="Resources\UnitSystem.xml">
+    </Content>
+    <Content Include="Resources\UnitSystem.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
+    </Content>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
