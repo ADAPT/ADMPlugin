@@ -73,7 +73,7 @@ namespace ADMPlugin
                             return _protobufSerializer.Read<IEnumerable<Summary>>(summaryFile);
                         return Enumerable.Empty<Summary>();
             */
-            var loggedDataFiles = Directory.EnumerateFiles(documentsPath, DatacardConstants.ConvertToSearchPattern(DatacardConstants.SummariesFile));
+            var loggedDataFiles = Directory.EnumerateFiles(documentsPath, DatacardConstants.ConvertToSearchPattern(DatacardConstants.SummaryFile));
             foreach (var loggedDataFile in loggedDataFiles)
             {
                 var loggedData = _protobufSerializer.Read<Summary>(loggedDataFile);

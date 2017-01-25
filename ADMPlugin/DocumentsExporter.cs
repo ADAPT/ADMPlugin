@@ -102,8 +102,13 @@ namespace ADMPlugin
             if(documents.Summaries == null)
                 return;
 
-            var filePath = Path.Combine(documentsPath, DatacardConstants.SummariesFile);
-            _protobufSerializer.Write(filePath, documents.Summaries);
+            foreach (var summary in documents.Summaries)
+            {
+                if (summary != null)
+                {
+                    WriteObject(documentsPath, summary, summary.Id.ReferenceId, DatacardConstants.SummaryFile);
+                }
+            }
         }
 
         private void WriteRecommendations(Documents documents, string documentsPath)
