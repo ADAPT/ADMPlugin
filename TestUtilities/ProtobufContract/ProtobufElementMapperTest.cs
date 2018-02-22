@@ -1,7 +1,8 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
+using System.Reflection;
 using NUnit.Framework;
 
 namespace TestUtilities.ProtobufContract
@@ -15,21 +16,24 @@ namespace TestUtilities.ProtobufContract
         [SetUp]
         public void Setup()
         {
-            _mapper = new ProtobufElementMapper();
+            var resourceDirectory = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "ProtobufTestFiles");
+            
             var tempDirectory = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
             Directory.CreateDirectory(tempDirectory);
             _tempFile = Path.Combine(tempDirectory, "text.xml");
-            File.WriteAllText(_tempFile, Resources.Resources.ProtobufMappingTest);
-            _mapper.LoadXmlFile(_tempFile);
+            File.WriteAllText(_tempFile, File.ReadAllText(Path.Combine(resourceDirectory, "ProtobufMappingTest.xml")));
+
+            _mapper = new ProtobufElementMapper(_tempFile);
+            if (!_mapper.IsMappingDocumentLoaded)
+                _mapper = null;
         }
 
         [Test]
         public void GivenXmlFileThatDoesNotExistWhenNewThenDocumentNotLoaded()
         {
-            _mapper = new ProtobufElementMapper();
-            var result=  _mapper.LoadXmlFile(@"..\..\NotAFile.xml");
+            _mapper = new ProtobufElementMapper(@"..\..\NotAFile.xml");
 
-            Assert.AreEqual(false, result);
+            Assert.AreEqual(false, _mapper.IsMappingDocumentLoaded);
         }
 
         [Test]
@@ -55,8 +59,7 @@ namespace TestUtilities.ProtobufContract
             const string elementName = "NumericRepresentation100";
             var result = _mapper.Map(elementName);
 
-            _mapper = new ProtobufElementMapper();
-            _mapper.LoadXmlFile(_tempFile);
+            _mapper = new ProtobufElementMapper(_tempFile);
             var mappedNames = _mapper.GetListOfMappedNames();
             List<string> mappedIds = _mapper.GetListOfMappedIds();
 

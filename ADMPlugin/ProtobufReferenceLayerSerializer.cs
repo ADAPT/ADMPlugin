@@ -3,7 +3,7 @@ using System.IO;
 using System.Linq;
 using AgGateway.ADAPT.ApplicationDataModel.ReferenceLayers;
 
-namespace ADMPlugin
+namespace AgGateway.ADAPT.ADMPlugin
 {
     public interface IProtobufReferenceLayerSerializer
     {

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -15,10 +15,10 @@ namespace TestUtilities.ProtobufContract
         private readonly ProtobufElementMapper _mapper;
         private RuntimeTypeModel _model;
 
-        public ProtobufContractGenerator(string resourcesProtobufmappingtestXml)
+        public ProtobufContractGenerator(string protobufMappingFile)
         {
-            _mapper = new ProtobufElementMapper();
-            if(!_mapper.LoadXmlFile(resourcesProtobufmappingtestXml))
+            _mapper = new ProtobufElementMapper(protobufMappingFile);
+            if(!_mapper.IsMappingDocumentLoaded)
                 _mapper = null;
 
             _model = TypeModel.Create();

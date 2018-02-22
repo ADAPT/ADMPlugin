@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -7,7 +7,7 @@ using AgGateway.ADAPT.ApplicationDataModel.ADM;
 using AgGateway.ADAPT.ApplicationDataModel.ReferenceLayers;
 using Newtonsoft.Json;
 
-namespace ADMPlugin
+namespace AgGateway.ADAPT.ADMPlugin
 {
     public class Plugin : IPlugin
     {
@@ -103,8 +103,7 @@ namespace ADMPlugin
             if (! (Directory.Exists(path) && Directory.GetFiles(path, String.Format(DatacardConstants.FileFormat, "*"), SearchOption.AllDirectories).Any()))
                 return false;
 
-            var currentVersion = Assembly.GetExecutingAssembly().GetName().Version.ToString();
-            var currentMajorVersion = currentVersion.Substring(0, currentVersion.IndexOf('.'));
+            var currentVersion = Assembly.GetExecutingAssembly().GetName().Version;
 
             var filename = Path.Combine(dataPath, AdmVersionFilename);
             var dataVersionModel = _admVersionInfoReader.ReadVersionInfoModel(filename);
@@ -112,10 +111,9 @@ namespace ADMPlugin
             if (dataVersionModel == null)
                 return true;
             
-            var dataVersion = dataVersionModel.AdmVersion;
-            var dataMajorVersion = dataVersion.Substring(0, currentVersion.IndexOf('.'));
+            var dataVersion = new Version(dataVersionModel.AdmVersion);
 
-            if (currentMajorVersion == dataMajorVersion)
+            if (currentVersion.Major == dataVersion.Major)
                 return true;
 
             return false;
@@ -126,7 +124,7 @@ namespace ADMPlugin
             return new List<IError>();
         }
 
-        public IList<ApplicationDataModel> Import(string path, Properties properties = null)
+        public IList<ApplicationDataModel.ADM.ApplicationDataModel> Import(string path, Properties properties = null)
         {
             if (!IsDataCardSupported(path, properties))
                 return null;
@@ -135,7 +133,7 @@ namespace ADMPlugin
             var proprietaryValues = ImportData<List<ProprietaryValue>>(path, ProprietaryValuesAdm);
             var referenceLayers = ImportReferenceLayers(path, ReferencelayersAdm); 
 
-            var applicationDataModel = new ApplicationDataModel
+            var applicationDataModel = new ApplicationDataModel.ADM.ApplicationDataModel
             {
                 ProprietaryValues = proprietaryValues,
                 Catalog = catalog,
@@ -152,7 +150,7 @@ namespace ADMPlugin
             return _protobufReferenceLayerSerializer.Import(filepath, filename);
         }
 
-        public void Export(ApplicationDataModel dataModel, string exportPath, Properties properties = null)
+        public void Export(ApplicationDataModel.ADM.ApplicationDataModel dataModel, string exportPath, Properties properties = null)
         {
             var path = Path.Combine(exportPath, DatacardConstants.PluginFolderAndExtension);
             if (!Directory.Exists(path))

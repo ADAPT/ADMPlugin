@@ -1,8 +1,8 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using ADMPlugin;
+using AgGateway.ADAPT.ADMPlugin;
 using AgGateway.ADAPT.ApplicationDataModel.ADM;
 using AgGateway.ADAPT.ApplicationDataModel.Equipment;
 using AgGateway.ADAPT.ApplicationDataModel.LoggedData;
@@ -11,7 +11,7 @@ using Moq;
 using NUnit.Framework;
 using TestUtilities;
 
-namespace PluginTest
+namespace AgGateway.ADAPT.PluginTest
 {
     [TestFixture]
     public class PluginTest
@@ -34,7 +34,7 @@ namespace PluginTest
             _admVersionInfoWriterMock = new Mock<IAdmVersionInfoWriter>();
             _admVersionInfoReaderMock = new Mock<IAdmVersionInfoReader>();
 
-            _cardPath = DatacardUtility.WriteDataCard("TestDatacard");
+            _cardPath = DatacardUtility.WriteDatacard("TestDatacard");
             _tempPath = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
             SetupVersionInfoMock();
 
@@ -43,11 +43,9 @@ namespace PluginTest
 
         private void SetupVersionInfoMock()
         {
-            var currentVersion = typeof(Plugin).Assembly.GetName().Version.ToString();
-            var currentMajorVersion = currentVersion.Substring(0, currentVersion.IndexOf('.'));
-            var version = currentMajorVersion + ".x.y.z";
+            var currentVersion = typeof(Plugin).Assembly.GetName().Version;
 
-            var versionInfoModel = new AdmVersionInfoModel { AdmVersion = version };
+            var versionInfoModel = new AdmVersionInfoModel { AdmVersion = currentVersion.ToString() };
             var expectedFilename = Path.Combine(_cardPath, AdmVersionFilename);
             _admVersionInfoReaderMock.Setup(x => x.ReadVersionInfoModel(expectedFilename)).Returns(versionInfoModel);
         }
@@ -62,10 +60,10 @@ namespace PluginTest
         [Test]
         public void GivenPluginWhenGetVersionThenOnePopIntOIsReturned()
         {
-            var currentVersion = typeof(Plugin).Assembly.GetName().Version.ToString();
+            var currentVersion = typeof(Plugin).Assembly.GetName().Version;
 
             var result = _plugin.Version;
-            Assert.AreEqual(currentVersion, result);
+            Assert.AreEqual(currentVersion.ToString(), result);
         }
 
         [Test]
@@ -92,7 +90,7 @@ namespace PluginTest
         public void GivenPluginWithInvalidStructureWhenIsDataCardSupportedThenFalseIsReturned()
         {
             Directory.Delete(_cardPath, true);
-            _cardPath = DatacardUtility.WriteDataCard("IncorrectHierarchy");
+            _cardPath = DatacardUtility.WriteDatacard("IncorrectHierarchy");
 
             var result = _plugin.IsDataCardSupported(_cardPath);
             Assert.IsFalse(result);
@@ -102,7 +100,7 @@ namespace PluginTest
         public void GivenPluginWithInvalidFileWhenIsDataCardSupportedThenFalseIsReturned()
         {
             Directory.Delete(_cardPath, true);
-            _cardPath = DatacardUtility.WriteDataCard("IncorrectFiles");
+            _cardPath = DatacardUtility.WriteDatacard("IncorrectFiles");
 
             var result = _plugin.IsDataCardSupported(_cardPath);
             Assert.IsFalse(result);
@@ -227,7 +225,7 @@ namespace PluginTest
         [Test]
         public void GivenPluginAndDataModelWhenExportThenProprietaryValuesFileIsWritten()
         {
-            var dataModel = new ApplicationDataModel
+            var dataModel = new ApplicationDataModel.ADM.ApplicationDataModel
             {
                 ProprietaryValues = new List<ProprietaryValue>
                 {
@@ -246,7 +244,7 @@ namespace PluginTest
         [Test]
         public void GivenPluginAndDataModelWhenExportThenCatalogFileIsWritten()
         {
-            var dataModel = new ApplicationDataModel
+            var dataModel = new ApplicationDataModel.ADM.ApplicationDataModel
             {
                 Catalog = new Catalog()
             };
@@ -260,7 +258,7 @@ namespace PluginTest
         [Test]
         public void GivenPluginAndDataModelWhenExportThenReferenceLayersFileIsWritten()
         {
-            var dataModel = new ApplicationDataModel
+            var dataModel = new ApplicationDataModel.ADM.ApplicationDataModel
             {
                 ReferenceLayers = new List<ReferenceLayer>
                 {
@@ -278,7 +276,7 @@ namespace PluginTest
         [Test]
         public void GivenPluginAndDataModelWhenExportThenVersionFileIsWritten()
         {
-            var dataModel = new ApplicationDataModel
+            var dataModel = new ApplicationDataModel.ADM.ApplicationDataModel
             {
                 ReferenceLayers = new List<ReferenceLayer>
                 {
@@ -296,11 +294,10 @@ namespace PluginTest
         [Test]
         public void GivenDatapathWhenIsSupportedThenTrueIfMajorVersionsMatch()
         {
-            var currentVersion = typeof (Plugin).Assembly.GetName().Version.ToString();
-            var currentMajorVersion = currentVersion.Substring(0, currentVersion.IndexOf('.'));
-            var version = currentMajorVersion + ".x.y.z";
+            var currentVersion = typeof (Plugin).Assembly.GetName().Version;
+            var version = new Version(currentVersion.Major, currentVersion.Minor);
 
-            var versionInfoModel = new AdmVersionInfoModel {AdmVersion = version};
+            var versionInfoModel = new AdmVersionInfoModel { AdmVersion = version.ToString() };
             var expectedFilename = Path.Combine(_cardPath, AdmVersionFilename);
             _admVersionInfoReaderMock.Setup(x => x.ReadVersionInfoModel(expectedFilename)).Returns(versionInfoModel);
 
@@ -312,9 +309,10 @@ namespace PluginTest
         [Test]
         public void GivenDatapathWhenIsSupportedThenFalseIfMajorVersionsDoNotMatch()
         {
-            var version = "z.x.y.z";
+            var currentVersion = typeof(Plugin).Assembly.GetName().Version;
+            var version = new Version(currentVersion.Major + 1, currentVersion.Minor);
 
-            var versionInfoModel = new AdmVersionInfoModel { AdmVersion = version };
+            var versionInfoModel = new AdmVersionInfoModel { AdmVersion = version.ToString() };
             var expectedFilename = Path.Combine(_cardPath, AdmVersionFilename);
             _admVersionInfoReaderMock.Setup(x => x.ReadVersionInfoModel(expectedFilename)).Returns(versionInfoModel);
 
@@ -322,6 +320,34 @@ namespace PluginTest
 
             Assert.That(result, Is.False);
         }
+
+        public void GivenDatapathWhenIsSupportedThenTrueIfMinorVersionsMatch()
+        {
+            var currentVersion = typeof(Plugin).Assembly.GetName().Version;
+            var version = new Version(currentVersion.Major, currentVersion.Minor);
+
+            var versionInfoModel = new AdmVersionInfoModel { AdmVersion = version.ToString() };
+            var expectedFilename = Path.Combine(_cardPath, AdmVersionFilename);
+            _admVersionInfoReaderMock.Setup(x => x.ReadVersionInfoModel(expectedFilename)).Returns(versionInfoModel);
+
+            var result = _plugin.IsDataCardSupported(_cardPath);
+
+            Assert.That(result, Is.True);
+        }
+
+        public void GivenDatapathWhenIsSupportedThenTrueIfMinorVersionsDoNotMatch()
+        {
+            var currentVersion = typeof(Plugin).Assembly.GetName().Version;
+            var version = new Version(currentVersion.Major, currentVersion.Minor + 1);
+
+            var versionInfoModel = new AdmVersionInfoModel { AdmVersion = version.ToString() };
+            var expectedFilename = Path.Combine(_cardPath, AdmVersionFilename);
+            _admVersionInfoReaderMock.Setup(x => x.ReadVersionInfoModel(expectedFilename)).Returns(versionInfoModel);
+
+            var result = _plugin.IsDataCardSupported(_cardPath);
+
+            Assert.That(result, Is.True);
+        }        
 
         [Test]
         public void GivenDatapathWithoutVersionFileWhenIsSupportedThenFalse()
