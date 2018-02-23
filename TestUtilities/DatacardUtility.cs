@@ -20,7 +20,7 @@ namespace TestUtilities
             var bytes = GetDatacard(name);
             Directory.CreateDirectory(directory);
 
-            var zipFilePath = Path.Combine(directory, "DataCard.zip");
+            var zipFilePath = Path.Combine(directory, "Datacard.zip");
             File.WriteAllBytes(zipFilePath, bytes);
 
             ZipFile.ExtractToDirectory(zipFilePath, directory);
@@ -28,7 +28,7 @@ namespace TestUtilities
 
         public static byte[] GetDatacard(string name)
         {
-            var path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "DataCards", Path.ChangeExtension(name.Replace(" ", "_"), ".zip"));
+            var path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Datacards", Path.ChangeExtension(name.Replace(" ", "_"), ".zip"));
             return File.ReadAllBytes(path);
         }
     }
