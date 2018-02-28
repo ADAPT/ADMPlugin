@@ -56,6 +56,11 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AssertBoundaries.cs" />
+    <Compile Include="AssertDevices.cs" />
+    <Compile Include="AssertGuidance.cs" />
+    <Compile Include="AssertLogistics.cs" />
+    <Compile Include="AssertProducts.cs" />
     <Compile Include="PluginAcceptanceTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
