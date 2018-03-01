@@ -3133,19 +3133,19 @@
     <Id>783</Id>
   </MappedElement>
   <MappedElement>
-    <Name>AgGateway.ADAPT.ApplicationDataModel.Products.CropVariety</Name>
+    <Name>AgGateway.ADAPT.ApplicationDataModel.Products.CropVarietyProduct</Name>
     <Id>784</Id>
   </MappedElement>
   <MappedElement>
-    <Name>AgGateway.ADAPT.ApplicationDataModel.Products.CropVariety.CropId</Name>
+    <Name>AgGateway.ADAPT.ApplicationDataModel.Products.CropVarietyProduct.CropId</Name>
     <Id>785</Id>
   </MappedElement>
   <MappedElement>
-    <Name>AgGateway.ADAPT.ApplicationDataModel.Products.CropVariety.TraitIds</Name>
+    <Name>AgGateway.ADAPT.ApplicationDataModel.Products.CropVarietyProduct.TraitIds</Name>
     <Id>786</Id>
   </MappedElement>
   <MappedElement>
-    <Name>AgGateway.ADAPT.ApplicationDataModel.Products.CropVariety.GeneticallyEnhanced</Name>
+    <Name>AgGateway.ADAPT.ApplicationDataModel.Products.CropVarietyProduct.GeneticallyEnhanced</Name>
     <Id>787</Id>
   </MappedElement>
   <MappedElement>
@@ -3173,11 +3173,11 @@
     <Id>793</Id>
   </MappedElement>
   <MappedElement>
-    <Name>AgGateway.ADAPT.ApplicationDataModel.Products.FertilizerProduct</Name>
+    <Name>AgGateway.ADAPT.ApplicationDataModel.Products.CropNutritionProduct</Name>
     <Id>794</Id>
   </MappedElement>
   <MappedElement>
-    <Name>AgGateway.ADAPT.ApplicationDataModel.Products.FertilizerProduct.IsManure</Name>
+    <Name>AgGateway.ADAPT.ApplicationDataModel.Products.CropNutritionProduct.IsManure</Name>
     <Id>795</Id>
   </MappedElement>
   <MappedElement>
@@ -3225,19 +3225,19 @@
     <Id>806</Id>
   </MappedElement>
   <MappedElement>
-    <Name>AgGateway.ADAPT.ApplicationDataModel.Products.ProductMix</Name>
+    <Name>AgGateway.ADAPT.ApplicationDataModel.Products.MixProduct</Name>
     <Id>807</Id>
   </MappedElement>
   <MappedElement>
-    <Name>AgGateway.ADAPT.ApplicationDataModel.Products.ProductMix.TotalQuantity</Name>
+    <Name>AgGateway.ADAPT.ApplicationDataModel.Products.MixProduct.TotalQuantity</Name>
     <Id>808</Id>
   </MappedElement>
   <MappedElement>
-    <Name>AgGateway.ADAPT.ApplicationDataModel.Products.ProductMix.IsTemporary</Name>
+    <Name>AgGateway.ADAPT.ApplicationDataModel.Products.MixProduct.IsTemporary</Name>
     <Id>809</Id>
   </MappedElement>
   <MappedElement>
-    <Name>AgGateway.ADAPT.ApplicationDataModel.Products.ProductMix.IsHotMix</Name>
+    <Name>AgGateway.ADAPT.ApplicationDataModel.Products.MixProduct.IsHotMix</Name>
     <Id>810</Id>
   </MappedElement>
   <MappedElement>
@@ -3307,5 +3307,89 @@
   <MappedElement>
     <Name>AgGateway.ADAPT.ApplicationDataModel.FieldBoundaries.FieldBoundary.TimeScopes</Name>
     <Id>827</Id>
+  </MappedElement>
+  <MappedElement>
+    <Name>AgGateway.ADAPT.ApplicationDataModel.Products.HarvestedCommodityProduct</Name>
+    <Id>828</Id>
+  </MappedElement>
+  <MappedElement>
+    <Name>AgGateway.ADAPT.ApplicationDataModel.Products.HarvestedCommodityProduct.CropId</Name>
+    <Id>829</Id>
+  </MappedElement>
+  <MappedElement>
+    <Name>AgGateway.ADAPT.ApplicationDataModel.Products.GenericProduct</Name>
+    <Id>830</Id>
+  </MappedElement>
+  <MappedElement>
+    <Name>AgGateway.ADAPT.ApplicationDataModel.Documents.OperationSummary.Id</Name>
+    <Id>831</Id>
+  </MappedElement>
+  <MappedElement>
+    <Name>AgGateway.ADAPT.ApplicationDataModel.Documents.OperationSummary.EquipmentConfigurationIds</Name>
+    <Id>832</Id>
+  </MappedElement>
+  <MappedElement>
+    <Name>AgGateway.ADAPT.ApplicationDataModel.Documents.OperationSummary.CoverageShape</Name>
+    <Id>833</Id>
+  </MappedElement>
+  <MappedElement>
+    <Name>AgGateway.ADAPT.ApplicationDataModel.Documents.OperationSummary.ContextItems</Name>
+    <Id>834</Id>
+  </MappedElement>
+  <MappedElement>
+    <Name>AgGateway.ADAPT.ApplicationDataModel.Documents.Summary.Id</Name>
+    <Id>835</Id>
+  </MappedElement>
+  <MappedElement>
+    <Name>AgGateway.ADAPT.ApplicationDataModel.Documents.Summary.WorkRecordId</Name>
+    <Id>836</Id>
+  </MappedElement>
+  <MappedElement>
+    <Name>AgGateway.ADAPT.ApplicationDataModel.Documents.Summary.GrowerId</Name>
+    <Id>837</Id>
+  </MappedElement>
+  <MappedElement>
+    <Name>AgGateway.ADAPT.ApplicationDataModel.Documents.Summary.TimeScopes</Name>
+    <Id>838</Id>
+  </MappedElement>
+  <MappedElement>
+    <Name>AgGateway.ADAPT.ApplicationDataModel.Documents.Summary.GuidanceAllocationIds</Name>
+    <Id>839</Id>
+  </MappedElement>
+  <MappedElement>
+    <Name>AgGateway.ADAPT.ApplicationDataModel.Equipment.HitchPoint.ReferencePoint</Name>
+    <Id>840</Id>
+  </MappedElement>
+  <MappedElement>
+    <Name>AgGateway.ADAPT.ApplicationDataModel.Equipment.Connector.DeviceElementConfigurationId</Name>
+    <Id>841</Id>
+  </MappedElement>
+  <MappedElement>
+    <Name>AgGateway.ADAPT.ApplicationDataModel.Guidance.PivotGuidancePattern</Name>
+    <Id>842</Id>
+  </MappedElement>
+  <MappedElement>
+    <Name>AgGateway.ADAPT.ApplicationDataModel.Guidance.PivotGuidancePattern.StartPoint</Name>
+    <Id>843</Id>
+  </MappedElement>
+  <MappedElement>
+    <Name>AgGateway.ADAPT.ApplicationDataModel.Guidance.PivotGuidancePattern.EndPoint</Name>
+    <Id>844</Id>
+  </MappedElement>
+  <MappedElement>
+    <Name>AgGateway.ADAPT.ApplicationDataModel.Guidance.PivotGuidancePattern.Center</Name>
+    <Id>845</Id>
+  </MappedElement>
+  <MappedElement>
+    <Name>AgGateway.ADAPT.ApplicationDataModel.Products.AvailableProduct.TimeScopes</Name>
+    <Id>846</Id>
+  </MappedElement>
+  <MappedElement>
+    <Name>AgGateway.ADAPT.ApplicationDataModel.LoggedData.DataLogTrigger.DeviceElementId</Name>
+    <Id>847</Id>
+  </MappedElement>
+  <MappedElement>
+    <Name>AgGateway.ADAPT.ApplicationDataModel.LoggedData.LoggedData.WorkRecordId</Name>
+    <Id>848</Id>
   </MappedElement>
 </ProtobufMapping>
