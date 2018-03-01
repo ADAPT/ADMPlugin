@@ -31,8 +31,15 @@ if (-not $UseBranch) {
   }
 }
 
-Remove-Item -Path ./ADMPlugin/bin -Recurse -Force
-Remove-Item -Path ./ADMPlugin/obj -Recurse -Force
+$BinDir = './ADMPlugin/bin'
+if(Test-Path -Path $BinDir ){
+	Remove-Item -Path ./ADMPlugin/bin -Recurse -Force
+}
+
+$ObjDir = './ADMPlugin/obj'
+if(Test-Path -Path $ObjDir){
+	Remove-Item -Path ./ADMPlugin/obj -Recurse -Force
+}
 
 nuget restore
 if ($LastExitCode -ne 0) {
