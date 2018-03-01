@@ -89,8 +89,9 @@ namespace PluginTest
 
             _documentsExport.ExportDocuments(_path, _documents);
 
-            var expectedPath = Path.Combine(_path, DatacardConstants.DocumentsFolder, DatacardConstants.SummariesFile);
-            _protobufSerialierMock.Verify(x => x.Write(expectedPath, _documents.Summaries), Times.Once);
+            var expectedFileName = String.Format(DatacardConstants.SummaryFile, summaries[0].Id.ReferenceId);
+            var expectedPath = Path.Combine(_path, DatacardConstants.DocumentsFolder, expectedFileName);
+            _protobufSerialierMock.Verify(x => x.Write(expectedPath, summaries[0]), Times.Once);
         }
 
         [Test]
