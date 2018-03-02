@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Reflection;
 using NUnit.Framework;
 using ProtoBuf.Meta;
 
@@ -10,10 +11,11 @@ namespace TestUtilities.ProtobufContract
     [TestFixture]
     public class ProtobufContractGeneratorTest
     {
-        public string _tempXmlFileCorrect;
-        public string _tempXmlFileIncorrect;
-        public string _tempProtoFile;
-        public string _tempDirectory;
+        private string _tempXmlFileCorrect;
+        private string _tempXmlFileIncorrect;
+        private string _tempProtoFile;
+        private string _tempDirectory;
+        private string _testUtilitiesDll;
 
         [SetUp]
         public void Setup()
@@ -30,6 +32,9 @@ namespace TestUtilities.ProtobufContract
 
             _tempProtoFile = Path.Combine(tempDirectory, "test.proto");
             File.WriteAllBytes(_tempProtoFile, Resources.Resources.test);
+
+            var testExecutionLocation = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+            _testUtilitiesDll = Path.Combine(testExecutionLocation, "TestUtilities.dll");
         }
 
         
@@ -75,7 +80,7 @@ namespace TestUtilities.ProtobufContract
         public void WhenExportThenFileIsWritten()
         {
             var generator = new ProtobufContractGenerator(_tempXmlFileCorrect);
-            var model = generator.GenerateContractCode("TestUtilities.dll");
+            var model = generator.GenerateContractCode(_testUtilitiesDll);
             
             var filename = Path.Combine(_tempDirectory, "test.proto");
 
@@ -90,7 +95,7 @@ namespace TestUtilities.ProtobufContract
         public void WhenExportAndImportTestClassesThenWorks()
         {
             var generator = new ProtobufContractGenerator(_tempXmlFileCorrect);
-            var model = generator.GenerateContractCode("TestUtilities.dll");
+            var model = generator.GenerateContractCode(_testUtilitiesDll);
 
             var filename = Path.Combine(_tempDirectory, "test.proto");
 
@@ -109,7 +114,7 @@ namespace TestUtilities.ProtobufContract
         {
             var generator = new ProtobufContractGenerator(_tempXmlFileIncorrect);
 
-            var model = generator.GenerateContractCode("TestUtilities.dll");
+            var model = generator.GenerateContractCode(_testUtilitiesDll);
 
             var testClassA = new TestClassA { AString1 = "ABC", AString2 = "XYZ" };
 
@@ -125,7 +130,7 @@ namespace TestUtilities.ProtobufContract
         public void WhenImportWithCorrectContractThenWorks()
         {
             var generator = new ProtobufContractGenerator(_tempXmlFileCorrect);
-            var model = generator.GenerateContractCode("TestUtilities.dll");
+            var model = generator.GenerateContractCode(_testUtilitiesDll);
 
             var testClassA = new TestClassA { AString1 = "ABC", AString2 = "XYZ", AInt = 3 };
 
@@ -150,7 +155,7 @@ namespace TestUtilities.ProtobufContract
         public void GivenBadXmlFileWhenGenerateThenModelIsNull()
         {
             var generator = new ProtobufContractGenerator(@"..\..\ProtobufTestFiles\HelloThere.xml");
-            var model = generator.GenerateContractCode("TestUtilities.dll");
+            var model = generator.GenerateContractCode(_testUtilitiesDll);
 
             Assert.IsNull(model);
         }
