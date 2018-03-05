@@ -14,7 +14,7 @@ using AgGateway.ADAPT.Representation.RepresentationSystem;
 using AgGateway.ADAPT.Representation.RepresentationSystem.ExtensionMethods;
 using AgGateway.ADAPT.Representation.UnitSystem;
 using NUnit.Framework;
-using TestUtilities;
+using AgGateway.ADAPT.TestUtilities;
 
 namespace AgGateway.ADAPT.PluginTest
 {

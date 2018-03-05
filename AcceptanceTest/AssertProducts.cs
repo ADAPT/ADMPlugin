@@ -1,11 +1,11 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using AgGateway.ADAPT.ApplicationDataModel.Products;
 using AgGateway.ADAPT.Representation.RepresentationSystem;
 using NUnit.Framework;
 
-namespace AcceptanceTest
+namespace AgGateway.ADAPT.AcceptanceTest
 {
     public static class AssertProducts
     {

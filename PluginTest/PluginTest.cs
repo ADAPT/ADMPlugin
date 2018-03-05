@@ -10,7 +10,7 @@ using AgGateway.ADAPT.ApplicationDataModel.ReferenceLayers;
 using Moq;
 using Newtonsoft.Json;
 using NUnit.Framework;
-using TestUtilities;
+using AgGateway.ADAPT.TestUtilities;
 
 namespace AgGateway.ADAPT.PluginTest
 {

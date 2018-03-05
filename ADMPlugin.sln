@@ -9,6 +9,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PluginTest", "PluginTest\Pl
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TestUtilities", "TestUtilities\TestUtilities.csproj", "{346030C7-75A9-4C9E-9A9A-BB09E207AD9B}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AcceptanceTest", "AcceptanceTest\AcceptanceTest.csproj", "{B0DECFAC-9297-4764-9CE7-91D0D66276AD}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +29,10 @@ Global
 		{346030C7-75A9-4C9E-9A9A-BB09E207AD9B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{346030C7-75A9-4C9E-9A9A-BB09E207AD9B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{346030C7-75A9-4C9E-9A9A-BB09E207AD9B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B0DECFAC-9297-4764-9CE7-91D0D66276AD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B0DECFAC-9297-4764-9CE7-91D0D66276AD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B0DECFAC-9297-4764-9CE7-91D0D66276AD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B0DECFAC-9297-4764-9CE7-91D0D66276AD}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

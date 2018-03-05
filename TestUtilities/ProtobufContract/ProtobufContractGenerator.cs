@@ -8,7 +8,7 @@ using System.Runtime.CompilerServices;
 using System.Text;
 using ProtoBuf.Meta;
 
-namespace TestUtilities.ProtobufContract
+namespace AgGateway.ADAPT.TestUtilities.ProtobufContract
 {
     public class ProtobufContractGenerator
     {

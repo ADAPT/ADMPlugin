@@ -5,7 +5,7 @@ using System.IO;
 using System.Reflection;
 using NUnit.Framework;
 
-namespace TestUtilities.ProtobufContract
+namespace AgGateway.ADAPT.TestUtilities.ProtobufContract
 {
     [TestFixture]
     public class ProtobufElementMapperTest

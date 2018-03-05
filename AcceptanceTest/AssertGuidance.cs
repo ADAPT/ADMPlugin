@@ -7,7 +7,7 @@ using AgGateway.ADAPT.ApplicationDataModel.Shapes;
 using AgGateway.ADAPT.Representation.RepresentationSystem;
 using NUnit.Framework;
 
-namespace AcceptanceTest
+namespace AgGateway.ADAPT.AcceptanceTest
 {
     public static class AssertGuidance
     {

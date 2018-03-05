@@ -7,7 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Linq;
 
-namespace TestUtilities.ProtobufContract
+namespace AgGateway.ADAPT.TestUtilities.ProtobufContract
 {
     public class ProtobufElementMapper
     {

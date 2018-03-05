@@ -3,7 +3,7 @@ using System.IO;
 using System.IO.Compression;
 using System.Reflection;
 
-namespace TestUtilities
+namespace AgGateway.ADAPT.TestUtilities
 {
     public static class DatacardUtility
     {
