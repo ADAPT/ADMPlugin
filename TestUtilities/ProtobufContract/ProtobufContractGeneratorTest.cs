@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -11,10 +11,10 @@ namespace TestUtilities.ProtobufContract
     [TestFixture]
     public class ProtobufContractGeneratorTest
     {
-        public string _tempXmlFileCorrect;
-        public string _tempXmlFileIncorrect;
-        public string _tempProtoFile;
-        public string _tempDirectory;
+        private string _tempXmlFileCorrect;
+        private string _tempXmlFileIncorrect;
+        private string _tempProtoFile;
+        private string _tempDirectory;
 
         [SetUp]
         public void Setup()

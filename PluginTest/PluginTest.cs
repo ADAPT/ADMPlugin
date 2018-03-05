@@ -8,6 +8,7 @@ using AgGateway.ADAPT.ApplicationDataModel.Equipment;
 using AgGateway.ADAPT.ApplicationDataModel.LoggedData;
 using AgGateway.ADAPT.ApplicationDataModel.ReferenceLayers;
 using Moq;
+using Newtonsoft.Json;
 using NUnit.Framework;
 using TestUtilities;
 
@@ -22,6 +23,7 @@ namespace AgGateway.ADAPT.PluginTest
         private Mock<IProtobufReferenceLayerSerializer> _protobufReferenceSerializerMock;
         private Mock<IAdmVersionInfoWriter> _admVersionInfoWriterMock;
         private Mock<IAdmVersionInfoReader> _admVersionInfoReaderMock;
+        private Mock<InternalJsonSerializer> _internalJsonSerializerMock;
         private string _tempPath;
 
         private const string AdmVersionFilename = "AdmVersion.info";
@@ -33,12 +35,18 @@ namespace AgGateway.ADAPT.PluginTest
             _protobufReferenceSerializerMock = new Mock<IProtobufReferenceLayerSerializer>();
             _admVersionInfoWriterMock = new Mock<IAdmVersionInfoWriter>();
             _admVersionInfoReaderMock = new Mock<IAdmVersionInfoReader>();
+            _internalJsonSerializerMock = new Mock<InternalJsonSerializer>();
+
 
             _cardPath = DatacardUtility.WriteDatacard("TestDatacard");
             _tempPath = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
             SetupVersionInfoMock();
 
-            _plugin = new Plugin(_protobufSerializerMock.Object, _protobufReferenceSerializerMock.Object, _admVersionInfoWriterMock.Object, _admVersionInfoReaderMock.Object);
+            _plugin = new Plugin(_protobufSerializerMock.Object,
+                _protobufReferenceSerializerMock.Object,
+                _admVersionInfoWriterMock.Object,
+                _admVersionInfoReaderMock.Object,
+                _internalJsonSerializerMock.Object);
         }
 
         private void SetupVersionInfoMock()

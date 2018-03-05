@@ -5,7 +5,6 @@ using System.Linq;
 using System.Reflection;
 using AgGateway.ADAPT.ApplicationDataModel.ADM;
 using AgGateway.ADAPT.ApplicationDataModel.ReferenceLayers;
-using Newtonsoft.Json;
 
 namespace AgGateway.ADAPT.ADMPlugin
 {
@@ -14,23 +13,33 @@ namespace AgGateway.ADAPT.ADMPlugin
         private readonly IProtobufReferenceLayerSerializer _protobufReferenceLayerSerializer;
         private readonly IAdmVersionInfoWriter _admVersionInfoWriter;
         private readonly IAdmVersionInfoReader _admVersionInfoReader;
+        private readonly InternalJsonSerializer _internalJsonSerializer;
         private readonly DocumentsExporter _documentsExporter;
         private readonly DocumentsImporter _documentsImporter;
 
         private const string AdmVersionFilename = "AdmVersion.info";
 
         public Plugin()
-            : this(new ProtobufSerializer(), new ProtobufReferenceLayerSerializer(), new AdmVersionInfoWriter(), new AdmVersionInfoReader())
+            : this(new ProtobufSerializer(),
+                new ProtobufReferenceLayerSerializer(),
+                new AdmVersionInfoWriter(),
+                new AdmVersionInfoReader(),
+                new InternalJsonSerializer())
         {
         }
 
-        public Plugin(IProtobufSerializer protobufSerializer, IProtobufReferenceLayerSerializer protobufReferenceLayerSerializer, IAdmVersionInfoWriter admVersionInfoWriter, IAdmVersionInfoReader admVersionInfoReader)
+        public Plugin(IProtobufSerializer protobufSerializer, 
+            IProtobufReferenceLayerSerializer protobufReferenceLayerSerializer, 
+            IAdmVersionInfoWriter admVersionInfoWriter, 
+            IAdmVersionInfoReader admVersionInfoReader,
+            InternalJsonSerializer internalJsonSerializer)
         {
             _documentsImporter = new DocumentsImporter(protobufSerializer);
             _documentsExporter = new DocumentsExporter(protobufSerializer);
             _protobufReferenceLayerSerializer = protobufReferenceLayerSerializer;
             _admVersionInfoWriter = admVersionInfoWriter;
             _admVersionInfoReader = admVersionInfoReader;
+            _internalJsonSerializer = internalJsonSerializer;
         }
 
         public string Name
@@ -70,21 +79,6 @@ namespace AgGateway.ADAPT.ADMPlugin
         private static string ReferencelayersAdm
         {
             get { return String.Format(DatacardConstants.FileFormat, "ReferenceLayers"); }
-        }
-
-        private JsonSerializer Serializer
-        {
-            get
-            {
-                return new JsonSerializer
-                {
-                    NullValueHandling = NullValueHandling.Ignore,
-                    DefaultValueHandling = DefaultValueHandling.Ignore,
-                    TypeNameHandling = TypeNameHandling.All,
-                    ContractResolver = new AdaptContractResolver()
-
-                };
-            }
         }
 
         public void Initialize(string args = null)
@@ -180,7 +174,7 @@ namespace AgGateway.ADAPT.ADMPlugin
             try
             {
                 ZipUtil.Unzip(files.First(), jsonFormat);
-                return Deserialize<T>(jsonFormat);
+                return _internalJsonSerializer.Deserialize<T>(jsonFormat);
             }
             finally
             {
@@ -202,7 +196,7 @@ namespace AgGateway.ADAPT.ADMPlugin
             var jsonFormat = Path.GetTempFileName();
             try
             {
-                Serialize(dataModel, jsonFormat);
+                _internalJsonSerializer.Serialize(dataModel, jsonFormat);
                 ZipUtil.Zip(Path.Combine(path, fileName), jsonFormat);
             }
             finally
@@ -212,26 +206,6 @@ namespace AgGateway.ADAPT.ADMPlugin
                     File.Delete(jsonFormat);
                 }
                 catch { }
-            }
-        }
-
-        private void Serialize<T>(T dataModel, string file)
-        {
-            using (var fileStream = File.Open(file, FileMode.Create, FileAccess.ReadWrite))
-            using (var streamWriter = new StreamWriter(fileStream))
-            using (var textWriter = new JsonTextWriter(streamWriter) { Formatting = Formatting.Indented })
-            {
-                Serializer.Serialize(textWriter, dataModel);
-            }
-        }
-
-        private T Deserialize<T>(string file)
-        {
-            using (var fileStream = File.Open(file, FileMode.Open))
-            using (var streamReader = new StreamReader(fileStream))
-            using (var textReader = new JsonTextReader(streamReader))
-            {
-                return Serializer.Deserialize<T>(textReader);
             }
         }
     }
