@@ -1,47 +1,15 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <ProtobufMapping>
   <MappedElement>
-    <Name>TestUtilities.ProtobufContract.ProtobufContractGenerator._mapper</Name>
-    <Id>1</Id>
+    <Name>AgGateway.ADAPT.TestUtilities.ProtobufContract.TestClassA.AString1</Name>
+    <Id>30</Id>
   </MappedElement>
   <MappedElement>
-    <Name>TestUtilities.ProtobufContract.ProtobufContractGenerator._model</Name>
-    <Id>2</Id>
+    <Name>AgGateway.ADAPT.TestUtilities.ProtobufContract.TestClassA.AString2</Name>
+    <Id>40</Id>
   </MappedElement>
   <MappedElement>
-    <Name>TestUtilities.ProtobufContract.TestClassA.AString1</Name>
-    <Id>10</Id>
-  </MappedElement>
-  <MappedElement>
-    <Name>TestUtilities.ProtobufContract.TestClassA.AString2</Name>
-    <Id>11</Id>
-  </MappedElement>
-  <MappedElement>
-    <Name>TestUtilities.ProtobufContract.TestClassB.BString1</Name>
-    <Id>5</Id>
-  </MappedElement>
-  <MappedElement>
-    <Name>TestUtilities.ProtobufContract.TestClassB.BString2</Name>
-    <Id>6</Id>
-  </MappedElement>
-  <MappedElement>
-    <Name>TestUtilities.ProtobufContract.ProtobufElementMapper._document</Name>
-    <Id>7</Id>
-  </MappedElement>
-  <MappedElement>
-    <Name>TestUtilities.ProtobufContract.ProtobufElementMapper._filepath</Name>
-    <Id>8</Id>
-  </MappedElement>
-  <MappedElement>
-    <Name>TestUtilities.ProtobufContract.ProtobufElementMapperTest._mapper</Name>
-    <Id>9</Id>
-  </MappedElement>
-  <MappedElement>
-    <Name>TestUtilities.ProtobufContract.TestClassA.AInt</Name>
-    <Id>12</Id>
-  </MappedElement>
-  <MappedElement>
-    <Name>TestUtilities.ProtobufContract.&lt;Write&gt;d__9`1</Name>
-    <Id>13</Id>
+    <Name>AgGateway.ADAPT.TestUtilities.ProtobufContract.TestClassA.AInt</Name>
+    <Id>100</Id>
   </MappedElement>
 </ProtobufMapping>

@@ -16,6 +16,8 @@ namespace AgGateway.ADAPT.TestUtilities.ProtobufContract
         private string _tempProtoFile;
         private string _tempDirectory;
 
+        private readonly TestClassA _testClassA = new TestClassA { AString1 = "ABC", AString2 = "XYZ" };
+
         [SetUp]
         public void Setup()
         {
@@ -111,17 +113,12 @@ namespace AgGateway.ADAPT.TestUtilities.ProtobufContract
         public void WhenImportWithWrongContractThenDoesNotWork()
         {
             var generator = new ProtobufContractGenerator(_tempXmlFileIncorrect);
-
             var model = generator.GenerateContractCode("AgGateway.ADAPT.TestUtilities.dll");
 
-            var testClassA = new TestClassA { AString1 = "ABC", AString2 = "XYZ" };
+            var readTestClassA = Read<TestClassA>(_tempProtoFile, model);
 
-            string filename = _tempProtoFile;
-
-            var readTestClassA = Read<TestClassA>(filename, model);
-
-            Assert.AreNotEqual(testClassA.AString1, readTestClassA.AString1);
-            Assert.AreNotEqual(testClassA.AString2, readTestClassA.AString2);
+            Assert.AreNotEqual(_testClassA.AString1, readTestClassA.AString1);
+            Assert.AreNotEqual(_testClassA.AString2, readTestClassA.AString2);
         }
 
         [Test]
@@ -130,14 +127,10 @@ namespace AgGateway.ADAPT.TestUtilities.ProtobufContract
             var generator = new ProtobufContractGenerator(_tempXmlFileCorrect);
             var model = generator.GenerateContractCode("AgGateway.ADAPT.TestUtilities.dll");
 
-            var testClassA = new TestClassA { AString1 = "ABC", AString2 = "XYZ", AInt = 3 };
+            var readTestClassA = Read<TestClassA>(_tempProtoFile, model);
 
-            string filename = _tempProtoFile;
-
-            var readTestClassA = Read<TestClassA>(filename, model);
-
-            Assert.AreEqual(testClassA.AString1, readTestClassA.AString1);
-            Assert.AreEqual(testClassA.AString2, readTestClassA.AString2);
+            Assert.AreEqual(_testClassA.AString1, readTestClassA.AString1);
+            Assert.AreEqual(_testClassA.AString2, readTestClassA.AString2);
         }
 
         [Test]
@@ -172,7 +165,7 @@ namespace AgGateway.ADAPT.TestUtilities.ProtobufContract
             }
         }
 
-        public T Read<T>(string path, RuntimeTypeModel model)
+        private T Read<T>(string path, RuntimeTypeModel model)
         {
             using (var fileStream = File.OpenRead(path))
             {
@@ -180,17 +173,4 @@ namespace AgGateway.ADAPT.TestUtilities.ProtobufContract
             }
         }
     }
-
-    public interface ITestClass
-    {
-        void DoNothing();
-    }
-
-    public class TestClassA
-    {
-        public string AString1 { get; set; }
-        public string AString2 { get; set; }
-        public int? AInt { get; set; }
-    }
-
 }
