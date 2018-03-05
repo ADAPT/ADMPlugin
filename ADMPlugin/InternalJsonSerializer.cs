@@ -1,7 +1,7 @@
-﻿using System.IO;
+using System.IO;
 using Newtonsoft.Json;
 
-namespace ADMPlugin
+namespace AgGateway.ADAPT.ADMPlugin
 {
     public class InternalJsonSerializer
     {
