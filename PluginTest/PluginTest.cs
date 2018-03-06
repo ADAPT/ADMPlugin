@@ -295,7 +295,7 @@ namespace AgGateway.ADAPT.PluginTest
 
             _plugin.Export(dataModel, _tempPath);
 
-            var expectedFilename = Path.Combine(_tempPath, "adm", AdmVersionFilename);
+            var expectedFilename = Path.Combine(_tempPath, DatacardConstants.PluginFolderAndExtension, AdmVersionFilename);
             _admVersionInfoWriterMock.Verify(x => x.WriteVersionInfoFile(expectedFilename), Times.Once);
         }
 
@@ -306,7 +306,7 @@ namespace AgGateway.ADAPT.PluginTest
             var version = new Version(currentVersion.Major, currentVersion.Minor);
 
             var versionInfoModel = new AdmVersionInfoModel { AdmVersion = version.ToString() };
-            var expectedFilename = Path.Combine(_cardPath, AdmVersionFilename);
+            var expectedFilename = Path.Combine(_cardPath, DatacardConstants.PluginFolderAndExtension, AdmVersionFilename);
             _admVersionInfoReaderMock.Setup(x => x.ReadVersionInfoModel(expectedFilename)).Returns(versionInfoModel);
 
             var result =_plugin.IsDataCardSupported(_cardPath);
@@ -321,7 +321,7 @@ namespace AgGateway.ADAPT.PluginTest
             var version = new Version(currentVersion.Major + 1, currentVersion.Minor);
 
             var versionInfoModel = new AdmVersionInfoModel { AdmVersion = version.ToString() };
-            var expectedFilename = Path.Combine(_cardPath, AdmVersionFilename);
+            var expectedFilename = Path.Combine(_cardPath, DatacardConstants.PluginFolderAndExtension, AdmVersionFilename);
             _admVersionInfoReaderMock.Setup(x => x.ReadVersionInfoModel(expectedFilename)).Returns(versionInfoModel);
 
             var result = _plugin.IsDataCardSupported(_cardPath);
@@ -329,13 +329,14 @@ namespace AgGateway.ADAPT.PluginTest
             Assert.That(result, Is.False);
         }
 
+        [Test]
         public void GivenDatapathWhenIsSupportedThenTrueIfMinorVersionsMatch()
         {
             var currentVersion = typeof(Plugin).Assembly.GetName().Version;
             var version = new Version(currentVersion.Major, currentVersion.Minor);
 
             var versionInfoModel = new AdmVersionInfoModel { AdmVersion = version.ToString() };
-            var expectedFilename = Path.Combine(_cardPath, AdmVersionFilename);
+            var expectedFilename = Path.Combine(_cardPath, DatacardConstants.PluginFolderAndExtension, AdmVersionFilename);
             _admVersionInfoReaderMock.Setup(x => x.ReadVersionInfoModel(expectedFilename)).Returns(versionInfoModel);
 
             var result = _plugin.IsDataCardSupported(_cardPath);
@@ -343,19 +344,20 @@ namespace AgGateway.ADAPT.PluginTest
             Assert.That(result, Is.True);
         }
 
+        [Test]
         public void GivenDatapathWhenIsSupportedThenTrueIfMinorVersionsDoNotMatch()
         {
             var currentVersion = typeof(Plugin).Assembly.GetName().Version;
             var version = new Version(currentVersion.Major, currentVersion.Minor + 1);
 
             var versionInfoModel = new AdmVersionInfoModel { AdmVersion = version.ToString() };
-            var expectedFilename = Path.Combine(_cardPath, AdmVersionFilename);
+            var expectedFilename = Path.Combine(_cardPath, DatacardConstants.PluginFolderAndExtension, AdmVersionFilename);
             _admVersionInfoReaderMock.Setup(x => x.ReadVersionInfoModel(expectedFilename)).Returns(versionInfoModel);
 
             var result = _plugin.IsDataCardSupported(_cardPath);
 
             Assert.That(result, Is.True);
-        }        
+        }
 
         [Test]
         public void GivenDatapathWithoutVersionFileWhenIsSupportedThenFalse()

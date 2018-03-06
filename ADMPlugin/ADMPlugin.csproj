@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <TargetFrameworks>netstandard2.0;net451</TargetFrameworks>
-    <Version>0.0.0</Version>
+    <Version>1.0.0</Version>
     <Authors>AgGateway and ADAPT Contributors</Authors>
     <Company>AgGateway</Company>
     <Product>ADMPlugin</Product>
@@ -11,7 +11,7 @@
     <AssemblyName>AgGateway.ADAPT.ADMPlugin</AssemblyName>
     <RootNamespace>AgGateway.ADAPT.ADMPlugin</RootNamespace>
     <PackageId>AgGateway.ADAPT.ADMPlugin</PackageId>
-    <AssemblyVersion>0.0.0.0</AssemblyVersion>
+    <AssemblyVersion>1.0.0.0</AssemblyVersion>
   </PropertyGroup>
 
   <ItemGroup>

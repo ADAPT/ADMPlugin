@@ -90,11 +90,11 @@ namespace AgGateway.ADAPT.ADMPlugin
             return new Properties();
         }
 
-        public bool IsDataCardSupported(string dataPath, Properties properties = null)
+        public bool IsDataCardSupported(string path, Properties properties = null)
         {
-            var path = Path.Combine(dataPath, DatacardConstants.PluginFolderAndExtension);
+            var dataPath = Path.Combine(path, DatacardConstants.PluginFolderAndExtension);
 
-            if (! (Directory.Exists(path) && Directory.GetFiles(path, String.Format(DatacardConstants.FileFormat, "*"), SearchOption.AllDirectories).Any()))
+            if (! (Directory.Exists(dataPath) && Directory.GetFiles(dataPath, String.Format(DatacardConstants.FileFormat, "*"), SearchOption.AllDirectories).Any()))
                 return false;
 
             var currentVersion = Assembly.GetExecutingAssembly().GetName().Version;
@@ -113,7 +113,7 @@ namespace AgGateway.ADAPT.ADMPlugin
             return false;
         }
 
-        public IList<IError> ValidateDataOnCard(string dataPath, Properties properties = null)
+        public IList<IError> ValidateDataOnCard(string path, Properties properties = null)
         {
             return new List<IError>();
         }
