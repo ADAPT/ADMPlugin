@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -28,9 +28,9 @@ namespace AgGateway.ADAPT.ADMPlugin
         {
         }
 
-        public Plugin(IProtobufSerializer protobufSerializer, 
-            IProtobufReferenceLayerSerializer protobufReferenceLayerSerializer, 
-            IAdmVersionInfoWriter admVersionInfoWriter, 
+        public Plugin(IProtobufSerializer protobufSerializer,
+            IProtobufReferenceLayerSerializer protobufReferenceLayerSerializer,
+            IAdmVersionInfoWriter admVersionInfoWriter,
             IAdmVersionInfoReader admVersionInfoReader,
             InternalJsonSerializer internalJsonSerializer)
         {
@@ -104,7 +104,7 @@ namespace AgGateway.ADAPT.ADMPlugin
 
             if (dataVersionModel == null)
                 return true;
-            
+
             var dataVersion = new Version(dataVersionModel.AdmVersion);
 
             if (currentVersion.Major == dataVersion.Major)
@@ -125,7 +125,7 @@ namespace AgGateway.ADAPT.ADMPlugin
             var catalog = ImportData<Catalog>(path, CatalogAdm);
             var documents = _documentsImporter.ImportDocuments(path, DocumentAdm, catalog);
             var proprietaryValues = ImportData<List<ProprietaryValue>>(path, ProprietaryValuesAdm);
-            var referenceLayers = ImportReferenceLayers(path, ReferencelayersAdm); 
+            var referenceLayers = ImportReferenceLayers(path, ReferencelayersAdm);
 
             var applicationDataModel = new ApplicationDataModel.ADM.ApplicationDataModel
             {
@@ -135,7 +135,10 @@ namespace AgGateway.ADAPT.ADMPlugin
                 ReferenceLayers = referenceLayers
             };
 
-            return new[] { applicationDataModel };
+            return new List<ApplicationDataModel.ADM.ApplicationDataModel>
+            {
+                applicationDataModel
+            };
         }
 
         private IEnumerable<ReferenceLayer> ImportReferenceLayers(string path, string filename)
@@ -163,7 +166,7 @@ namespace AgGateway.ADAPT.ADMPlugin
         {
             _protobufReferenceLayerSerializer.Export(filePath, fileName, referenceLayers);
         }
-        
+
         private T ImportData<T>(string path, string searchPattern)
         {
             var files = Directory.GetFiles(path, searchPattern, SearchOption.AllDirectories);
