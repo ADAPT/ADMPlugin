@@ -54,7 +54,7 @@ namespace AgGateway.ADAPT.PluginTest
             var currentVersion = typeof(Plugin).Assembly.GetName().Version;
 
             var versionInfoModel = new AdmVersionInfoModel { AdmVersion = currentVersion.ToString() };
-            var expectedFilename = Path.Combine(_cardPath, AdmVersionFilename);
+            var expectedFilename = Path.Combine(_cardPath, DatacardConstants.PluginFolderAndExtension, AdmVersionFilename);
             _admVersionInfoReaderMock.Setup(x => x.ReadVersionInfoModel(expectedFilename)).Returns(versionInfoModel);
         }
 
