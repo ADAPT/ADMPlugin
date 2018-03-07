@@ -1,43 +1,35 @@
-﻿using System;
+using System;
 using System.IO;
 using System.IO.Compression;
+using System.Reflection;
 
-namespace TestUtilities
+namespace AgGateway.ADAPT.TestUtilities
 {
     public static class DatacardUtility
     {
-        public static string WriteDataCard(string resource)
+        public static string WriteDatacard(string name)
         {
             var directory = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
             Directory.CreateDirectory(directory);
-            WriteDataCard(resource, directory);
+            WriteDatacard(name, directory);
             return directory;
         }
 
-        public static void WriteDataCard(string resource, string directory)
+        public static void WriteDatacard(string name, string directory)
         {
-            var bytes = GetResource(resource);
+            var bytes = GetDatacard(name);
             Directory.CreateDirectory(directory);
 
-            var zipFilePath = Path.Combine(directory, "DataCard.zip");
+            var zipFilePath = Path.Combine(directory, "Datacard.zip");
             File.WriteAllBytes(zipFilePath, bytes);
 
             ZipFile.ExtractToDirectory(zipFilePath, directory);
         }
 
-        private static string GetResourceName(string resourceName)
+        public static byte[] GetDatacard(string name)
         {
-            return resourceName.Replace(" ", "_");
-        }
-
-        private static byte[] GetResource(string resource)
-        {
-            var resourceName = GetResourceName(resource);
-            var bytes = (byte[])Datacards.ResourceManager.GetObject(resourceName);
-            if (bytes == null)
-                throw new ArgumentException(string.Format("Data card {0} is not part of data cards resources.", resource));
-
-            return bytes;
+            var path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Datacards", Path.ChangeExtension(name.Replace(" ", "_"), ".zip"));
+            return File.ReadAllBytes(path);
         }
     }
 }

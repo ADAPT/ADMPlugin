@@ -1,12 +1,12 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using ADMPlugin;
+using AgGateway.ADAPT.ADMPlugin;
 using AgGateway.ADAPT.ApplicationDataModel.Common;
 using AgGateway.ADAPT.ApplicationDataModel.ReferenceLayers;
 using AgGateway.ADAPT.ApplicationDataModel.Representations;
 using NUnit.Framework;
 
-namespace PluginTest
+namespace AgGateway.ADAPT.PluginTest
 {
     [TestFixture]
     public class ProtobufReferenceLayerConverterTest

@@ -2,12 +2,12 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using ADMPlugin;
+using AgGateway.ADAPT.ADMPlugin;
 using AgGateway.ADAPT.ApplicationDataModel.ReferenceLayers;
 using Moq;
 using NUnit.Framework;
 
-namespace PluginTest
+namespace AgGateway.ADAPT.PluginTest
 {
     [TestFixture]
     public class ProtobufReferenceLayerSerializerTest

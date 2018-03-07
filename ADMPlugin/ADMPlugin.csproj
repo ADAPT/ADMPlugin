@@ -1,94 +1,23 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
   <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{544E1ACE-2655-4870-9EC0-D463C5947F7B}</ProjectGuid>
-    <OutputType>Library</OutputType>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>ADMPlugin</RootNamespace>
-    <AssemblyName>ADMPlugin</AssemblyName>
-    <TargetFrameworkVersion>v4.5.1</TargetFrameworkVersion>
-    <FileAlignment>512</FileAlignment>
+    <TargetFrameworks>netstandard2.0;net451</TargetFrameworks>
+    <Version>1.0.0</Version>
+    <Authors>AgGateway and ADAPT Contributors</Authors>
+    <Company>AgGateway</Company>
+    <Product>ADMPlugin</Product>
+    <NeutralLanguage>English (United States)</NeutralLanguage>
+    <Copyright>Copyright (C) 2015-18 AgGateway and ADAPT Contributors</Copyright>
+    <AssemblyName>AgGateway.ADAPT.ADMPlugin</AssemblyName>
+    <RootNamespace>AgGateway.ADAPT.ADMPlugin</RootNamespace>
+    <PackageId>AgGateway.ADAPT.ADMPlugin</PackageId>
+    <AssemblyVersion>1.0.0.0</AssemblyVersion>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
-    <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
-    <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-  </PropertyGroup>
+
   <ItemGroup>
-    <Reference Include="AgGateway.ADAPT.ApplicationDataModel, Version=1.0.0.1, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\AgGatewayADAPTFramework.1.1.0.10\lib\AgGateway.ADAPT.ApplicationDataModel.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="AgGateway.ADAPT.PluginManager, Version=1.0.0.1, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\AgGatewayADAPTFramework.1.1.0.10\lib\AgGateway.ADAPT.PluginManager.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="AgGateway.ADAPT.Representation, Version=1.0.0.1, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\AgGatewayADAPTFramework.1.1.0.10\lib\AgGateway.ADAPT.Representation.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="Newtonsoft.Json, Version=11.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <HintPath>..\packages\Newtonsoft.Json.11.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
-    </Reference>
-    <Reference Include="protobuf-net, Version=2.0.0.668, Culture=neutral, PublicKeyToken=257b51d87d2e4d67, processorArchitecture=MSIL">
-      <HintPath>..\packages\protobuf-net.2.0.0.668\lib\net40\protobuf-net.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="System" />
-    <Reference Include="System.Core" />
-    <Reference Include="System.Xml.Linq" />
-    <Reference Include="System.Data.DataSetExtensions" />
-    <Reference Include="Microsoft.CSharp" />
-    <Reference Include="System.Data" />
-    <Reference Include="System.Xml" />
+    <PackageReference Include="AgGatewayADAPTFramework" Version="2.0.0-alpha4" />
+    <PackageReference Include="Newtonsoft.Json" Version="11.0.1" />
+    <PackageReference Include="protobuf-net" Version="2.3.7" />
   </ItemGroup>
-  <ItemGroup>
-    <Compile Include="AdaptContractResolver.cs" />
-    <Compile Include="InternalJsonTextReader.cs" />
-    <Compile Include="AdmVersionInfoModel.cs" />
-    <Compile Include="AdmVersionInfoReader.cs" />
-    <Compile Include="AdmVersionInfoWriter.cs" />
-    <Compile Include="DatacardConstants.cs" />
-    <Compile Include="DocumentsExporter.cs" />
-    <Compile Include="DocumentsImporter.cs" />
-    <Compile Include="InternalJsonSerializer.cs" />
-    <Compile Include="Plugin.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="ProtobufReferenceLayerConverter.cs" />
-    <Compile Include="ProtobufReferenceLayerSerializer.cs" />
-    <Compile Include="ProtobufSerializer.cs" />
-    <Compile Include="SerializableRasterData.cs" />
-    <Compile Include="SerializableReferenceLayer.cs" />
-    <Compile Include="InternalSerializationBinder.cs" />
-    <Compile Include="ZipUtil.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="packages.config">
-      <SubType>Designer</SubType>
-    </None>
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="Resources\RepresentationSystem.xml">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Resources\UnitSystem.xml">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-  </ItemGroup>
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+
 </Project>

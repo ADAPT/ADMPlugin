@@ -1,8 +1,8 @@
-﻿using System.IO;
+using System.IO;
 using System.Reflection;
 using Newtonsoft.Json;
 
-namespace ADMPlugin
+namespace AgGateway.ADAPT.ADMPlugin
 {
 
     public interface IAdmVersionInfoWriter
@@ -19,8 +19,8 @@ namespace ADMPlugin
             if (!Directory.Exists(directory))
                 Directory.CreateDirectory(directory);
 
-            var version = Assembly.GetExecutingAssembly().GetName().Version.ToString();
-            var versionModel = new AdmVersionInfoModel() {AdmVersion = version};
+            var version = Assembly.GetExecutingAssembly().GetName().Version;
+            var versionModel = new AdmVersionInfoModel() {AdmVersion = version.ToString()};
             var versionModelString = JsonConvert.SerializeObject(versionModel);
 
             File.WriteAllText(filename, versionModelString);

@@ -1,7 +1,7 @@
-﻿using ADMPlugin;
+using AgGateway.ADAPT.ADMPlugin;
 using NUnit.Framework;
 
-namespace PluginTest
+namespace AgGateway.ADAPT.PluginTest
 {
     [TestFixture]
     public class InternalSerializationBinderTest

@@ -1,8 +1,8 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using ADMPlugin;
+using AgGateway.ADAPT.ADMPlugin;
 using AgGateway.ADAPT.ApplicationDataModel.ADM;
 using AgGateway.ADAPT.ApplicationDataModel.Common;
 using AgGateway.ADAPT.ApplicationDataModel.Documents;
@@ -14,9 +14,9 @@ using AgGateway.ADAPT.Representation.RepresentationSystem;
 using AgGateway.ADAPT.Representation.RepresentationSystem.ExtensionMethods;
 using AgGateway.ADAPT.Representation.UnitSystem;
 using NUnit.Framework;
-using TestUtilities;
+using AgGateway.ADAPT.TestUtilities;
 
-namespace PluginTest
+namespace AgGateway.ADAPT.PluginTest
 {
     [TestFixture]
     public class ProtobufSerializerTest
@@ -29,7 +29,7 @@ namespace PluginTest
         [SetUp]
         public void Setup()
         {
-            _testCardPath = DatacardUtility.WriteDataCard("TestDatacard");
+            _testCardPath = DatacardUtility.WriteDatacard("TestDatacard");
             _spatialRecords = new List<SpatialRecord>();
             _meters = new List<WorkingData>();
         }
