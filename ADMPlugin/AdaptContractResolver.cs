@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Reflection;
 using AgGateway.ADAPT.ApplicationDataModel.Equipment;
@@ -6,7 +6,7 @@ using AgGateway.ADAPT.ApplicationDataModel.LoggedData;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 
-namespace ADMPlugin
+namespace AgGateway.ADAPT.ADMPlugin
 {
     public class AdaptContractResolver : DefaultContractResolver
     {

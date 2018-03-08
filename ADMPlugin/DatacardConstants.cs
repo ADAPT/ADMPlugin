@@ -1,4 +1,4 @@
-namespace ADMPlugin
+namespace AgGateway.ADAPT.ADMPlugin
 {
     public class DatacardConstants
     {

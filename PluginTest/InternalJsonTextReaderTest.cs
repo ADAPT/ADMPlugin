@@ -1,9 +1,9 @@
-﻿using System.IO;
+using System.IO;
 using System.Text;
-using ADMPlugin;
+using AgGateway.ADAPT.ADMPlugin;
 using NUnit.Framework;
 
-namespace PluginTest
+namespace AgGateway.ADAPT.PluginTest
 {
     [TestFixture]
     public class InternalJsonTextReaderTest

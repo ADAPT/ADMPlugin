@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using AgGateway.ADAPT.ApplicationDataModel.ADM;
@@ -18,7 +18,7 @@ using AgGateway.ADAPT.ApplicationDataModel.Shapes;
 using ProtoBuf;
 using ProtoBuf.Meta;
 
-namespace ADMPlugin
+namespace AgGateway.ADAPT.ADMPlugin
 {
     public interface IProtobufSerializer
     {
@@ -575,10 +575,10 @@ namespace ADMPlugin
             model[typeof(Trait)].Add(817, "Description");
             model[typeof(Trait)].Add(818, "ManufacturerId");
             model[typeof(Trait)].Add(819, "CropIds");
-            model[typeof(ApplicationDataModel)].Add(167, "ProprietaryValues");
-            model[typeof(ApplicationDataModel)].Add(168, "Catalog");
-            model[typeof(ApplicationDataModel)].Add(169, "Documents");
-            model[typeof(ApplicationDataModel)].Add(170, "ReferenceLayers");
+            model[typeof(ApplicationDataModel.ADM.ApplicationDataModel)].Add(167, "ProprietaryValues");
+            model[typeof(ApplicationDataModel.ADM.ApplicationDataModel)].Add(168, "Catalog");
+            model[typeof(ApplicationDataModel.ADM.ApplicationDataModel)].Add(169, "Documents");
+            model[typeof(ApplicationDataModel.ADM.ApplicationDataModel)].Add(170, "ReferenceLayers");
             model[typeof(Documents)].Add(171, "WorkItems");
             model[typeof(Documents)].Add(172, "WorkItemOperations");
             model[typeof(Documents)].Add(173, "LoggedData");
@@ -728,12 +728,12 @@ namespace ADMPlugin
             model[typeof(InteriorBoundaryAttribute)].Add(711, "Description");
             model[typeof(EnumerationMember)].Add(109, "Code");
             model[typeof(EnumerationMember)].Add(110, "Value");
-            model[typeof(Representation)].Add(111, "Id");
-            model[typeof(Representation)].Add(112, "CodeSource");
-            model[typeof(Representation)].Add(113, "Code");
-            model[typeof(Representation)].Add(114, "Description");
-            model[typeof(Representation)].Add(115, "LongDescription");
-            model[typeof(Representation)].AddSubType(116, typeof(EnumeratedRepresentation));
+            model[typeof(ApplicationDataModel.Representations.Representation)].Add(111, "Id");
+            model[typeof(ApplicationDataModel.Representations.Representation)].Add(112, "CodeSource");
+            model[typeof(ApplicationDataModel.Representations.Representation)].Add(113, "Code");
+            model[typeof(ApplicationDataModel.Representations.Representation)].Add(114, "Description");
+            model[typeof(ApplicationDataModel.Representations.Representation)].Add(115, "LongDescription");
+            model[typeof(ApplicationDataModel.Representations.Representation)].AddSubType(116, typeof(EnumeratedRepresentation));
             model[typeof(EnumeratedRepresentation)].Add(117, "EnumeratedMembers");
             model[typeof(EnumeratedRepresentation)].Add(118, "RepresentationGroupId");
             model[typeof(EnumeratedRepresentationGroup)].Add(119, "Id");
@@ -746,7 +746,7 @@ namespace ADMPlugin
             model[typeof(EnumeratedValue)].Add(126, "Value");
             model[typeof(NumericValue)].Add(127, "Value");
             model[typeof(NumericValue)].Add(128, "UnitOfMeasure");
-            model[typeof(Representation)].AddSubType(129, typeof(NumericRepresentation));
+            model[typeof(ApplicationDataModel.Representations.Representation)].AddSubType(129, typeof(NumericRepresentation));
             model[typeof(NumericRepresentation)].Add(130, "DecimalDigits");
             model[typeof(NumericRepresentation)].Add(131, "MinValue");
             model[typeof(NumericRepresentation)].Add(132, "MaxValue");
@@ -755,7 +755,7 @@ namespace ADMPlugin
             model[typeof(NumericRepresentationValue)].Add(135, "Representation");
             model[typeof(NumericRepresentationValue)].Add(136, "Value");
             model[typeof(NumericRepresentationValue)].Add(137, "UserProvidedUnitOfMeasure");
-            model[typeof(Representation)].AddSubType(138, typeof(StringRepresentation));
+            model[typeof(ApplicationDataModel.Representations.Representation)].AddSubType(138, typeof(StringRepresentation));
             model[typeof(StringRepresentation)].Add(139, "MinCharacters");
             model[typeof(StringRepresentation)].Add(140, "MaxCharacters");
             model[typeof(RepresentationValue)].AddSubType(141, typeof(StringValue));

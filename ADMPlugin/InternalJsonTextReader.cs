@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using System.IO;
 using Newtonsoft.Json;
 
-namespace ADMPlugin
+namespace AgGateway.ADAPT.ADMPlugin
 {
     public class InternalJsonTextReader : JsonTextReader
     {

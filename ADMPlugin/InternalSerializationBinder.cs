@@ -1,9 +1,9 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
 using Newtonsoft.Json.Serialization;
 
-namespace ADMPlugin
+namespace AgGateway.ADAPT.ADMPlugin
 {
     public class InternalSerializationBinder : ISerializationBinder
     {

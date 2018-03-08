@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -7,28 +7,16 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Linq;
 
-namespace TestUtilities.ProtobufContract
+namespace AgGateway.ADAPT.TestUtilities.ProtobufContract
 {
     public class ProtobufElementMapper
     {
         private XDocument _document;
         private string _filepath;
 
-        public ProtobufElementMapper()
+        public ProtobufElementMapper(string protobufMappingFile)
         {
-            LoadXmlFile(@"..\..\Resources\ProtobufMapping.xml");
-        }
-
-
-        public bool LoadXmlFile(string filename)
-        {
-            if (!File.Exists(filename))
-                return false;
-
-            _filepath = filename;
-            _document = XDocument.Load(filename);
-
-            return true;
+            LoadXmlFile(protobufMappingFile);
         }
 
         public int Map(string elementName)
@@ -56,6 +44,15 @@ namespace TestUtilities.ProtobufContract
             return listOfIds.ToList();
         }
 
+        private void LoadXmlFile(string filename)
+        {
+            if (File.Exists(filename))
+            {
+                _filepath = filename;
+                _document = XDocument.Load(filename);
+            }
+        }
+
         private void AddMappedElement(string elementName, int nextId)
         {
             var element = new XElement("MappedElement", new XElement("Name", elementName), new XElement("Id", nextId));
@@ -76,5 +73,7 @@ namespace TestUtilities.ProtobufContract
 
             return nextId;
         }
+
+        public bool IsMappingDocumentLoaded { get { return _document != null; } }
     }
 }

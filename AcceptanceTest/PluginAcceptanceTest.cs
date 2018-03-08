@@ -1,8 +1,8 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using ADMPlugin;
+using AgGateway.ADAPT.ADMPlugin;
 using AgGateway.ADAPT.ApplicationDataModel.Equipment;
 using AgGateway.ADAPT.ApplicationDataModel.Guidance;
 using AgGateway.ADAPT.ApplicationDataModel.Logistics;
@@ -10,9 +10,9 @@ using AgGateway.ADAPT.ApplicationDataModel.Products;
 using AgGateway.ADAPT.ApplicationDataModel.Shapes;
 using AgGateway.ADAPT.Representation.RepresentationSystem;
 using NUnit.Framework;
-using TestUtilities;
+using AgGateway.ADAPT.TestUtilities;
 
-namespace AcceptanceTest
+namespace AgGateway.ADAPT.AcceptanceTest
 {
     [TestFixture]
     public class PluginAcceptanceTest
@@ -22,7 +22,7 @@ namespace AcceptanceTest
         [Test]
         public void GivenOlderVersionSetupCardWhenImportedToVersionWithChangedPropertyAndTypeNamesThenImportsToTheNewerModel()
         {
-            _cardPath = DatacardUtility.WriteDataCard("adm_setup_v1_0_8");
+            _cardPath = DatacardUtility.WriteDatacard("ADMSetupV1_0_8");
 
             var plugin = new Plugin();
             var applicationDataModel = plugin.Import(_cardPath);
@@ -162,7 +162,7 @@ namespace AcceptanceTest
         [Test]
         public void GivenOlderVersionDocCardWhenImportedToVersionWithChangedPropertyAndTypeNamesThenImportsToTheNewerModel()
         {
-            _cardPath = DatacardUtility.WriteDataCard("adm_doc_v1_0_8");
+            _cardPath = DatacardUtility.WriteDatacard("ADMDocV1_0_8");
 
             var plugin = new Plugin();
             var applicationDataModel = plugin.Import(_cardPath);

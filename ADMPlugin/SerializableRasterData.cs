@@ -1,11 +1,11 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using AgGateway.ADAPT.ApplicationDataModel.Representations;
 
-namespace ADMPlugin
+namespace AgGateway.ADAPT.ADMPlugin
 {
     public class SerializableRasterData<TVal>
     {
         public List<TVal> values;
-        public Representation Representation;
+        public ApplicationDataModel.Representations.Representation Representation;
     }
 }

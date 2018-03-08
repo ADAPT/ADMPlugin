@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using ADMPlugin;
+using AgGateway.ADAPT.ADMPlugin;
 using AgGateway.ADAPT.ApplicationDataModel.ADM;
 using AgGateway.ADAPT.ApplicationDataModel.Documents;
 using AgGateway.ADAPT.ApplicationDataModel.Guidance;
@@ -9,7 +9,7 @@ using AgGateway.ADAPT.ApplicationDataModel.LoggedData;
 using Moq;
 using NUnit.Framework;
 
-namespace PluginTest
+namespace AgGateway.ADAPT.PluginTest
 {
     [TestFixture]
     public class DocumentsExporterTest

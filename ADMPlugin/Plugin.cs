@@ -6,7 +6,7 @@ using System.Reflection;
 using AgGateway.ADAPT.ApplicationDataModel.ADM;
 using AgGateway.ADAPT.ApplicationDataModel.ReferenceLayers;
 
-namespace ADMPlugin
+namespace AgGateway.ADAPT.ADMPlugin
 {
     public class Plugin : IPlugin
     {
@@ -28,9 +28,9 @@ namespace ADMPlugin
         {
         }
 
-        public Plugin(IProtobufSerializer protobufSerializer, 
-            IProtobufReferenceLayerSerializer protobufReferenceLayerSerializer, 
-            IAdmVersionInfoWriter admVersionInfoWriter, 
+        public Plugin(IProtobufSerializer protobufSerializer,
+            IProtobufReferenceLayerSerializer protobufReferenceLayerSerializer,
+            IAdmVersionInfoWriter admVersionInfoWriter,
             IAdmVersionInfoReader admVersionInfoReader,
             InternalJsonSerializer internalJsonSerializer)
         {
@@ -90,46 +90,44 @@ namespace ADMPlugin
             return new Properties();
         }
 
-        public bool IsDataCardSupported(string dataPath, Properties properties = null)
+        public bool IsDataCardSupported(string path, Properties properties = null)
         {
-            var path = Path.Combine(dataPath, DatacardConstants.PluginFolderAndExtension);
+            var dataPath = Path.Combine(path, DatacardConstants.PluginFolderAndExtension);
 
-            if (! (Directory.Exists(path) && Directory.GetFiles(path, String.Format(DatacardConstants.FileFormat, "*"), SearchOption.AllDirectories).Any()))
+            if (! (Directory.Exists(dataPath) && Directory.GetFiles(dataPath, String.Format(DatacardConstants.FileFormat, "*"), SearchOption.AllDirectories).Any()))
                 return false;
 
-            var currentVersion = Assembly.GetExecutingAssembly().GetName().Version.ToString();
-            var currentMajorVersion = currentVersion.Substring(0, currentVersion.IndexOf('.'));
+            var currentVersion = Assembly.GetExecutingAssembly().GetName().Version;
 
             var filename = Path.Combine(dataPath, AdmVersionFilename);
             var dataVersionModel = _admVersionInfoReader.ReadVersionInfoModel(filename);
 
             if (dataVersionModel == null)
                 return true;
-            
-            var dataVersion = dataVersionModel.AdmVersion;
-            var dataMajorVersion = dataVersion.Substring(0, currentVersion.IndexOf('.'));
 
-            if (currentMajorVersion == dataMajorVersion)
+            var dataVersion = new Version(dataVersionModel.AdmVersion);
+
+            if (currentVersion.Major == dataVersion.Major)
                 return true;
 
             return false;
         }
 
-        public IList<IError> ValidateDataOnCard(string dataPath, Properties properties = null)
+        public IList<IError> ValidateDataOnCard(string path, Properties properties = null)
         {
             return new List<IError>();
         }
 
-        public IList<ApplicationDataModel> Import(string path, Properties properties = null)
+        public IList<ApplicationDataModel.ADM.ApplicationDataModel> Import(string path, Properties properties = null)
         {
             if (!IsDataCardSupported(path, properties))
                 return null;
             var catalog = ImportData<Catalog>(path, CatalogAdm);
             var documents = _documentsImporter.ImportDocuments(path, DocumentAdm, catalog);
             var proprietaryValues = ImportData<List<ProprietaryValue>>(path, ProprietaryValuesAdm);
-            var referenceLayers = ImportReferenceLayers(path, ReferencelayersAdm); 
+            var referenceLayers = ImportReferenceLayers(path, ReferencelayersAdm);
 
-            var applicationDataModel = new ApplicationDataModel
+            var applicationDataModel = new ApplicationDataModel.ADM.ApplicationDataModel
             {
                 ProprietaryValues = proprietaryValues,
                 Catalog = catalog,
@@ -137,7 +135,10 @@ namespace ADMPlugin
                 ReferenceLayers = referenceLayers
             };
 
-            return new[] { applicationDataModel };
+            return new List<ApplicationDataModel.ADM.ApplicationDataModel>
+            {
+                applicationDataModel
+            };
         }
 
         private IEnumerable<ReferenceLayer> ImportReferenceLayers(string path, string filename)
@@ -146,7 +147,7 @@ namespace ADMPlugin
             return _protobufReferenceLayerSerializer.Import(filepath, filename);
         }
 
-        public void Export(ApplicationDataModel dataModel, string exportPath, Properties properties = null)
+        public void Export(ApplicationDataModel.ADM.ApplicationDataModel dataModel, string exportPath, Properties properties = null)
         {
             var path = Path.Combine(exportPath, DatacardConstants.PluginFolderAndExtension);
             if (!Directory.Exists(path))
@@ -165,7 +166,7 @@ namespace ADMPlugin
         {
             _protobufReferenceLayerSerializer.Export(filePath, fileName, referenceLayers);
         }
-        
+
         private T ImportData<T>(string path, string searchPattern)
         {
             var files = Directory.GetFiles(path, searchPattern, SearchOption.AllDirectories);

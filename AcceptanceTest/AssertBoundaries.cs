@@ -4,7 +4,7 @@ using AgGateway.ADAPT.ApplicationDataModel.Logistics;
 using AgGateway.ADAPT.ApplicationDataModel.Shapes;
 using NUnit.Framework;
 
-namespace AcceptanceTest
+namespace AgGateway.ADAPT.AcceptanceTest
 {
     public static class AssertBoundaries
     {

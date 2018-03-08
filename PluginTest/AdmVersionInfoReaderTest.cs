@@ -1,10 +1,10 @@
-﻿using System;
+using System;
 using System.IO;
-using ADMPlugin;
+using AgGateway.ADAPT.ADMPlugin;
 using Newtonsoft.Json;
 using NUnit.Framework;
 
-namespace PluginTest
+namespace AgGateway.ADAPT.PluginTest
 {
     [TestFixture]
     public class AdmVersionInfoReaderTest

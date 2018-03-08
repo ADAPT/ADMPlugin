@@ -1,10 +1,10 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using AgGateway.ADAPT.ApplicationDataModel.Logistics;
 using AgGateway.ADAPT.Representation.RepresentationSystem;
 using NUnit.Framework;
 
-namespace AcceptanceTest
+namespace AgGateway.ADAPT.AcceptanceTest
 {
     public static class AssertLogistics
     {
