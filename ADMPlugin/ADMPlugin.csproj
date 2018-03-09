@@ -15,7 +15,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="AgGatewayADAPTFramework" Version="1.2.0-rc1" />
+    <PackageReference Include="AgGatewayADAPTFramework" Version="1.2.0" />
     <PackageReference Include="Newtonsoft.Json" Version="11.0.1" />
     <PackageReference Include="protobuf-net" Version="2.3.7" />
   </ItemGroup>
