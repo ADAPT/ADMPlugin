@@ -1,9 +1,12 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography.X509Certificates;
 using AgGateway.ADAPT.ADMPlugin;
 using AgGateway.ADAPT.ApplicationDataModel.Common;
 using AgGateway.ADAPT.ApplicationDataModel.ReferenceLayers;
 using AgGateway.ADAPT.ApplicationDataModel.Representations;
+using AgGateway.ADAPT.ApplicationDataModel.Shapes;
+using Castle.Components.DictionaryAdapter;
 using NUnit.Framework;
 
 namespace AgGateway.ADAPT.PluginTest
@@ -13,6 +16,7 @@ namespace AgGateway.ADAPT.PluginTest
     {
         private RasterReferenceLayer _referenceLayer;
         private ProtobufReferenceLayerConverter _converter;
+        private ShapeReferenceLayer _shapeReferenceLayer;
 
         [SetUp]
         public void Setup()
@@ -20,6 +24,7 @@ namespace AgGateway.ADAPT.PluginTest
             _referenceLayer = new RasterReferenceLayer();
 
             _converter = new ProtobufReferenceLayerConverter();
+            _shapeReferenceLayer=new ShapeReferenceLayer();
         }
 
         [Test]
@@ -37,8 +42,8 @@ namespace AgGateway.ADAPT.PluginTest
 
             var serializable = _converter.ConvertToSerializableReferenceLayer(_referenceLayer);
 
-            Assert.AreEqual(3, serializable.ReferenceLayer.ColumnCount);
-            Assert.AreEqual(2, serializable.ReferenceLayer.RowCount);
+            Assert.AreEqual(3, serializable.RasterReferenceLayer.ColumnCount);
+            Assert.AreEqual(2, serializable.RasterReferenceLayer.RowCount);
 
             var expectedStringValues = new List<string> {"one", "two", "three", "four", "five", "six"};
 
@@ -66,8 +71,8 @@ namespace AgGateway.ADAPT.PluginTest
 
             var serializable = _converter.ConvertToSerializableReferenceLayer(_referenceLayer);
 
-            Assert.AreEqual(3, serializable.ReferenceLayer.ColumnCount);
-            Assert.AreEqual(2, serializable.ReferenceLayer.RowCount);
+            Assert.AreEqual(3, serializable.RasterReferenceLayer.ColumnCount);
+            Assert.AreEqual(2, serializable.RasterReferenceLayer.RowCount);
 
             Assert.AreEqual(rasterDatas.Count, serializable.StringValues.Count);
 
@@ -102,8 +107,8 @@ namespace AgGateway.ADAPT.PluginTest
 
             var serializable = _converter.ConvertToSerializableReferenceLayer(_referenceLayer);
 
-            Assert.AreEqual(3, serializable.ReferenceLayer.ColumnCount);
-            Assert.AreEqual(2, serializable.ReferenceLayer.RowCount);
+            Assert.AreEqual(3, serializable.RasterReferenceLayer.ColumnCount);
+            Assert.AreEqual(2, serializable.RasterReferenceLayer.RowCount);
 
             var expectedStringValues = new List<string> { "1", "2", "3", "4", "5", "6" };
 
@@ -133,8 +138,8 @@ namespace AgGateway.ADAPT.PluginTest
 
             var serializable = _converter.ConvertToSerializableReferenceLayer(_referenceLayer);
 
-            Assert.AreEqual(3, serializable.ReferenceLayer.ColumnCount);
-            Assert.AreEqual(2, serializable.ReferenceLayer.RowCount);
+            Assert.AreEqual(3, serializable.RasterReferenceLayer.ColumnCount);
+            Assert.AreEqual(2, serializable.RasterReferenceLayer.RowCount);
 
             Assert.AreEqual(rasterDatas.Count, serializable.EnumerationMemberValues.Count);
 
@@ -170,8 +175,8 @@ namespace AgGateway.ADAPT.PluginTest
 
             var serializable = _converter.ConvertToSerializableReferenceLayer(_referenceLayer);
 
-            Assert.AreEqual(3, serializable.ReferenceLayer.ColumnCount);
-            Assert.AreEqual(2, serializable.ReferenceLayer.RowCount);
+            Assert.AreEqual(3, serializable.RasterReferenceLayer.ColumnCount);
+            Assert.AreEqual(2, serializable.RasterReferenceLayer.RowCount);
 
             var expectedStringValues = new List<double> { 1, 2, 3, 4, 5, 6 };
 
@@ -203,8 +208,8 @@ namespace AgGateway.ADAPT.PluginTest
 
             var serializable = _converter.ConvertToSerializableReferenceLayer(_referenceLayer);
 
-            Assert.AreEqual(3, serializable.ReferenceLayer.ColumnCount);
-            Assert.AreEqual(2, serializable.ReferenceLayer.RowCount);
+            Assert.AreEqual(3, serializable.RasterReferenceLayer.ColumnCount);
+            Assert.AreEqual(2, serializable.RasterReferenceLayer.RowCount);
 
             Assert.AreEqual(rasterDatas.Count, serializable.NumericValueValues.Count);
 
@@ -228,7 +233,7 @@ namespace AgGateway.ADAPT.PluginTest
         { 
             var serialzedReferenceLayer = new SerializableReferenceLayer();
             serialzedReferenceLayer.StringValues = new List<SerializableRasterData<string>> { new SerializableRasterData<string>{values = new List<string>{"one", "two", "three", "four", "five", "six" } } };
-            serialzedReferenceLayer.ReferenceLayer = _referenceLayer;
+            serialzedReferenceLayer.RasterReferenceLayer = _referenceLayer;
 
             _referenceLayer.StringRasterValues = null;
             _referenceLayer.ColumnCount = 3;
@@ -261,7 +266,7 @@ namespace AgGateway.ADAPT.PluginTest
                     },
                     new SerializableRasterData<string> {values = new List<string> {"11", "12", "13", "14", "15", "16"}}
                 },
-                ReferenceLayer = _referenceLayer
+                RasterReferenceLayer = _referenceLayer
             };
 
             _referenceLayer.StringRasterValues = null;
@@ -295,7 +300,7 @@ namespace AgGateway.ADAPT.PluginTest
             serialzedReferenceLayer.EnumerationMemberValues = new List<SerializableRasterData<EnumerationMember>>{ new SerializableRasterData<EnumerationMember>{ values = new List<EnumerationMember>{ new EnumerationMember {Value = "one" },  new EnumerationMember {Value = "two"},
                                                                                             new EnumerationMember {Value = "three"},  new EnumerationMember {Value = "four"},
                                                                                             new EnumerationMember {Value = "five"},  new EnumerationMember {Value = "six" } } } };
-            serialzedReferenceLayer.ReferenceLayer = _referenceLayer;
+            serialzedReferenceLayer.RasterReferenceLayer = _referenceLayer;
 
             _referenceLayer.EnumeratedRasterValues = null;
             _referenceLayer.ColumnCount = 3;
@@ -348,7 +353,7 @@ namespace AgGateway.ADAPT.PluginTest
                         }
                     }
                 },
-                ReferenceLayer = _referenceLayer
+                RasterReferenceLayer = _referenceLayer
             };
 
             _referenceLayer.EnumeratedRasterValues = null;
@@ -392,7 +397,7 @@ namespace AgGateway.ADAPT.PluginTest
                         }
                     }
                 },
-                ReferenceLayer = _referenceLayer
+                RasterReferenceLayer = _referenceLayer
             };
 
             _referenceLayer.ColumnCount = 3;
@@ -443,7 +448,7 @@ namespace AgGateway.ADAPT.PluginTest
                         }
                     },
                 },
-                ReferenceLayer = _referenceLayer
+                RasterReferenceLayer = _referenceLayer
             };
 
             _referenceLayer.ColumnCount = 3;
@@ -614,7 +619,7 @@ namespace AgGateway.ADAPT.PluginTest
                 new SerializableRasterData<string> { Representation = stringRepresentation1 },
                 new SerializableRasterData<string> { Representation = stringRepresentation2}
             };
-            serialzedReferenceLayer.ReferenceLayer = _referenceLayer;
+            serialzedReferenceLayer.RasterReferenceLayer = _referenceLayer;
 
             var referenceLayer = _converter.ConvertToReferenceLayer(serialzedReferenceLayer) as RasterReferenceLayer;
 
@@ -654,7 +659,7 @@ namespace AgGateway.ADAPT.PluginTest
                 new SerializableRasterData<NumericValue> { Representation = numericRepresentation1 },
                 new SerializableRasterData<NumericValue> { Representation = numericRepresentation2}
             };
-            serialzedReferenceLayer.ReferenceLayer = _referenceLayer;
+            serialzedReferenceLayer.RasterReferenceLayer = _referenceLayer;
 
             var referenceLayer = _converter.ConvertToReferenceLayer(serialzedReferenceLayer) as RasterReferenceLayer;
 
@@ -694,7 +699,7 @@ namespace AgGateway.ADAPT.PluginTest
                 new SerializableRasterData<EnumerationMember> { Representation = numericRepresentation1 },
                 new SerializableRasterData<EnumerationMember> { Representation = numericRepresentation2}
             };
-            serialzedReferenceLayer.ReferenceLayer = _referenceLayer;
+            serialzedReferenceLayer.RasterReferenceLayer = _referenceLayer;
 
             var referenceLayer = _converter.ConvertToReferenceLayer(serialzedReferenceLayer) as RasterReferenceLayer;
 
@@ -709,5 +714,149 @@ namespace AgGateway.ADAPT.PluginTest
             }
         }
 
+        [Test]
+        public void GivenShapeReferenceLayerWithMultiPointWhenConvertToSerializableThenIsConverted()
+        {
+            var point1 = new Point{X = 5, Y = 5, Z = 5};
+            var point2 = new Point { X = 10, Y = 10, Z = 10 };
+            _shapeReferenceLayer.ShapeLookups = new List<ShapeLookup>{new ShapeLookup{Shape = new MultiPoint{Id = 1, Points = new List<Point>{point1, point2}}}};
+
+            var result = _converter.ConvertToSerializableReferenceLayer(_shapeReferenceLayer);
+
+            Assert.IsInstanceOf(typeof(MultiPoint), result.ShapeLookupValues.First().shapeLookups.FirstOrDefault().Shape);
+            Assert.IsInstanceOf(typeof(ShapeReferenceLayer), result.ShapeReferenceLayer);
+        }
+
+        [Test]
+        public void GivenShapeReferenceLayerWithPolygonWhenConvertToSerializableThenIsConverted()
+        {
+            var point1 = new Point { X = 5, Y = 5, Z = 5 };
+            var point2 = new Point { X = 10, Y = 10, Z = 10 };
+            var polygon = new Polygon
+            {
+                ExteriorRing = new LinearRing { Id = 1, Points = new List<Point>{ point1, point2} }
+            };
+
+            _shapeReferenceLayer.ShapeLookups = new List<ShapeLookup> { new ShapeLookup { Shape = polygon }};
+
+            var result = _converter.ConvertToSerializableReferenceLayer(_shapeReferenceLayer);
+
+            Assert.IsInstanceOf(typeof(Polygon), result.ShapeLookupValues.First().shapeLookups.FirstOrDefault().Shape);
+            Assert.IsInstanceOf(typeof(ShapeReferenceLayer), result.ShapeReferenceLayer);
+        }
+
+        [Test]
+        public void GivenShapeReferenceLayerWithNullShapeLookUpsWhenConvertToSerializableThenIsNotConverted()
+        {
+            _shapeReferenceLayer.ShapeLookups = null;
+            var result = _converter.ConvertToSerializableReferenceLayer(_shapeReferenceLayer);
+
+            Assert.IsNull(result.ShapeLookupValues);
+            Assert.IsInstanceOf(typeof(ShapeReferenceLayer), result.ShapeReferenceLayer);
+        }
+
+        [Test]
+        public void GivenShapeReferenceLayerWithEmptyShapeLookUpsWhenConvertToSerializableThenIsNotConverted()
+        {
+            _shapeReferenceLayer.ShapeLookups = new List<ShapeLookup>();
+            var result = _converter.ConvertToSerializableReferenceLayer(_shapeReferenceLayer);
+
+            Assert.IsNull(result.ShapeLookupValues);
+            Assert.IsInstanceOf(typeof(ShapeReferenceLayer), result.ShapeReferenceLayer);
+        }
+
+        [Test]
+        public void GivenShapeReferenceLayerWithNullShapeWhenConvertoSerializableThenIsNotConverted()
+        {
+            _shapeReferenceLayer.ShapeLookups = new List<ShapeLookup>{new ShapeLookup()};
+            var result = _converter.ConvertToSerializableReferenceLayer(_shapeReferenceLayer);
+
+            Assert.IsNull(result.ShapeLookupValues.First().shapeLookups.First().Shape);
+            Assert.IsInstanceOf(typeof(ShapeReferenceLayer), result.ShapeReferenceLayer);
+        }
+        
+        [Test]
+        public void GivenSerializableReferenceLayerWithMultiPointWhenConvertoReferenceLayerThenIsConverted()
+        {
+            var serializedReferenceLayer = new SerializableReferenceLayer();
+            var point1 = new Point { X = 5, Y = 5, Z = 5 };
+            var point2 = new Point { X = 10, Y = 10, Z = 10 };
+            serializedReferenceLayer.ShapeLookupValues=new List<SerializableShapeData>
+            {
+                new SerializableShapeData{shapeLookups = new List<ShapeLookup>{new ShapeLookup{Shape = new MultiPoint{Id = 1, Points = new List<Point>{point1, point2}}}}}
+            };
+            serializedReferenceLayer.ShapeReferenceLayer = _shapeReferenceLayer;
+
+            var result = _converter.ConvertToReferenceLayer(serializedReferenceLayer) as ShapeReferenceLayer;
+            var multiPoint = result.ShapeLookups.First().Shape;
+
+            Assert.IsInstanceOf(typeof(MultiPoint), multiPoint);
+            Assert.IsInstanceOf(typeof(ShapeReferenceLayer), result);
+        }
+
+        [Test]
+        public void GivenSerializableReferenceLayerWithPolygonWhenConvertoReferenceLayerThenIsConverted()
+        {
+            var serializedReferenceLayer = new SerializableReferenceLayer();
+            var point1 = new Point { X = 5, Y = 5, Z = 5 };
+            var point2 = new Point { X = 10, Y = 10, Z = 10 };
+            var polygon = new Polygon
+            {
+                ExteriorRing = new LinearRing { Id = 1, Points = new List<Point> { point1, point2 } }
+            };
+            serializedReferenceLayer.ShapeLookupValues = new List<SerializableShapeData>
+            {
+                new SerializableShapeData{shapeLookups = new List<ShapeLookup>{new ShapeLookup{Shape = polygon }}}
+            };
+            serializedReferenceLayer.ShapeReferenceLayer = _shapeReferenceLayer;
+
+            var result = _converter.ConvertToReferenceLayer(serializedReferenceLayer) as ShapeReferenceLayer;
+            var actualPolygon = result.ShapeLookups.First().Shape;
+
+            Assert.IsInstanceOf(typeof(Polygon), actualPolygon);
+            Assert.IsInstanceOf(typeof(ShapeReferenceLayer), result);
+        }
+
+        [Test]
+        public void GivenSerializableReferenceLayerWithNullShapeLookUpsValuesWhenConvertoReferenceLayerThenIsNotConverted()
+        {
+            var serializedReferenceLayer = new SerializableReferenceLayer
+            {
+                ShapeReferenceLayer = _shapeReferenceLayer,
+                ShapeLookupValues = null
+            };
+
+            var result = _converter.ConvertToReferenceLayer(serializedReferenceLayer) as ShapeReferenceLayer;
+
+            Assert.IsEmpty(result.ShapeLookups);
+        }
+
+        [Test]
+        public void GivenSerializableReferenceLayerWithEmptyShapeLookUpsValuesWhenConvertoReferenceLayerThenIsNotConverted()
+        {
+            var serializedReferenceLayer = new SerializableReferenceLayer
+            {
+                ShapeReferenceLayer = _shapeReferenceLayer,
+                ShapeLookupValues = new List<SerializableShapeData>()
+            };
+
+            var result = _converter.ConvertToReferenceLayer(serializedReferenceLayer) as ShapeReferenceLayer;
+
+            Assert.IsEmpty(result.ShapeLookups);
+        }
+
+        [Test]
+        public void GivenSerializableReferenceLayerWithNullShapeLookUpsWhenConvertoReferenceLayerThenIsNotConverted()
+        {
+            var serializedReferenceLayer = new SerializableReferenceLayer
+            {
+                ShapeReferenceLayer = _shapeReferenceLayer,
+                ShapeLookupValues = new List<SerializableShapeData> { new SerializableShapeData()}
+            };
+
+            var result = _converter.ConvertToReferenceLayer(serializedReferenceLayer) as ShapeReferenceLayer;
+
+            Assert.IsEmpty(result.ShapeLookups);
+        }
     }
 }

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -128,6 +128,20 @@ namespace AgGateway.ADAPT.PluginTest
             var result = _serializer.Import(_filepath, "notaFile.bin");
 
             Assert.AreEqual(0, result.Count());
+        }
+
+        [Test]
+        public void GivenFilenameAndShapeRefenceLayerWhenExportThenSeralizableReferenceLayersAreSerialized()
+        {
+            const string filename = "file.bin";
+            var output = Path.Combine(_filepath, filename);
+            _referenceLayers.Add(new ShapeReferenceLayer());
+
+            var serializableReferenceLayer = new SerializableReferenceLayer();
+            _converterMock.Setup(x => x.ConvertToSerializableReferenceLayer(_referenceLayers.First())).Returns(serializableReferenceLayer);
+            _serializer.Export(_filepath, "file.bin", _referenceLayers);
+
+            _serializerMock.Verify(x => x.Write(output, new List<SerializableReferenceLayer> { serializableReferenceLayer }), Times.Once);
         }
 
         [TearDown]

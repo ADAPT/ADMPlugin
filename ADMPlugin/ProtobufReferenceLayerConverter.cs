@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Linq;
 using AgGateway.ADAPT.ApplicationDataModel.ReferenceLayers;
 using AgGateway.ADAPT.ApplicationDataModel.Representations;
@@ -15,17 +15,36 @@ namespace AgGateway.ADAPT.ADMPlugin
     {
         public SerializableReferenceLayer ConvertToSerializableReferenceLayer(ReferenceLayer referenceLayer)
         {
-            var rasterReferenceLayer = referenceLayer as RasterReferenceLayer;
-            var stringValues = GetStringValues(rasterReferenceLayer);
-            var enumeratedValues = GetEnumeratedValues(rasterReferenceLayer);
-            var numericValues = GetNumericValues(rasterReferenceLayer);
-            return new SerializableReferenceLayer
+            if (referenceLayer.GetType() == typeof(RasterReferenceLayer))
             {
-                ReferenceLayer = rasterReferenceLayer,
-                StringValues = stringValues,
-                EnumerationMemberValues = enumeratedValues,
-                NumericValueValues = numericValues
-            };
+                var rasterReferenceLayer = referenceLayer as RasterReferenceLayer;
+                var stringValues = GetStringValues(rasterReferenceLayer);
+                var enumeratedValues = GetEnumeratedValues(rasterReferenceLayer);
+                var numericValues = GetNumericValues(rasterReferenceLayer);
+                return new SerializableReferenceLayer()
+                {
+                    RasterReferenceLayer = rasterReferenceLayer,
+                    StringValues = stringValues,
+                    EnumerationMemberValues = enumeratedValues,
+                    NumericValueValues = numericValues
+                };
+            }
+
+            if (referenceLayer.GetType() == typeof(ShapeReferenceLayer))
+            {
+                var shapeReferenceLayer = referenceLayer as ShapeReferenceLayer;
+
+                if (shapeReferenceLayer != null && (shapeReferenceLayer.ShapeLookups == null || !shapeReferenceLayer.ShapeLookups.Any()))
+                    return new SerializableReferenceLayer{ShapeReferenceLayer = shapeReferenceLayer};
+
+                return new SerializableReferenceLayer
+                {
+                    ShapeReferenceLayer = shapeReferenceLayer,
+                    ShapeLookupValues = new List<SerializableShapeData> { new SerializableShapeData{shapeLookups = shapeReferenceLayer?.ShapeLookups}}
+                };
+            }
+
+            return null;
         }
 
         private List<SerializableRasterData<NumericValue>> GetNumericValues(RasterReferenceLayer rasterReferenceLayer)
@@ -97,11 +116,30 @@ namespace AgGateway.ADAPT.ADMPlugin
 
         public ReferenceLayer ConvertToReferenceLayer(SerializableReferenceLayer serializableReferenceLayer)
         {
-            var convertToReferenceLayer = serializableReferenceLayer.ReferenceLayer;
-            convertToReferenceLayer.StringRasterValues = GetStringValues( serializableReferenceLayer);
-            convertToReferenceLayer.EnumeratedRasterValues = GetEnumeratedValues(serializableReferenceLayer);
-            convertToReferenceLayer.NumericRasterValues = GetNumericValues(serializableReferenceLayer);
-            return convertToReferenceLayer;
+            if (serializableReferenceLayer.RasterReferenceLayer != null)
+            {
+                var convertToReferenceLayer = serializableReferenceLayer.RasterReferenceLayer;
+                convertToReferenceLayer.StringRasterValues = GetStringValues(serializableReferenceLayer);
+                convertToReferenceLayer.EnumeratedRasterValues = GetEnumeratedValues(serializableReferenceLayer);
+                convertToReferenceLayer.NumericRasterValues = GetNumericValues(serializableReferenceLayer);
+                return convertToReferenceLayer;
+            }
+
+            if (serializableReferenceLayer.ShapeReferenceLayer != null)
+            {
+                var convertToShapeReferenceLayer = serializableReferenceLayer.ShapeReferenceLayer;
+
+                if (serializableReferenceLayer.ShapeLookupValues == null || !serializableReferenceLayer.ShapeLookupValues.Any())
+                    return convertToShapeReferenceLayer;
+
+                convertToShapeReferenceLayer.ShapeLookups = serializableReferenceLayer.ShapeLookupValues
+                                                                .Where(a => a.shapeLookups != null)
+                                                                .SelectMany(a => a.shapeLookups).ToList();
+
+                return convertToShapeReferenceLayer;
+            }
+
+            return null;
         }
 
         private List<RasterData<NumericRepresentation, NumericValue>> GetNumericValues(SerializableReferenceLayer serializableReferenceLayer)
@@ -110,8 +148,8 @@ namespace AgGateway.ADAPT.ADMPlugin
             if (values == null || !values.Any())
                 return null;
 
-            var rowCount = serializableReferenceLayer.ReferenceLayer.RowCount;
-            var columnCount = serializableReferenceLayer.ReferenceLayer.ColumnCount;
+            var rowCount = serializableReferenceLayer.RasterReferenceLayer.RowCount;
+            var columnCount = serializableReferenceLayer.RasterReferenceLayer.ColumnCount;
 
             var data = new List<RasterData<NumericRepresentation, NumericValue>>();
             foreach (var value in values)
@@ -136,8 +174,8 @@ namespace AgGateway.ADAPT.ADMPlugin
             if (values == null || !values.Any())
                 return null;
 
-            var rowCount = serializableReferenceLayer.ReferenceLayer.RowCount;
-            var columnCount = serializableReferenceLayer.ReferenceLayer.ColumnCount;
+            var rowCount = serializableReferenceLayer.RasterReferenceLayer.RowCount;
+            var columnCount = serializableReferenceLayer.RasterReferenceLayer.ColumnCount;
 
             var data = new List<RasterData<EnumeratedRepresentation, EnumerationMember>>();
             foreach (var value in values)
@@ -161,8 +199,8 @@ namespace AgGateway.ADAPT.ADMPlugin
             if (values == null || !values.Any())
                 return null;
 
-            var rowCount = serializableReferenceLayer.ReferenceLayer.RowCount;
-            var columnCount = serializableReferenceLayer.ReferenceLayer.ColumnCount;
+            var rowCount = serializableReferenceLayer.RasterReferenceLayer.RowCount;
+            var columnCount = serializableReferenceLayer.RasterReferenceLayer.ColumnCount;
 
             var data = new List<RasterData<StringRepresentation, string>>();
             foreach(var value in values)

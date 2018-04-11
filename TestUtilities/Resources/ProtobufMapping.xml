@@ -3392,4 +3392,16 @@
     <Name>AgGateway.ADAPT.ApplicationDataModel.LoggedData.LoggedData.WorkRecordId</Name>
     <Id>848</Id>
   </MappedElement>
+  <MappedElement>
+    <Name>Manually Added - used for ReferenceLayer Protobuf</Name>
+    <Id>849</Id>
+  </MappedElement>
+  <MappedElement>
+    <Name>Manually Added - used for ReferenceLayer Protobuf</Name>
+    <Id>850</Id>
+  </MappedElement>
+  <MappedElement>
+    <Name>Manually Added - used for ReferenceLayer Protobuf</Name>
+    <Id>851</Id>
+  </MappedElement>
 </ProtobufMapping>

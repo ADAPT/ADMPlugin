@@ -66,10 +66,14 @@ namespace AgGateway.ADAPT.TestUtilities.ProtobufContract
             Debug.WriteLine(@"model[typeof(SerializableRasterData<EnumerationMember>)].Add(470, ""Representation"");");
             Debug.WriteLine(@"model[typeof(SerializableRasterData<NumericValue>)].Add(471, ""Representation"");");
 
-            Debug.WriteLine(@"model[typeof(SerializableReferenceLayer)].Add(472, ""ReferenceLayer"");");
+            Debug.WriteLine(@"model[typeof(SerializableReferenceLayer)].Add(472, ""RasterReferenceLayer"");");
             Debug.WriteLine(@"model[typeof(SerializableReferenceLayer)].Add(473, ""StringValues"");");
             Debug.WriteLine(@"model[typeof(SerializableReferenceLayer)].Add(474, ""EnumerationMemberValues"");");
             Debug.WriteLine(@"model[typeof(SerializableReferenceLayer)].Add(475, ""NumericValueValues"");");
+
+            Debug.WriteLine(@"model[typeof(SerializableReferenceLayer)].Add(849, ""ShapeReferenceLayer"");");
+            Debug.WriteLine(@"model[typeof(SerializableReferenceLayer)].Add(850, ""ShapeLookupValues"");");
+            Debug.WriteLine(@"model[typeof(SerializableShapeData)].Add(851, ""shapeLookups"");");
 
             Debug.WriteLine(@"// END OF GENERATED CODE:");
             Debug.WriteLine(@"//");
