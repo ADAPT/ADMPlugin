@@ -172,6 +172,28 @@ namespace AgGateway.ADAPT.AcceptanceTest
             Assert.AreNotEqual(0, id);
         }
 
+        [Test]
+        public void GivenFlagSessionsLayerCardWhenRoundTripThenModelAreSame()
+        {
+            _cardPath = DatacardUtility.WriteDatacard("FlagSessionLayers");
+
+            var plugin = new Plugin();
+
+            //import to common object model
+            var originalApplicationDataModel = plugin.Import(_cardPath);
+
+            //export to ADM
+            for (var i = 0; i < originalApplicationDataModel.Count; i++)
+            {
+                plugin.Export(originalApplicationDataModel[i], _cardPath);
+
+                //import to common object model from exported adm file
+                var exportedApplicationDataModel = plugin.Import(_cardPath);
+
+                AssertReferenceLayers.VerifyReferenceLayers(originalApplicationDataModel[i].ReferenceLayers.ToList(), exportedApplicationDataModel[i].ReferenceLayers.ToList());
+            }
+        }
+
         [TearDown]
         public void Teardown()
         {

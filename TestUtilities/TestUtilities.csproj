@@ -34,6 +34,9 @@
     <None Update="Datacards\ADMSetupV1_0_8.zip">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Update="Datacards\FlagSessionLayers.zip">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="Datacards\IncorrectFiles.zip">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
