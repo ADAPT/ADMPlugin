@@ -796,10 +796,13 @@ namespace AgGateway.ADAPT.ADMPlugin
             model[typeof(SerializableRasterData<string>)].Add(469, "Representation");
             model[typeof(SerializableRasterData<EnumerationMember>)].Add(470, "Representation");
             model[typeof(SerializableRasterData<NumericValue>)].Add(471, "Representation");
-            model[typeof(SerializableReferenceLayer)].Add(472, "ReferenceLayer");
+            model[typeof(SerializableReferenceLayer)].Add(472, "RasterReferenceLayer");
             model[typeof(SerializableReferenceLayer)].Add(473, "StringValues");
             model[typeof(SerializableReferenceLayer)].Add(474, "EnumerationMemberValues");
             model[typeof(SerializableReferenceLayer)].Add(475, "NumericValueValues");
+            model[typeof(SerializableReferenceLayer)].Add(849, "ShapeReferenceLayer");
+            model[typeof(SerializableReferenceLayer)].Add(850, "ShapeLookupValues");
+            model[typeof(SerializableShapeData)].Add(851, "shapeLookups");
             // END OF GENERATED CODE:
             //
             //
