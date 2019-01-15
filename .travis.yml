@@ -11,7 +11,6 @@ jobs:
       script:
         - dotnet test ./PluginTest/PluginTest.csproj -c Release
         - dotnet test ./AcceptanceTest/AcceptanceTest.csproj -c Release
-        - dotnet test ./TestUtilities/TestUtilities.csproj -c Release
     - stage: deploy
       if: tag =~ ^v\d+\.\d+\.\d+
       mono: 5.8.0

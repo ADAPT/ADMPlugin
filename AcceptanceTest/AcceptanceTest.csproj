@@ -5,7 +5,7 @@
     <TargetFramework>netcoreapp2.0</TargetFramework>
     <Version>0.0.0</Version>
     <NeutralLanguage></NeutralLanguage>
-    <Copyright>Copyright (C) 2015-18 AgGateway and ADAPT Contributors</Copyright>
+    <Copyright>Copyright (C) 2015-19 AgGateway and ADAPT Contributors</Copyright>
     <Authors>AgGateway and ADAPT Contributors</Authors>
     <Company>AgGateway</Company>
     <Product>ADMPlugin</Product>
@@ -15,10 +15,10 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="AgGatewayADAPTFramework" Version="1.2.0" />
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.6.0" />
-    <PackageReference Include="NUnit" Version="3.9.0" />
-    <PackageReference Include="NUnit3TestAdapter" Version="3.9.0" />
+    <PackageReference Include="AgGatewayADAPTFramework" Version="2.0.1" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.9.0" />
+    <PackageReference Include="NUnit" Version="3.11.0" />
+    <PackageReference Include="NUnit3TestAdapter" Version="3.12.0" />
   </ItemGroup>
 
   <ItemGroup>
