@@ -1,5 +1,4 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <TargetFramework>netcoreapp2.0</TargetFramework>
@@ -13,17 +12,14 @@
     <RootNamespace>AgGateway.ADAPT.AcceptanceTest</RootNamespace>
     <PackageId>AgGateway.ADAPT.AcceptanceTest</PackageId>
   </PropertyGroup>
-
   <ItemGroup>
-    <PackageReference Include="AgGatewayADAPTFramework" Version="2.0.1" />
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.9.0" />
+    <PackageReference Include="AgGatewayADAPTFramework" Version="2.0.2" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.0.1" />
     <PackageReference Include="NUnit" Version="3.11.0" />
-    <PackageReference Include="NUnit3TestAdapter" Version="3.12.0" />
+    <PackageReference Include="NUnit3TestAdapter" Version="3.13.0" />
   </ItemGroup>
-
   <ItemGroup>
     <ProjectReference Include="..\ADMPlugin\ADMPlugin.csproj" />
     <ProjectReference Include="..\TestUtilities\TestUtilities.csproj" />
   </ItemGroup>
-
 </Project>
