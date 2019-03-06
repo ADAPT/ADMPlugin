@@ -1,5 +1,4 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-
   <PropertyGroup>
     <TargetFrameworks>netstandard2.0;net451</TargetFrameworks>
     <Version>1.0.0</Version>
@@ -13,11 +12,9 @@
     <PackageId>AgGateway.ADAPT.ADMPlugin</PackageId>
     <AssemblyVersion>1.0.0.0</AssemblyVersion>
   </PropertyGroup>
-
   <ItemGroup>
-    <PackageReference Include="AgGatewayADAPTFramework" Version="2.0.1" />
+    <PackageReference Include="AgGatewayADAPTFramework" Version="2.0.2" />
     <PackageReference Include="Newtonsoft.Json" Version="12.0.1" />
     <PackageReference Include="protobuf-net" Version="2.4.0" />
   </ItemGroup>
-
 </Project>
