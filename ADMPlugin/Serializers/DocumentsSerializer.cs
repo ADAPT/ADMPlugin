@@ -303,8 +303,8 @@ namespace AgGateway.ADAPT.ADMPlugin.Serializers
 
     private IEnumerable<WorkItem> ReadWorkItems(IBaseSerializer baseSerializer, string documentsPath)
     {
-      var loggedDataFiles = Directory.EnumerateFiles(documentsPath, ConvertToSearchPattern(DatacardConstants.WorkItemFile));
-      return loggedDataFiles.Select(loggedDataFile => baseSerializer.Deserialize<WorkItem>(loggedDataFile));
+        var loggedDataFiles = Directory.EnumerateFiles(documentsPath, ConvertToSearchPattern(DatacardConstants.WorkItemFileOnly));
+        return loggedDataFiles.Select(loggedDataFile => baseSerializer.Deserialize<WorkItem>(loggedDataFile));
     }
 
     private IEnumerable<WorkItemOperation> ReadWorkItemOperations(IBaseSerializer baseSerializer, string documentsPath)

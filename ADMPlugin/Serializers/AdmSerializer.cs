@@ -48,8 +48,8 @@ namespace AgGateway.ADAPT.ADMPlugin.Serializers
       }
 
       _propriataryValuesSerializer.Serialize(GetPropriataryValuesBaseSerializer(_defaultSerializationVersion), dataModel.ProprietaryValues, dataPath);
-      _catalogSerializer.Serialize(GetCatalogBaseSerializer(_defaultSerializationVersion), dataModel.Catalog, dataPath);
       _documentsSerializer.Serialize(GetDocumentsBaseSerializer(_defaultSerializationVersion), dataModel.Documents, dataPath);
+      _catalogSerializer.Serialize(GetCatalogBaseSerializer(_defaultSerializationVersion), dataModel.Catalog, dataPath);
       _referenceLayersSerializer.Serialize(GetReferenceLayersBaseSerializer(_defaultSerializationVersion), dataModel.ReferenceLayers, dataPath);
       _versionSerializer.Serialize(_defaultSerializationVersion, dataPath);
     }

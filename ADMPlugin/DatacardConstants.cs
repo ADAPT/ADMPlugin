@@ -22,5 +22,6 @@ namespace AgGateway.ADAPT.ADMPlugin
     public const string LoadFile = "Recommendation{0}.adm";
     public const string VersionFile = "AdmVersion.info";
     public const string FileFormat = "{0}.adm";
-  }
+    public const string WorkItemFileOnly = "WorkItem-{0}.adm";
+    }
 }
