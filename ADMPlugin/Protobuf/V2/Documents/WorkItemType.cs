@@ -12,7 +12,7 @@ namespace AgGateway.ADAPT.ADMPlugin.Protobuf.V2.Documents
       var type = model.Add(typeof(AgGateway.ADAPT.ApplicationDataModel.Documents.WorkItem), Constants.UseDefaults);
       type.AddField(1, nameof(AgGateway.ADAPT.ApplicationDataModel.Documents.WorkItem.Id));
       type.AddField(3, nameof(AgGateway.ADAPT.ApplicationDataModel.Documents.WorkItem.Notes));
-      type.AddField(3, nameof(AgGateway.ADAPT.ApplicationDataModel.Documents.WorkItem.TimeScopes));
+      type.AddField(10, nameof(AgGateway.ADAPT.ApplicationDataModel.Documents.WorkItem.TimeScopes));
       type.AddField(15, nameof(AgGateway.ADAPT.ApplicationDataModel.Documents.WorkItem.WorkItemPriority));
       type.AddField(4, nameof(AgGateway.ADAPT.ApplicationDataModel.Documents.WorkItem.PeopleRoleIds));
       type.AddField(16, nameof(AgGateway.ADAPT.ApplicationDataModel.Documents.WorkItem.GrowerId));

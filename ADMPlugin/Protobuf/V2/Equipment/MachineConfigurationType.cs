@@ -13,6 +13,7 @@ namespace AgGateway.ADAPT.ADMPlugin.Protobuf.V2.Equipment
       type.AddField(1, nameof(AgGateway.ADAPT.ApplicationDataModel.Equipment.MachineConfiguration.GpsReceiverXOffset));
       type.AddField(2, nameof(AgGateway.ADAPT.ApplicationDataModel.Equipment.MachineConfiguration.GpsReceiverYOffset));
       type.AddField(3, nameof(AgGateway.ADAPT.ApplicationDataModel.Equipment.MachineConfiguration.GpsReceiverZOffset));
+      type.AddField(4, nameof(AgGateway.ADAPT.ApplicationDataModel.Equipment.MachineConfiguration.OriginAxleLocation));
     }
   }
 }
