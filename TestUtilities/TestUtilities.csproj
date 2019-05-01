@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>netcoreapp2.0</TargetFramework>
-    <Copyright>Copyright (C) 2015-18 AgGateway and ADAPT Contributors</Copyright>
+    <Copyright>Copyright (C) 2015-19 AgGateway and ADAPT Contributors</Copyright>
     <AssemblyVersion>0.0.0.0</AssemblyVersion>
     <Version>0.0.0</Version>
     <Authors>AgGateway and ADAPT Contributors</Authors>
@@ -14,48 +14,22 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="AgGatewayADAPTFramework" Version="1.2.0" />
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.6.0" />
-    <PackageReference Include="Moq" Version="4.8.2" />
-    <PackageReference Include="Newtonsoft.Json" Version="11.0.1" />
-    <PackageReference Include="NUnit" Version="3.9.0" />
-    <PackageReference Include="NUnit3TestAdapter" Version="3.9.0" />
-    <PackageReference Include="protobuf-net" Version="2.3.7" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\ADMPlugin\ADMPlugin.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Update="Datacards\ADMDocV1_0_8.zip">
+    <None Update="Datacards\ADMDoc_V1_0_8.zip">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="Datacards\ADMSetupV1_0_8.zip">
+    <None Update="Datacards\ADMSetup_V1_0_8.zip">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="Datacards\IncorrectFiles.zip">
+    <None Update="Datacards\FlagSessionLayers_V1.zip">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="Datacards\IncorrectHierarchy.zip">
+    <None Update="Datacards\IncorrectFiles_V1.zip">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="Datacards\TestDatacard.zip">
+    <None Update="Datacards\IncorrectHierarchy_V1.zip">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="ProtobufTestFiles\ProtobufMappingTest.xml">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="ProtobufTestFiles\ProtobufMappingTest2.xml">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="ProtobufTestFiles\ProtobufMappingTest3.xml">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="ProtobufTestFiles\test.proto">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Resources\ProtobufMapping.xml">
+    <None Update="Datacards\TestDatacard_V1.zip">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>
