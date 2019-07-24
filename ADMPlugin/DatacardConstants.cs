@@ -19,7 +19,7 @@ namespace AgGateway.ADAPT.ADMPlugin
     public const string CatalogFile = "Catalog.adm";
     public const string ProprietaryValuesFile = "ProprietaryValues.adm";
     public const string ReferenceLayersFile = "ReferenceLayers.adm";
-    public const string LoadFile = "Recommendation{0}.adm";
+    public const string LoadFile = "Load{0}.adm";
     public const string VersionFile = "AdmVersion.info";
     public const string FileFormat = "{0}.adm";
     public const string WorkItemFileOnly = "WorkItem-{0}.adm";
