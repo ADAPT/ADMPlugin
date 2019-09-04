@@ -291,65 +291,92 @@ namespace AgGateway.ADAPT.ADMPlugin.Serializers
 
     private IEnumerable<WorkRecord> ReadWorkRecords(IBaseSerializer baseSerializer, string documentsPath)
     {
-      var loggedDataFiles = Directory.EnumerateFiles(documentsPath, ConvertToSearchPattern(DatacardConstants.WorkRecordFile));
-      return loggedDataFiles.Select(loggedDataFile => baseSerializer.Deserialize<WorkRecord>(loggedDataFile));
+        var workRecordFiles = Directory.EnumerateFiles(documentsPath, ConvertToSearchPattern(DatacardConstants.WorkRecordFile));
+        foreach (var workRecordFile in workRecordFiles)
+        {
+            yield return baseSerializer.Deserialize<WorkRecord>(workRecordFile);
+        }
     }
 
     private IEnumerable<WorkOrder> ReadWorkOrders(IBaseSerializer baseSerializer, string documentsPath)
     {
-      var loggedDataFiles = Directory.EnumerateFiles(documentsPath, ConvertToSearchPattern(DatacardConstants.WorkOrderFile));
-      return loggedDataFiles.Select(loggedDataFile => baseSerializer.Deserialize<WorkOrder>(loggedDataFile));
+        var loggedDataFiles = Directory.EnumerateFiles(documentsPath, ConvertToSearchPattern(DatacardConstants.WorkOrderFile));
+        foreach (var loggedDataFile in loggedDataFiles)
+        {
+            yield return baseSerializer.Deserialize<WorkOrder>(loggedDataFile);
+        }
     }
 
     private IEnumerable<WorkItem> ReadWorkItems(IBaseSerializer baseSerializer, string documentsPath)
     {
         var loggedDataFiles = Directory.EnumerateFiles(documentsPath, ConvertToSearchPattern(DatacardConstants.WorkItemFileOnly));
-        return loggedDataFiles.Select(loggedDataFile => baseSerializer.Deserialize<WorkItem>(loggedDataFile));
+        foreach (var loggedDataFile in loggedDataFiles)
+        {
+            yield return baseSerializer.Deserialize<WorkItem>(loggedDataFile);
+        }
     }
 
     private IEnumerable<WorkItemOperation> ReadWorkItemOperations(IBaseSerializer baseSerializer, string documentsPath)
     {
-      var loggedDataFiles = Directory.EnumerateFiles(documentsPath, ConvertToSearchPattern(DatacardConstants.WorkItemOperationFile));
-      return loggedDataFiles.Select(loggedDataFile => baseSerializer.Deserialize<WorkItemOperation>(loggedDataFile));
+        var workItemOperationFiles = Directory.EnumerateFiles(documentsPath, ConvertToSearchPattern(DatacardConstants.WorkItemOperationFile));
+        foreach (var workItemOperationFile in workItemOperationFiles)
+        {
+            yield return baseSerializer.Deserialize<WorkItemOperation>(workItemOperationFile);
+        }
     }
 
     private IEnumerable<Summary> ReadSummaries(IBaseSerializer baseSerializer, string documentsPath)
     {
-      var summaryFiles = Directory.EnumerateFiles(documentsPath, ConvertToSearchPattern(DatacardConstants.SummaryFile));
-      return summaryFiles.Select(summaryFile => baseSerializer.Deserialize<Summary>(summaryFile));
+        var summaryFiles = Directory.EnumerateFiles(documentsPath, ConvertToSearchPattern(DatacardConstants.SummaryFile));
+        foreach (var summaryFile in summaryFiles)
+        {
+            yield return baseSerializer.Deserialize<Summary>(summaryFile);
+        }
     }
 
     private IEnumerable<Recommendation> ReadRecommendations(IBaseSerializer baseSerializer, string documentsPath)
     {
-      var loggedDataFiles = Directory.EnumerateFiles(documentsPath, ConvertToSearchPattern(DatacardConstants.RecommendationFile));
-      return loggedDataFiles.Select(loggedDataFile => baseSerializer.Deserialize<Recommendation>(loggedDataFile));
+        var recommendationFiles = Directory.EnumerateFiles(documentsPath, ConvertToSearchPattern(DatacardConstants.RecommendationFile));
+        foreach (var recommendationFile in recommendationFiles)
+        {
+            yield return baseSerializer.Deserialize<Recommendation>(recommendationFile);
+        }
     }
 
     private IEnumerable<Plan> ReadPlans(IBaseSerializer baseSerializer, string documentsPath)
     {
-      var loggedDataFiles = Directory.EnumerateFiles(documentsPath, ConvertToSearchPattern(DatacardConstants.PlanFile));
-      return loggedDataFiles.Select(loggedDataFile => baseSerializer.Deserialize<Plan>(loggedDataFile));
+        var planFiles = Directory.EnumerateFiles(documentsPath, ConvertToSearchPattern(DatacardConstants.PlanFile));
+        foreach (var planFile in planFiles)
+        {
+            yield return baseSerializer.Deserialize<Plan>(planFile);
+        }
     }
 
     private IEnumerable<GuidanceAllocation> ReadGuidanceAllocations(IBaseSerializer baseSerializer, string documentsPath)
     {
-      var loggedDataFiles = Directory.EnumerateFiles(documentsPath, ConvertToSearchPattern(DatacardConstants.GuidanceAllocationFile));
-      return loggedDataFiles.Select(loggedDataFile => baseSerializer.Deserialize<GuidanceAllocation>(loggedDataFile));
+        var guidanceAllocationFiles = Directory.EnumerateFiles(documentsPath, ConvertToSearchPattern(DatacardConstants.GuidanceAllocationFile));
+        foreach (var guidanceAllocationFile in guidanceAllocationFiles)
+        {
+            yield return baseSerializer.Deserialize<GuidanceAllocation>(guidanceAllocationFile);
+        }
     }
 
     private IEnumerable<Load> ReadLoads(IBaseSerializer baseSerializer, string documentsPath)
     {
-      var loadFiles = Directory.EnumerateFiles(documentsPath, ConvertToSearchPattern(DatacardConstants.LoadFile));
-      return loadFiles.Select(loadFile => baseSerializer.Deserialize<Load>(loadFile));
+        var loadFiles = Directory.EnumerateFiles(documentsPath, ConvertToSearchPattern(DatacardConstants.LoadFile));
+        foreach (var loadFile in loadFiles)
+        {
+            yield return baseSerializer.Deserialize<Load>(loadFile);
+        }
     }
 
     private IEnumerable<LoggedData> ReadLoggedData(IBaseSerializer baseSerializer, string documentsPath)
     {
-      var loggedDataCol = new List<LoggedData>();
+        var loggedDataCol = new List<LoggedData>();
 
-      var loggedDataFiles = Directory.EnumerateFiles(documentsPath, ConvertToSearchPattern(DatacardConstants.LoggedDataFile));
-      foreach (var loggedDataFile in loggedDataFiles)
-      {
+        var loggedDataFiles = Directory.EnumerateFiles(documentsPath, ConvertToSearchPattern(DatacardConstants.LoggedDataFile));
+        foreach (var loggedDataFile in loggedDataFiles)
+        {
         var loggedData = baseSerializer.Deserialize<LoggedData>(loggedDataFile);
         foreach (var operationData in loggedData.OperationData)
         {
@@ -359,9 +386,9 @@ namespace AgGateway.ADAPT.ADMPlugin.Serializers
         }
 
         loggedDataCol.Add(loggedData);
-      }
+        }
 
-      return loggedDataCol;
+        return loggedDataCol;
     }
 
     private void ImportMeters(IBaseSerializer baseSerializer, string documentsPath, OperationData operationData)
