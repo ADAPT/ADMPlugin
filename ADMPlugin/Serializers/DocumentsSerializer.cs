@@ -372,26 +372,27 @@ namespace AgGateway.ADAPT.ADMPlugin.Serializers
 
     private IEnumerable<LoggedData> ReadLoggedData(IBaseSerializer baseSerializer, string documentsPath)
     {
-        var loggedDataCol = new List<LoggedData>();
-
         var loggedDataFiles = Directory.EnumerateFiles(documentsPath, ConvertToSearchPattern(DatacardConstants.LoggedDataFile));
         foreach (var loggedDataFile in loggedDataFiles)
         {
-        var loggedData = baseSerializer.Deserialize<LoggedData>(loggedDataFile);
-        foreach (var operationData in loggedData.OperationData)
-        {
-          ImportSpatialRecords(baseSerializer, documentsPath, operationData);
-          ImportSections(baseSerializer, documentsPath, operationData);
-          ImportMeters(baseSerializer, documentsPath, operationData);
+           yield return MapLoggedData(baseSerializer, documentsPath, loggedDataFile);
         }
-
-        loggedDataCol.Add(loggedData);
-        }
-
-        return loggedDataCol;
     }
 
-    private void ImportMeters(IBaseSerializer baseSerializer, string documentsPath, OperationData operationData)
+      private LoggedData MapLoggedData(IBaseSerializer baseSerializer, string documentsPath, string loggedDataFile)
+      {
+          var loggedData = baseSerializer.Deserialize<LoggedData>(loggedDataFile);
+          foreach (var operationData in loggedData.OperationData)
+          {
+              ImportSpatialRecords(baseSerializer, documentsPath, operationData);
+              ImportSections(baseSerializer, documentsPath, operationData);
+              ImportMeters(baseSerializer, documentsPath, operationData);
+          }
+
+          return loggedData;
+      }
+
+      private void ImportMeters(IBaseSerializer baseSerializer, string documentsPath, OperationData operationData)
     {
       var deviceElementUses = GetAllDeviceElementUses(operationData).Where(x => x.Value != null).SelectMany(x => x.Value);
 
