@@ -105,19 +105,14 @@ namespace AgGateway.ADAPT.ADMPlugin.Protobuf
 
     public IEnumerable<T> DeserializeWithLengthPrefix<T>(string path) where T : new()
     {
-      var itemCol = new List<T>();
-
       using (var fileStream = File.OpenRead(path))
       {
         while (!IsEndOfStream(fileStream))
         {
           var item = new T();
-          _model.DeserializeWithLengthPrefix(fileStream, item, typeof(T), PrefixStyle.Base128, 1);
-          itemCol.Add(item);
+          yield return (T)_model.DeserializeWithLengthPrefix(fileStream, item, typeof(T), PrefixStyle.Base128, 1);
         }
       }
-
-      return itemCol;
     }
 
     private bool IsEndOfStream(FileStream fileStream)
