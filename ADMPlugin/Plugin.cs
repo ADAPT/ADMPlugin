@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -36,7 +36,6 @@ namespace AgGateway.ADAPT.ADMPlugin
     public void Initialize(string args = null)
     {
     }
-
     public Properties GetProperties(string dataPath)
     {
       return new Properties();
