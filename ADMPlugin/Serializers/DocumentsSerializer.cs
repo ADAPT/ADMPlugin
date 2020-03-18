@@ -363,7 +363,7 @@ namespace AgGateway.ADAPT.ADMPlugin.Serializers
 
     private IEnumerable<Load> ReadLoads(IBaseSerializer baseSerializer, string documentsPath)
     {
-        var loadFiles = Directory.EnumerateFiles(documentsPath, ConvertToSearchPattern(DatacardConstants.LoadFile));
+        var loadFiles = Directory.EnumerateFiles(documentsPath, ConvertToSearchPattern(DatacardConstants.LoadFileReadOnly));
         foreach (var loadFile in loadFiles)
         {
             yield return baseSerializer.Deserialize<Load>(loadFile);
