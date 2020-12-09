@@ -24,6 +24,7 @@ namespace AgGateway.ADAPT.ADMPlugin.Protobuf.V2.LoggedData
       type.AddField(6, nameof(AgGateway.ADAPT.ApplicationDataModel.LoggedData.LoggedData.SummaryId));
       type.AddField(7, nameof(AgGateway.ADAPT.ApplicationDataModel.LoggedData.LoggedData.Notes));
       type.AddField(8, nameof(AgGateway.ADAPT.ApplicationDataModel.LoggedData.LoggedData.OperationData));
+      type.AddField(22, nameof(AgGateway.ADAPT.ApplicationDataModel.LoggedData.LoggedData.CalibrationFactors));
       type.AddField(21, nameof(AgGateway.ADAPT.ApplicationDataModel.LoggedData.LoggedData.Description));
     }
   }
