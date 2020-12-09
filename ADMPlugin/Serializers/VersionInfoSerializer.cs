@@ -1,11 +1,8 @@
-using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
-using System.Text;
 using AgGateway.ADAPT.ADMPlugin.Json;
 using AgGateway.ADAPT.ADMPlugin.Models;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Converters;
 
 namespace AgGateway.ADAPT.ADMPlugin.Serializers
 {
