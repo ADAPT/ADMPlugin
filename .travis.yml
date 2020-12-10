@@ -7,9 +7,8 @@ jobs:
   include:
     - stage: test
       script:
-        - dotnet restore
+        - dotnet restore --force
         - dotnet test
-        - dotnet build -c Release
     - stage: deploy
       if: tag =~ ^v\d+\.\d+\.\d+
       script:
