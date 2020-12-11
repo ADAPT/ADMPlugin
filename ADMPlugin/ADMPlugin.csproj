@@ -11,6 +11,7 @@
     <RootNamespace>AgGateway.ADAPT.ADMPlugin</RootNamespace>
     <PackageId>AgGateway.ADAPT.ADMPlugin</PackageId>
     <AssemblyVersion>1.0.0.0</AssemblyVersion>
+
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="AgGatewayADAPTFramework" Version="2.0.4" />
