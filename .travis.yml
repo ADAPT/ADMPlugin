@@ -1,14 +1,18 @@
 language: csharp
-dotnet: 3.1
-before_install:
-  - sudo apt-get install dotnet-sdk-2.1
-
 jobs:
   include:
-    - stage: test
+    - stage: test .NET Core 2.0
+      dotnet: 2.1.4
       script:
         - dotnet restore --force
-        - dotnet test
+        - dotnet test -c Release -f netcoreapp2.0
+
+    - stage: test .NET Core 3.1
+      dotnet: 3.1
+      script:
+        - dotnet restore --force
+        - dotnet test -c Release -f netcoreapp3.1
+
     - stage: deploy
       if: tag =~ ^v\d+\.\d+\.\d+
       script:
