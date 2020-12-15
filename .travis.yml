@@ -5,7 +5,7 @@ dist: bionic
 jobs:
   include:
     - stage: test
-      mono: none
+      mono: 5.8.0
       script:
         - dotnet test -c Release
 
