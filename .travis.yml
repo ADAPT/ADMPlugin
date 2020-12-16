@@ -1,13 +1,21 @@
 language: csharp
-dotnet: 3.1
 dist: bionic
+env:
+  - FrameworkPathOverride=/usr/lib/mono/4.5/
 
 jobs:
   include:
-    - stage: test
-      mono: 5.8.0
+    - stage: Test .NET Core 2.0
+      dotnet: 2.1.4
+      mono: none
       script:
-        - dotnet test -c Release
+        - dotnet test -c Release -f netcoreapp2.0
+
+    - stage: Test .NET Core 3.1
+      dotnet: 3.1
+      mono: none
+      script:
+        - dotnet test -c Release -f netcoreapp3.1
 
     - stage: deploy
       if: tag =~ ^v\d+\.\d+\.\d+
