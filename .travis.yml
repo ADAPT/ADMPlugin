@@ -1,5 +1,7 @@
 language: csharp
 dist: bionic
+env:
+  - FrameworkPathOverride=/usr/lib/mono/4.5/
 
 jobs:
   include:
