@@ -1,14 +1,21 @@
 language: csharp
 dist: bionic
-mono: none
-dotnet: 3.1
 
 jobs:
   include:
-    - stage: Run Test
+    - stage: Run .NET Core 3.1 Tests
+      dotnet: 3.1
+      mono: none
       script:
         - dotnet test ./PluginTest/PluginTest.csproj -c Release -f netcoreapp3.1
         - dotnet test ./AcceptanceTest/AcceptanceTest.csproj -c Release -f netcoreapp3.1
+
+    - stage: Run .NET Core 2.0 Tests
+      dotnet: 2.1.4
+      mono: none
+      script:
+        - dotnet test ./PluginTest/PluginTest.csproj -c Release -f netcoreapp2.0
+        - dotnet test ./AcceptanceTest/AcceptanceTest.csproj -c Release -f netcoreapp2.0
 
     - stage: deploy
       if: tag =~ ^v\d+\.\d+\.\d+
