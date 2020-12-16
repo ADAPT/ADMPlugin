@@ -11,8 +11,10 @@
     <RootNamespace>AgGateway.ADAPT.ADMPlugin</RootNamespace>
     <PackageId>AgGateway.ADAPT.ADMPlugin</PackageId>
     <AssemblyVersion>1.0.0.0</AssemblyVersion>
-
   </PropertyGroup>
+  <ItemGroup Condition="$(TargetFramework.StartsWith('net4')) AND '$(MSBuildRuntimeType)' == 'Core' AND '$(OS)' != 'Windows_NT'">
+    <PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies" Version="1.0.0" PrivateAssets="All" />
+  </ItemGroup>
   <ItemGroup>
     <PackageReference Include="AgGatewayADAPTFramework" Version="2.0.4" />
     <PackageReference Include="Newtonsoft.Json" Version="12.0.1" />
