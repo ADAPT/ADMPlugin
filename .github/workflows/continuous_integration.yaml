@@ -1,0 +1,26 @@
+on:
+  push:
+    branches: [ $default-branch ]
+  pull_request:
+    branches: [ $default-branch ]
+
+name: Continuous Integration
+jobs:
+  build_and_test:
+    runs-on: ubuntu-20.04
+    name: Build and Test
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Setup .NET Core 3.1
+        uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: 3.1
+
+      - name: Setup .NET Core 2.0
+        uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: 2.0
+
+      - name: Test
+        run: dotnet test -configuration Release

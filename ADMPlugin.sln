@@ -16,6 +16,13 @@ ProjectSection(SolutionItems) = preProject
 	.travis.yml = .travis.yml
 EndProjectSection
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".github", ".github", "{EF083CE5-CE45-41A9-A786-09382ED2A9F8}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "workflows", "workflows", "{B99CFE87-0A6E-4774-A59C-AA2606CCFC38}"
+ProjectSection(SolutionItems) = preProject
+	.github\workflows\continuous_integration.yaml = .github\workflows\continuous_integration.yaml
+EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -44,5 +51,8 @@ Global
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {97C57A24-3EF5-4CF0-B193-6B0E7A98234D}
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{B99CFE87-0A6E-4774-A59C-AA2606CCFC38} = {EF083CE5-CE45-41A9-A786-09382ED2A9F8}
 	EndGlobalSection
 EndGlobal
