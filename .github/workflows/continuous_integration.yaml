@@ -23,4 +23,4 @@ jobs:
           dotnet-version: 2.1
 
       - name: Test
-        run: dotnet test -configuration Release
+        run: dotnet test --configuration Release
