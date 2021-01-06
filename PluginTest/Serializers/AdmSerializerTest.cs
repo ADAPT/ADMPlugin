@@ -1,16 +1,11 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using AgGateway.ADAPT.ADMPlugin;
 using AgGateway.ADAPT.ApplicationDataModel.ADM;
-using AgGateway.ADAPT.ApplicationDataModel.Equipment;
-using AgGateway.ADAPT.ApplicationDataModel.LoggedData;
 using AgGateway.ADAPT.ApplicationDataModel.ReferenceLayers;
 using Moq;
-using Newtonsoft.Json;
 using NUnit.Framework;
-using AgGateway.ADAPT.TestUtilities;
 using AgGateway.ADAPT.ADMPlugin.Serializers;
 using AgGateway.ADAPT.ADMPlugin.Models;
 using AgGateway.ADAPT.ADMPlugin.Json;

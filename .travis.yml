@@ -1,16 +1,23 @@
 language: csharp
-dotnet: 2.1.4
-
+dist: bionic
 env:
   - FrameworkPathOverride=/usr/lib/mono/4.5/
 
 jobs:
   include:
-    - stage: test
+    - stage: Run Tests
+      before_install:
+        - wget https://packages.microsoft.com/config/ubuntu/18.04/packages-microsoft-prod.deb -O packages-microsoft-prod.deb
+        - sudo dpkg -i packages-microsoft-prod.deb
+        - sudo apt-get update
+        - sudo apt-get install -y dotnet-sdk-3.1
+        - sudo apt-get install -y dotnet-sdk-2.1
       mono: none
       script:
+        - dotnet --list-sdks
         - dotnet test ./PluginTest/PluginTest.csproj -c Release
         - dotnet test ./AcceptanceTest/AcceptanceTest.csproj -c Release
+
     - stage: deploy
       if: tag =~ ^v\d+\.\d+\.\d+
       mono: 5.8.0

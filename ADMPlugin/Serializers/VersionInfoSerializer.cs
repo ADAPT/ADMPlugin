@@ -1,8 +1,6 @@
-using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
-using System.Text;
+using AgGateway.ADAPT.ADMPlugin.Json;
 using AgGateway.ADAPT.ADMPlugin.Models;
 using Newtonsoft.Json;
 
@@ -39,7 +37,7 @@ namespace AgGateway.ADAPT.ADMPlugin.Serializers
 
       var fileString = File.ReadAllText(filePath);
 
-      var model = JsonConvert.DeserializeObject<AdmVersionInfo>(fileString);
+      var model = JsonConvert.DeserializeObject<AdmVersionInfo>(fileString, new NetCoreApp31CompatibleVersionConverter());
       return model;
     }
   }
