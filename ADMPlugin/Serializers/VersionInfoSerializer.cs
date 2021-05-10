@@ -36,8 +36,8 @@ namespace AgGateway.ADAPT.ADMPlugin.Serializers
       }
 
       var fileString = File.ReadAllText(filePath);
-
-      var model = JsonConvert.DeserializeObject<AdmVersionInfo>(fileString, new NetCoreApp31CompatibleVersionConverter());
+            
+      var model = JsonConvert.DeserializeObject<AdmVersionInfo>(fileString);
       return model;
     }
   }
