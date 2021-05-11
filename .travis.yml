@@ -1,36 +1,23 @@
 language: csharp
-dist: bionic
+dotnet: 2.1.4
+
 env:
   - FrameworkPathOverride=/usr/lib/mono/4.5/
 
 jobs:
   include:
-    - stage: Run Tests
-      before_install:
-        - wget https://packages.microsoft.com/config/ubuntu/18.04/packages-microsoft-prod.deb -O packages-microsoft-prod.deb
-        - sudo dpkg -i packages-microsoft-prod.deb
-        - sudo apt-get update
-        - sudo apt-get install -y dotnet-sdk-3.1
-        - sudo apt-get install -y dotnet-sdk-2.1
+    - stage: test
       mono: none
       script:
-        - dotnet --list-sdks
         - dotnet test ./PluginTest/PluginTest.csproj -c Release
         - dotnet test ./AcceptanceTest/AcceptanceTest.csproj -c Release
-
     - stage: deploy
       if: tag =~ ^v\d+\.\d+\.\d+
-      before_install:
-        - wget https://packages.microsoft.com/config/ubuntu/18.04/packages-microsoft-prod.deb -O packages-microsoft-prod.deb
-        - sudo dpkg -i packages-microsoft-prod.deb
-        - sudo apt-get update
-        - sudo apt-get install -y dotnet-sdk-3.1
-        - sudo apt-get install -y dotnet-sdk-2.1      
-      mono: none
+      mono: 5.8.0
       script:
         - VERSION=$(echo $TRAVIS_TAG | grep -i -P -o '(?<=^v)\d+\.\d+\.\d+(?:.+)?$'); VERSION_NUMBER=$(echo $VERSION | grep -i -P -o '^\d+\.\d+\.\d+')
         - dotnet build ./ADMPlugin.sln -c Release /p:Version=$VERSION /p:FileVersion=$VERSION_NUMBER.$TRAVIS_BUILD_NUMBER
-        - dotnet pack --output ./dist -p:PackageVersion $VERSION
+        - mkdir -p ./dist; nuget pack ./AgGatewayADMPlugin.nuspec -outputdirectory ./dist -version $VERSION
         - if [ -n "${NUGET_API_KEY}" ]; then dotnet nuget push ./dist/AgGatewayADMPlugin.${VERSION}.nupkg --api-key $NUGET_API_KEY --source https://api.nuget.org/v3/index.json; fi
       deploy:
         provider: releases
