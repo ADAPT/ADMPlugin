@@ -40,7 +40,7 @@ namespace AgGateway.ADAPT.ADMPlugin.Serializers
 
       // due to a breaking change in Newtonsoft between Core 2.0 and Core 3.1+, need to handle version info that was originally emitted as a dict rather than a string.
       // 3.1+ expects the version info to be in a string format therefore we use this logic to convert to a string if the PluginVersion type is null (not a primitive type).
-      if (json["PluginVersion"].Type == null)
+      if (json["PluginVersion"] != null && json["PluginVersion"].Type == null)
       {
         var major = json["PluginVersion"].Major;
         var minor = json["PluginVersion"].Minor;
