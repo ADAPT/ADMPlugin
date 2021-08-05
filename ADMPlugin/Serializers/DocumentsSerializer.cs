@@ -2,6 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using AgGateway.ADAPT.ADMPlugin.Converters;
+using AgGateway.ADAPT.ADMPlugin.Models;
 using AgGateway.ADAPT.ApplicationDataModel.ADM;
 using AgGateway.ADAPT.ApplicationDataModel.Documents;
 using AgGateway.ADAPT.ApplicationDataModel.Equipment;
@@ -220,8 +222,8 @@ namespace AgGateway.ADAPT.ADMPlugin.Serializers
             loggedData.OperationData = loggedData.OperationData.ToList();
             foreach (var operationData in loggedData.OperationData)
             {
-              ExportSpatialRecords(baseSerializer, documentsPath, operationData);
-              ExportSectionsAndMeters(baseSerializer, documentsPath, operationData);
+              var meters = ExportSectionsAndMeters(baseSerializer, documentsPath, operationData);
+              ExportSpatialRecords(baseSerializer, documentsPath, operationData, meters);
             }
           }
           WriteObject(baseSerializer, documentsPath, loggedData, loggedData.Id.ReferenceId, DatacardConstants.LoggedDataFile);
@@ -236,34 +238,37 @@ namespace AgGateway.ADAPT.ADMPlugin.Serializers
       baseSerializer.Serialize(obj, filePath);
     }
 
-    private void ExportSpatialRecords(IBaseSerializer baseSerializer, string documentsPath, OperationData operationData)
+    private void ExportSpatialRecords(IBaseSerializer baseSerializer, string documentsPath, OperationData operationData, List<WorkingData> meters)
     {
       var fileName = string.Format(DatacardConstants.OperationDataFile, operationData.Id.ReferenceId);
       var filePath = Path.Combine(documentsPath, fileName);
 
       if (operationData.GetSpatialRecords == null)
       {
-        baseSerializer.SerializeWithLengthPrefix(new List<SpatialRecord>(), filePath);
+        baseSerializer.SerializeWithLengthPrefix(new List<SerializableSpatialRecord>(), filePath);
         return;
       }
 
       var spatialRecords = operationData.GetSpatialRecords();
+      var serializableSpatialRecords = SpatialRecordConverter.ConvertToSerializableSpatialRecords(spatialRecords, meters);
 
-      baseSerializer.SerializeWithLengthPrefix(spatialRecords, filePath);
+      baseSerializer.SerializeWithLengthPrefix(serializableSpatialRecords, filePath);
     }
 
-    private void ExportSectionsAndMeters(IBaseSerializer baseSerializer, string documentsPath, OperationData operationData)
+    private List<WorkingData> ExportSectionsAndMeters(IBaseSerializer baseSerializer, string documentsPath, OperationData operationData)
     {
       var deviceElementUses = GetAllDeviceElementUses(operationData);
       var deviceElementUseFileName = string.Format(DatacardConstants.SectionFile, operationData.Id.ReferenceId);
       var deviceElementUseFilePath = Path.Combine(documentsPath, deviceElementUseFileName);
 
-      var workingData = deviceElementUses.SelectMany(deviceElementUse => deviceElementUse.Value.SelectMany(x => x.GetWorkingDatas()));
+      var workingData = deviceElementUses.SelectMany(deviceElementUse => deviceElementUse.Value.SelectMany(x => x.GetWorkingDatas())).ToList();
       var workingDataFileName = string.Format(DatacardConstants.WorkingDataFile, operationData.Id.ReferenceId);
       var workingDataFilePath = Path.Combine(documentsPath, workingDataFileName);
 
       baseSerializer.Serialize(deviceElementUses, deviceElementUseFilePath);
       baseSerializer.Serialize(workingData, workingDataFilePath);
+
+      return workingData;
     }
 
     private Dictionary<int, IEnumerable<DeviceElementUse>> GetAllDeviceElementUses(OperationData operationData)
@@ -384,15 +389,15 @@ namespace AgGateway.ADAPT.ADMPlugin.Serializers
           var loggedData = baseSerializer.Deserialize<LoggedData>(loggedDataFile);
           foreach (var operationData in loggedData.OperationData)
           {
-              ImportSpatialRecords(baseSerializer, documentsPath, operationData);
               ImportSections(baseSerializer, documentsPath, operationData);
-              ImportMeters(baseSerializer, documentsPath, operationData);
+              var meters = ImportMeters(baseSerializer, documentsPath, operationData);
+              ImportSpatialRecords(baseSerializer, documentsPath, operationData, meters);
           }
 
           return loggedData;
       }
 
-      private void ImportMeters(IBaseSerializer baseSerializer, string documentsPath, OperationData operationData)
+      private IEnumerable<WorkingData> ImportMeters(IBaseSerializer baseSerializer, string documentsPath, OperationData operationData)
     {
       var deviceElementUses = GetAllDeviceElementUses(operationData).Where(x => x.Value != null).SelectMany(x => x.Value);
 
@@ -405,6 +410,8 @@ namespace AgGateway.ADAPT.ADMPlugin.Serializers
         var deviceElementUseWorkingData = allWorkingData.Where(x => x.DeviceElementUseId == deviceElementUse.Id.ReferenceId);
         deviceElementUse.GetWorkingDatas = () => deviceElementUseWorkingData;
       }
+
+      return allWorkingData;
     }
 
     private void ImportSections(IBaseSerializer baseSerializer, string documentsPath, OperationData operationData)
@@ -417,13 +424,13 @@ namespace AgGateway.ADAPT.ADMPlugin.Serializers
         operationData.GetDeviceElementUses = x => sections[x] ?? new List<DeviceElementUse>();
     }
 
-    private void ImportSpatialRecords(IBaseSerializer baseSerializer, string documentsPath, OperationData operationData)
+    private void ImportSpatialRecords(IBaseSerializer baseSerializer, string documentsPath, OperationData operationData, IEnumerable<WorkingData> workingDatas)
     {
       var spatialRecordFileName = string.Format(DatacardConstants.OperationDataFile, operationData.Id.ReferenceId);
       var spatialRecordFilePath = Path.Combine(documentsPath, spatialRecordFileName);
 
-      var spatialRecords = baseSerializer.DeserializeWithLengthPrefix<SpatialRecord>(spatialRecordFilePath);
-      operationData.GetSpatialRecords = () => spatialRecords;
+      var spatialRecords = baseSerializer.DeserializeWithLengthPrefix<SerializableSpatialRecord>(spatialRecordFilePath);
+      operationData.GetSpatialRecords = () => SpatialRecordConverter.ConvertToSpatialRecords(spatialRecords, workingDatas);
     }
 
     private string ConvertToSearchPattern(string filePattern)
