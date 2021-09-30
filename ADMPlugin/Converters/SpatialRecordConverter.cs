@@ -4,14 +4,15 @@ using AgGateway.ADAPT.ADMPlugin.Models;
 using AgGateway.ADAPT.ApplicationDataModel.LoggedData;
 using AgGateway.ADAPT.ApplicationDataModel.Representations;
 using AgGateway.ADAPT.Representation.RepresentationSystem.ExtensionMethods;
+using AgGateway.ADAPT.Representation.UnitSystem.ExtensionMethods;
 
 namespace AgGateway.ADAPT.ADMPlugin.Converters
 {
-    public class SpatialRecordConverter
+    public class SpatialRecordConverter : ISpatialRecordConverter
     {
-        public static IEnumerable<SpatialRecord> ConvertToSpatialRecords(IEnumerable<SerializableSpatialRecord> protobufSpatialRecords, IEnumerable<WorkingData> workingData)
+        public IEnumerable<SpatialRecord> ConvertToSpatialRecords(IEnumerable<SerializableSpatialRecord> protobufSpatialRecords, IEnumerable<WorkingData> workingData)
         {
-            if (protobufSpatialRecords == null)
+            if (protobufSpatialRecords == null || workingData == null)
             {
                 return Enumerable.Empty<SpatialRecord>();
             }
@@ -19,6 +20,16 @@ namespace AgGateway.ADAPT.ADMPlugin.Converters
             var workingDataById = workingData.ToDictionary(meter => meter.Id.ReferenceId, meter => meter);
 
             return protobufSpatialRecords.Select(protobufSpatialRecord => ConvertToSpatialRecord(protobufSpatialRecord, workingDataById));
+        }
+
+        public IEnumerable<SerializableSpatialRecord> ConvertToSerializableSpatialRecords(IEnumerable<SpatialRecord> spatialRecords, List<WorkingData> workingData)
+        {
+            if (spatialRecords == null || workingData == null)
+            {
+                return Enumerable.Empty<SerializableSpatialRecord>();
+            }
+
+            return spatialRecords.Select(spatialRecord => ConvertToSerializableSpatialRecord(spatialRecord, workingData));
         }
 
         private static SpatialRecord ConvertToSpatialRecord(SerializableSpatialRecord protobufSpatialRecord, Dictionary<int, WorkingData> workingDataById)
@@ -40,46 +51,56 @@ namespace AgGateway.ADAPT.ADMPlugin.Converters
 
             foreach (var enumeratedMeterValue in protobufSpatialRecord.EnumeratedMeterValues)
             {
-                var workingData = workingDataById[enumeratedMeterValue.Key] as EnumeratedWorkingData;
-                var representation = workingData?.Representation as EnumeratedRepresentation;
-                var enumeratedValue = representation.ToInternalRepresentation().EnumerationMembers[enumeratedMeterValue.Value].ToModelEnumMember();
-                var value = new EnumeratedValue
-                {
-                    Representation = representation,
-                    Value = enumeratedValue,
-                    Code = (int?)enumeratedMeterValue.Value
-                };
-                spatialRecord.SetMeterValue(workingData, value);
+                ConvertEnumeratedValue(workingDataById, enumeratedMeterValue, spatialRecord);
             }
-
             foreach (var numericMeterValue in protobufSpatialRecord.NumericMeterValues)
             {
-                var workingData = workingDataById[numericMeterValue.Key] as NumericWorkingData;
-                var representation = workingData.Representation as NumericRepresentation;
-                var numericValue = new NumericRepresentationValue
-                {
-                    Representation = representation,
-                    UserProvidedUnitOfMeasure = workingData.UnitOfMeasure,
-                    Value = new NumericValue(workingData.UnitOfMeasure, numericMeterValue.Value)
-                };
-                spatialRecord.SetMeterValue(workingData, numericValue);
+                ConvertNumericValue(workingDataById, numericMeterValue, spatialRecord);
             }
-
-            // TODO: String workingData
-            // TODO: Reduce duplication
-            // TODO: What about the missing crap on these RepresentationValue objects?
+            foreach (var stringMeterValue in protobufSpatialRecord.StringMeterValues)
+            {
+                ConvertStringValue(workingDataById, stringMeterValue, spatialRecord);
+            }
 
             return spatialRecord;
         }
 
-        public static IEnumerable<SerializableSpatialRecord> ConvertToSerializableSpatialRecords(IEnumerable<SpatialRecord> spatialRecords, List<WorkingData> workingData)
+        private static void ConvertStringValue(Dictionary<int, WorkingData> workingDataById, KeyValuePair<int, string> stringMeterValue, SpatialRecord spatialRecord)
         {
-            if (spatialRecords == null)
+            var workingData = workingDataById[stringMeterValue.Key];
+            var stringValue = new StringValue
             {
-                return Enumerable.Empty<SerializableSpatialRecord>();
-            }
+                Representation = workingData.Representation as StringRepresentation,
+                Value = stringMeterValue.Value
+            };
+            spatialRecord.SetMeterValue(workingData, stringValue);
+        }
 
-            return spatialRecords.Select(spatialRecord => ConvertToSerializableSpatialRecord(spatialRecord, workingData));
+        private static void ConvertNumericValue(Dictionary<int, WorkingData> workingDataById, KeyValuePair<int, double> numericMeterValue, SpatialRecord spatialRecord)
+        {
+            var workingData = workingDataById[numericMeterValue.Key] as NumericWorkingData;
+            var representation = workingData.Representation as NumericRepresentation;
+            var numericValue = new NumericRepresentationValue
+            {
+                Representation = representation,
+                UserProvidedUnitOfMeasure = workingData.UnitOfMeasure,
+                Value = new NumericValue(workingData.UnitOfMeasure, numericMeterValue.Value)
+            };
+            spatialRecord.SetMeterValue(workingData, numericValue);
+        }
+
+        private static void ConvertEnumeratedValue(Dictionary<int, WorkingData> workingDataById, KeyValuePair<int, long> enumeratedMeterValue, SpatialRecord spatialRecord)
+        {
+            var workingData = workingDataById[enumeratedMeterValue.Key] as EnumeratedWorkingData;
+            var representation = workingData.Representation as EnumeratedRepresentation;
+            var enumeratedValue = representation.ToInternalRepresentation().EnumerationMembers[enumeratedMeterValue.Value].ToModelEnumMember();
+            var value = new EnumeratedValue
+            {
+                Representation = representation,
+                Value = enumeratedValue,
+                Code = (int?)enumeratedMeterValue.Value
+            };
+            spatialRecord.SetMeterValue(workingData, value);
         }
 
         private static SerializableSpatialRecord ConvertToSerializableSpatialRecord(SpatialRecord spatialRecord, List<WorkingData> workingData)
@@ -89,27 +110,34 @@ namespace AgGateway.ADAPT.ADMPlugin.Converters
                 Geometry = spatialRecord.Geometry,
                 Timestamp = spatialRecord.Timestamp
             };
-            foreach (var meter in workingData)
+
+            foreach (var currentWorkingData in workingData)
             {
-                var appliedLatency = spatialRecord.GetAppliedLatency(meter);
+                var appliedLatency = spatialRecord.GetAppliedLatency(currentWorkingData);
                 if (appliedLatency.HasValue)
                 {
-                    serializableSpatialRecord.AppliedLatencyValues[meter.Id.ReferenceId] = appliedLatency;
+                    serializableSpatialRecord.AppliedLatencyValues[currentWorkingData.Id.ReferenceId] = appliedLatency;
                 }
 
-                var meterValue = spatialRecord.GetMeterValue(meter);
+                var meterValue = spatialRecord.GetMeterValue(currentWorkingData);
                 switch (meterValue)
                 {
                     case null:
                         break;
                     case NumericRepresentationValue numericValue:
-                        serializableSpatialRecord.NumericMeterValues[meter.Id.ReferenceId] = numericValue.Value.Value;
+                        var numericWorkingData = currentWorkingData as NumericWorkingData;
+                        if (numericWorkingData.UnitOfMeasure == null)
+                        {
+                            numericWorkingData.UnitOfMeasure = numericValue.Value.UnitOfMeasure;
+                        }
+                        double value = numericValue.Value.ConvertToUnit(numericWorkingData.UnitOfMeasure.ToInternalUom());
+                        serializableSpatialRecord.NumericMeterValues[currentWorkingData.Id.ReferenceId] = value;
                         break;
                     case EnumeratedValue enumeratedValue:
-                        serializableSpatialRecord.EnumeratedMeterValues[meter.Id.ReferenceId] = enumeratedValue.Value.Code;
+                        serializableSpatialRecord.EnumeratedMeterValues[currentWorkingData.Id.ReferenceId] = enumeratedValue.Value.Code;
                         break;
                     case StringValue stringValue:
-                        serializableSpatialRecord.StringMeterValues[meter.Id.ReferenceId] = stringValue.Value;
+                        serializableSpatialRecord.StringMeterValues[currentWorkingData.Id.ReferenceId] = stringValue.Value;
                         break;
                 }
             }
