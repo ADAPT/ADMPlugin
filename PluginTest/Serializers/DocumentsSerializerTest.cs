@@ -2,6 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using AgGateway.ADAPT.ADMPlugin;
+using AgGateway.ADAPT.ADMPlugin.Converters;
+using AgGateway.ADAPT.ADMPlugin.Models;
 using AgGateway.ADAPT.ADMPlugin.Serializers;
 using AgGateway.ADAPT.ApplicationDataModel.ADM;
 using AgGateway.ADAPT.ApplicationDataModel.Documents;
@@ -18,6 +20,8 @@ namespace AgGateway.ADAPT.PluginTest.Serializers
     private string _path;
     private Documents _documents;
     private Mock<IBaseSerializer> _baseSerializerMock;
+    private Mock<ISpatialRecordConverter> _spatialRecordConverterMock;
+    private DocumentsSerializer _documentsSerializer;
 
     [SetUp]
     public void Setup()
@@ -25,6 +29,9 @@ namespace AgGateway.ADAPT.PluginTest.Serializers
       _documents = new Documents { LoggedData = new List<LoggedData>() };
       _path = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
       _baseSerializerMock = new Mock<IBaseSerializer>();
+      _spatialRecordConverterMock = new Mock<ISpatialRecordConverter>();
+
+      _documentsSerializer = new DocumentsSerializer(_spatialRecordConverterMock.Object);
     }
 
     [Test]
@@ -33,8 +40,7 @@ namespace AgGateway.ADAPT.PluginTest.Serializers
       var loggedDatas = new List<LoggedData> { new LoggedData() };
       _documents.LoggedData = loggedDatas;
 
-      var documentsSerializer = new DocumentsSerializer();
-      documentsSerializer.Serialize(_baseSerializerMock.Object, _documents, _path);
+      _documentsSerializer.Serialize(_baseSerializerMock.Object, _documents, _path);
 
       var expectedFileName = String.Format(DatacardConstants.LoggedDataFile, loggedDatas[0].Id.ReferenceId);
       var expectedPath = Path.Combine(_path, DatacardConstants.DocumentsFolder, expectedFileName);
@@ -47,8 +53,7 @@ namespace AgGateway.ADAPT.PluginTest.Serializers
       var guidanceAllocations = new List<GuidanceAllocation> { new GuidanceAllocation() };
       _documents.GuidanceAllocations = guidanceAllocations;
 
-      var documentsSerializer = new DocumentsSerializer();
-      documentsSerializer.Serialize(_baseSerializerMock.Object, _documents, _path);
+      _documentsSerializer.Serialize(_baseSerializerMock.Object, _documents, _path);
 
       var expectedFileName = String.Format(DatacardConstants.GuidanceAllocationFile, guidanceAllocations[0].Id.ReferenceId);
       var expectedPath = Path.Combine(_path, DatacardConstants.DocumentsFolder, expectedFileName);
@@ -61,8 +66,7 @@ namespace AgGateway.ADAPT.PluginTest.Serializers
       var plans = new List<Plan> { new Plan() };
       _documents.Plans = plans;
 
-      var documentsSerializer = new DocumentsSerializer();
-      documentsSerializer.Serialize(_baseSerializerMock.Object, _documents, _path);
+      _documentsSerializer.Serialize(_baseSerializerMock.Object, _documents, _path);
 
       var expectedFileName = String.Format(DatacardConstants.PlanFile, plans[0].Id.ReferenceId);
       var expectedPath = Path.Combine(_path, DatacardConstants.DocumentsFolder, expectedFileName);
@@ -75,8 +79,7 @@ namespace AgGateway.ADAPT.PluginTest.Serializers
       var recommendations = new List<Recommendation> { new Recommendation() };
       _documents.Recommendations = recommendations;
 
-      var documentsSerializer = new DocumentsSerializer();
-      documentsSerializer.Serialize(_baseSerializerMock.Object, _documents, _path);
+      _documentsSerializer.Serialize(_baseSerializerMock.Object, _documents, _path);
 
       var expectedFileName = String.Format(DatacardConstants.RecommendationFile, recommendations[0].Id.ReferenceId);
       var expectedPath = Path.Combine(_path, DatacardConstants.DocumentsFolder, expectedFileName);
@@ -89,8 +92,7 @@ namespace AgGateway.ADAPT.PluginTest.Serializers
       var summaries = new List<Summary> { new Summary() };
       _documents.Summaries = summaries;
 
-      var documentsSerializer = new DocumentsSerializer();
-      documentsSerializer.Serialize(_baseSerializerMock.Object, _documents, _path);
+      _documentsSerializer.Serialize(_baseSerializerMock.Object, _documents, _path);
 
       var expectedFileName = String.Format(DatacardConstants.SummaryFile, summaries[0].Id.ReferenceId);
       var expectedPath = Path.Combine(_path, DatacardConstants.DocumentsFolder, expectedFileName);
@@ -103,8 +105,7 @@ namespace AgGateway.ADAPT.PluginTest.Serializers
       var workItemOperations = new List<WorkItemOperation> { new WorkItemOperation() };
       _documents.WorkItemOperations = workItemOperations;
 
-      var documentsSerializer = new DocumentsSerializer();
-      documentsSerializer.Serialize(_baseSerializerMock.Object, _documents, _path);
+      _documentsSerializer.Serialize(_baseSerializerMock.Object, _documents, _path);
 
       var expectedFileName = String.Format(DatacardConstants.WorkItemOperationFile, workItemOperations[0].Id.ReferenceId);
       var expectedPath = Path.Combine(_path, DatacardConstants.DocumentsFolder, expectedFileName);
@@ -117,8 +118,7 @@ namespace AgGateway.ADAPT.PluginTest.Serializers
       var workItems = new List<WorkItem> { new WorkItem() };
       _documents.WorkItems = workItems;
 
-      var documentsSerializer = new DocumentsSerializer();
-      documentsSerializer.Serialize(_baseSerializerMock.Object, _documents, _path);
+      _documentsSerializer.Serialize(_baseSerializerMock.Object, _documents, _path);
 
       var expectedFileName = String.Format(DatacardConstants.WorkItemFile, workItems[0].Id.ReferenceId);
       var expectedPath = Path.Combine(_path, DatacardConstants.DocumentsFolder, expectedFileName);
@@ -131,8 +131,7 @@ namespace AgGateway.ADAPT.PluginTest.Serializers
       var workOrders = new List<WorkOrder> { new WorkOrder() };
       _documents.WorkOrders = workOrders;
 
-      var documentsSerializer = new DocumentsSerializer();
-      documentsSerializer.Serialize(_baseSerializerMock.Object, _documents, _path);
+      _documentsSerializer.Serialize(_baseSerializerMock.Object, _documents, _path);
 
       var expectedFileName = String.Format(DatacardConstants.WorkOrderFile, workOrders[0].Id.ReferenceId);
       var expectedPath = Path.Combine(_path, DatacardConstants.DocumentsFolder, expectedFileName);
@@ -142,8 +141,7 @@ namespace AgGateway.ADAPT.PluginTest.Serializers
     [Test]
     public void GivenNullDocumentsWhenExportDocumentsThenDoesNothing()
     {
-      var documentsSerializer = new DocumentsSerializer();
-      documentsSerializer.Serialize(_baseSerializerMock.Object, null, _path);
+        _documentsSerializer.Serialize(_baseSerializerMock.Object, null, _path);
 
       _baseSerializerMock.Verify(s => s.Serialize(It.IsAny<object>(), It.IsAny<string>()), Times.Never);
     }
@@ -166,13 +164,12 @@ namespace AgGateway.ADAPT.PluginTest.Serializers
                 }
             };
 
-      var documentsSerializer = new DocumentsSerializer();
-      documentsSerializer.Serialize(_baseSerializerMock.Object, _documents, _path);
+      _documentsSerializer.Serialize(_baseSerializerMock.Object, _documents, _path);
 
-      var expectedFileName = String.Format(DatacardConstants.OperationDataFile, operationData.Id.ReferenceId);
+      var expectedFileName = String.Format(DatacardConstants.SpatialRecordsFile, operationData.Id.ReferenceId);
       var expectedPath = Path.Combine(_path, DatacardConstants.DocumentsFolder, expectedFileName);
 
-      _baseSerializerMock.Verify(s => s.SerializeWithLengthPrefix(new List<SpatialRecord>(), expectedPath), Times.Once);
+      _baseSerializerMock.Verify(s => s.SerializeWithLengthPrefix(new List<SerializableSpatialRecord>(), expectedPath), Times.Once);
     }
 
     [TearDown]
