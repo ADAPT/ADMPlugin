@@ -255,7 +255,7 @@ namespace AgGateway.ADAPT.ADMPlugin.Serializers
 
     private void ExportSpatialRecords(IBaseSerializer baseSerializer, string documentsPath, OperationData operationData, List<WorkingData> meters)
     {
-      var fileName = string.Format(DatacardConstants.OperationDataFile, operationData.Id.ReferenceId);
+      var fileName = string.Format(DatacardConstants.SpatialRecordsFile, operationData.Id.ReferenceId);
       var filePath = Path.Combine(documentsPath, fileName);
 
       if (operationData.GetSpatialRecords == null)
@@ -437,11 +437,20 @@ namespace AgGateway.ADAPT.ADMPlugin.Serializers
 
     private void ImportSpatialRecords(IBaseSerializer baseSerializer, string documentsPath, OperationData operationData, IEnumerable<WorkingData> workingDatas)
     {
-      var spatialRecordFileName = string.Format(DatacardConstants.OperationDataFile, operationData.Id.ReferenceId);
-      var spatialRecordFilePath = Path.Combine(documentsPath, spatialRecordFileName);
+      var protobufSpatialRecordsFileName = string.Format(DatacardConstants.SpatialRecordsFile, operationData.Id.ReferenceId);
+      var protobufSpatialRecordsFilePath = Path.Combine(documentsPath, protobufSpatialRecordsFileName);
+      if (File.Exists(protobufSpatialRecordsFilePath))
+      {
+          var spatialRecords = baseSerializer.DeserializeWithLengthPrefix<SerializableSpatialRecord>(protobufSpatialRecordsFilePath);
+          operationData.GetSpatialRecords = () => _spatialRecordConverter.ConvertToSpatialRecords(spatialRecords, workingDatas);
+      }
+      else
+      {
+          var spatialRecordFileName = string.Format(DatacardConstants.OperationDataFile, operationData.Id.ReferenceId);
+          var spatialRecordFilePath = Path.Combine(documentsPath, spatialRecordFileName);
 
-      var spatialRecords = baseSerializer.DeserializeWithLengthPrefix<SerializableSpatialRecord>(spatialRecordFilePath);
-      operationData.GetSpatialRecords = () => _spatialRecordConverter.ConvertToSpatialRecords(spatialRecords, workingDatas);
+          operationData.GetSpatialRecords = () => baseSerializer.DeserializeWithLengthPrefix<SpatialRecord>(spatialRecordFilePath);
+      }
     }
 
     private string ConvertToSearchPattern(string filePattern)

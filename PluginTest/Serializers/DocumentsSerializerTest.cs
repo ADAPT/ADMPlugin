@@ -166,7 +166,7 @@ namespace AgGateway.ADAPT.PluginTest.Serializers
 
       _documentsSerializer.Serialize(_baseSerializerMock.Object, _documents, _path);
 
-      var expectedFileName = String.Format(DatacardConstants.OperationDataFile, operationData.Id.ReferenceId);
+      var expectedFileName = String.Format(DatacardConstants.SpatialRecordsFile, operationData.Id.ReferenceId);
       var expectedPath = Path.Combine(_path, DatacardConstants.DocumentsFolder, expectedFileName);
 
       _baseSerializerMock.Verify(s => s.SerializeWithLengthPrefix(new List<SerializableSpatialRecord>(), expectedPath), Times.Once);

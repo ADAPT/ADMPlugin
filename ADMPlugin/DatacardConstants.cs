@@ -15,6 +15,7 @@ namespace AgGateway.ADAPT.ADMPlugin
     public const string SectionFile = "Section{0}.adm";
     public const string WorkingDataFile = "Meter{0}.adm";
     public const string OperationDataFile = "OperationData{0}.adm";
+    public const string SpatialRecordsFile = "SpatialRecords{0}.adm";
     public const string WorkRecordFile = "WorkRecord{0}.adm";
     public const string CatalogFile = "Catalog.adm";
     public const string ProprietaryValuesFile = "ProprietaryValues.adm";
