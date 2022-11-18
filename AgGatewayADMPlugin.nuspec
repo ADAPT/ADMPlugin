@@ -9,10 +9,10 @@
     <projectUrl>https://github.com/ADAPT/ADMPlugin</projectUrl>
     <requireLicenseAcceptance>true</requireLicenseAcceptance>
     <description>AgGateway ADM Plugin for the ADAPT framework</description>
-    <copyright>Copyright (C) 2015-19 AgGateway and ADAPT Contributors</copyright>
+    <copyright>Copyright (C) 2015-22 AgGateway and ADAPT Contributors</copyright>
     <tags>aggateway adapt adm agriculture</tags>
     <dependencies>
-      <dependency id="AgGatewayADAPTFramework" version="[2.0.2,3)" />
+      <dependency id="AgGatewayADAPTFramework" version="[2.0.2,4)" />
       <dependency id="Newtonsoft.Json" version="[12,13)" />
       <dependency id="protobuf-net" version="[2.4,3)" />
     </dependencies>
@@ -22,6 +22,5 @@
   </metadata>
   <files>
     <file src="ADMPlugin/bin/Release/netstandard2.0/AgGateway.ADAPT.ADMPlugin.dll" target="lib/netstandard2.0/AgGateway.ADAPT.ADMPlugin.dll" />
-    <file src="ADMPlugin/bin/Release/net451/AgGateway.ADAPT.ADMPlugin.dll" target="lib/net451/AgGateway.ADAPT.ADMPlugin.dll" />
   </files>
 </package>
