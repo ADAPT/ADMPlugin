@@ -13,7 +13,7 @@
     <tags>aggateway adapt adm agriculture</tags>
     <dependencies>
       <dependency id="AgGatewayADAPTFramework" version="[2.0.2,4)" />
-      <dependency id="Newtonsoft.Json" version="[12,13)" />
+      <dependency id="Newtonsoft.Json" version="[13,14)" />
       <dependency id="protobuf-net" version="[2.4,3)" />
     </dependencies>
     <references>
